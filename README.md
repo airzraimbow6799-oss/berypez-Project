@@ -565,6 +565,10 @@ npm run dev              # http://localhost:3000
 | `npm run format` / `format:check`           | Prettier (con orden de clases de Tailwind).                |
 | `npm test` / `test:watch` / `test:coverage` | Vitest + Testing Library. La cobertura mínima es del 80 %. |
 | `npm run check`                             | Todo lo anterior junto (lo mismo que corre la CI).         |
+| `npm run catalog:fetch`                     | Única lectura del catálogo de berypez.pe → `data/catalog`. |
+| `npm run catalog:images` / `catalog:build`  | Fotos WebP y catálogo normalizado (sin tocar producción).  |
+
+Los tests de `tests/db/` aplican las migraciones de `supabase/migrations` en un Postgres en memoria (PGlite, sin Docker) y comprueban las políticas RLS y las reglas de datos.
 
 Antes de cada commit, Husky ejecuta `lint-staged` (ESLint + Prettier sobre los archivos modificados).
 
@@ -594,6 +598,7 @@ npx vercel env pull .env.local
 | F0-03         | Proyectos Supabase + Vercel                                                                                                                        | ⏳ Pendiente: cargar claves en `.env.local`    |
 | F0-04         | Catálogo: snapshot único de berypez.pe, 107 productos limpios (Anexo B), mapeo a 6 cartas y 106 fotos WebP en `public/catalog`                     | 🚧 Falta la carga en Supabase (`catalog:load`) |
 | F0-05         | Contrato de datos v1 (`src/types/catalog.ts`) y `docs/api.md`                                                                                      | ✅ Hecho (revisión de Rafael)                  |
-| F0-06 a F0-14 | Resto de la fase                                                                                                                                   | ⏳ Pendiente                                   |
+| F0-06         | Esquema SQL (catálogo, sedes, zonas, pedidos, pagos, reservas, reclamos, personal) con RLS en todas las tablas, probado con PGlite                 | 🚧 Falta `db push` y `gen types` en Supabase   |
+| F0-07 a F0-14 | Resto de la fase                                                                                                                                   | ⏳ Pendiente                                   |
 
 > **Nota de dependencias:** `npm audit` reporta una vulnerabilidad de PostCSS **incluida dentro de Next 15**. Solo afecta al procesamiento de nuestro propio CSS en el build (no a datos de usuarios) y únicamente se corrige migrando a Next 16. Queda registrada para evaluarla en la Fase 5 (F5-04).
