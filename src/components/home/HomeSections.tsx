@@ -1,11 +1,12 @@
-import { ArrowRight, CalendarDays, MapPin } from "lucide-react";
+import { ArrowRight, CalendarDays, MapPin, Navigation } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { ProductCard } from "@/components/catalog/ProductCard";
+import { BranchMap } from "@/components/home/BranchMap";
 import { Button } from "@/components/ui/Button";
-import { BRANCHES } from "@/config/site";
+import { BRANCHES, isGoogleMapsEmbed } from "@/config/site";
 import type { Menu, Product } from "@/types/catalog";
 
 function SectionHeading({
@@ -186,11 +187,23 @@ export function Branches() {
                 Reservar aquí
               </Button>
               {branch.mapsUrl ? (
-                <Button href={branch.mapsUrl} variant="fantasma">
+                <a
+                  href={branch.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-marino-600 rounded-pill min-h-tactil inline-flex items-center gap-1 px-4 font-semibold hover:underline"
+                >
+                  <Navigation aria-hidden="true" className="size-5" />
                   Cómo llegar
-                </Button>
+                  <span className="sr-only"> (abre Google Maps)</span>
+                </a>
               ) : null}
             </div>
+            {isGoogleMapsEmbed(branch.mapsEmbedUrl) ? (
+              <div className="mt-4">
+                <BranchMap branchName={branch.name} embedUrl={branch.mapsEmbedUrl} />
+              </div>
+            ) : null}
           </li>
         ))}
       </ul>

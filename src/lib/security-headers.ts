@@ -47,7 +47,12 @@ export function contentSecurityPolicy({ supabaseUrl, isDev }: HeaderOptions): st
       "https://vercel.live",
       "wss://ws-us3.pusher.com",
     ],
-    "frame-src": ["https://challenges.cloudflare.com", "https://vercel.live"],
+    // www.google.com: mapas de las sedes (solo /maps/embed, ver isGoogleMapsEmbed).
+    "frame-src": [
+      "https://challenges.cloudflare.com",
+      "https://vercel.live",
+      "https://www.google.com",
+    ],
     "worker-src": ["'self'", "blob:"],
     "object-src": ["'none'"],
     "base-uri": ["'self'"],

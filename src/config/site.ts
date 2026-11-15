@@ -12,7 +12,10 @@ export interface BranchInfo {
   phone: string | null;
   /** Solo dígitos con código de país: 51987654321. */
   whatsapp: string | null;
+  /** Enlace «Compartir» de Google Maps (maps.app.goo.gl/…): botón «Cómo llegar». */
   mapsUrl: string | null;
+  /** src del iframe de «Compartir → Insertar un mapa» (google.com/maps/embed?pb=…). */
+  mapsEmbedUrl: string | null;
   hours: string | null;
 }
 
@@ -24,6 +27,7 @@ export const BRANCHES: readonly BranchInfo[] = [
     phone: null,
     whatsapp: null,
     mapsUrl: null,
+    mapsEmbedUrl: null,
     hours: null,
   },
   {
@@ -33,6 +37,7 @@ export const BRANCHES: readonly BranchInfo[] = [
     phone: null,
     whatsapp: null,
     mapsUrl: null,
+    mapsEmbedUrl: null,
     hours: null,
   },
 ];
@@ -80,4 +85,11 @@ export function primaryWhatsapp(branches: readonly BranchInfo[] = BRANCHES): str
 export function whatsappUrl(number: string, message?: string): string {
   const text = message ? `?text=${encodeURIComponent(message)}` : "";
   return `https://wa.me/${number}${text}`;
+}
+
+const MAPS_EMBED_PREFIX = "https://www.google.com/maps/embed?";
+
+/** Solo acepta el iframe oficial de Google Maps (el CSP solo permite ese origen). */
+export function isGoogleMapsEmbed(url: string | null): url is string {
+  return url !== null && url.startsWith(MAPS_EMBED_PREFIX);
 }
