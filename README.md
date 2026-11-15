@@ -591,7 +591,9 @@ npx vercel env pull .env.local
 | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
 | F0-01         | Proyecto base (Next.js 15.5, TS estricto, Tailwind 4, ESLint, Prettier, Husky, Vitest, `.env.example`, validación de variables de entorno con Zod) | ✅ Hecho                                       |
 | F0-02         | CI en GitHub Actions (lint, tipos, formato, tests con cobertura, build; Lighthouse informativo)                                                    | ✅ Hecho (se activa al subir el repo a GitHub) |
-| F0-03         | Proyectos Supabase + Vercel                                                                                                                        | ⏳ Pendiente: requiere crear las cuentas       |
-| F0-04 a F0-14 | Resto de la fase                                                                                                                                   | ⏳ Pendiente                                   |
+| F0-03         | Proyectos Supabase + Vercel                                                                                                                        | ⏳ Pendiente: cargar claves en `.env.local`    |
+| F0-04         | Catálogo: snapshot único de berypez.pe, 107 productos limpios (Anexo B), mapeo a 6 cartas y 106 fotos WebP en `public/catalog`                     | 🚧 Falta la carga en Supabase (`catalog:load`) |
+| F0-05         | Contrato de datos v1 (`src/types/catalog.ts`) y `docs/api.md`                                                                                      | ✅ Hecho (revisión de Rafael)                  |
+| F0-06 a F0-14 | Resto de la fase                                                                                                                                   | ⏳ Pendiente                                   |
 
 > **Nota de dependencias:** `npm audit` reporta una vulnerabilidad de PostCSS **incluida dentro de Next 15**. Solo afecta al procesamiento de nuestro propio CSS en el build (no a datos de usuarios) y únicamente se corrige migrando a Next 16. Queda registrada para evaluarla en la Fase 5 (F5-04).
