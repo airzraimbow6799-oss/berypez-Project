@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { Plus, Search, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Chip } from "@/components/ui/Chip";
 import { IconButton } from "@/components/ui/IconButton";
@@ -12,6 +12,7 @@ import { canAddToCart, defaultSelection, toCartInput } from "@/features/catalog/
 import type { MenuPage, Product, ProductTag } from "@/types/catalog";
 
 import { ProductCard } from "./ProductCard";
+import { SectionNav } from "./SectionNav";
 import { QuickView } from "./QuickView";
 
 const TAG_FILTERS: Array<{ tag: ProductTag; label: string }> = [
@@ -25,57 +26,6 @@ const GRID_SIZES = "(min-width: 1024px) 280px, (min-width: 640px) 33vw, 50vw";
 /** Necesita vista rápida si hay que elegir algo (variante o elección libre). */
 function needsQuickView(product: Product): boolean {
   return product.variants.length > 1 || product.choiceGroups.length > 0;
-}
-
-/** Barra de secciones fija con scroll-spy: resalta la sección visible. */
-function SectionNav({ sections }: { sections: Array<{ slug: string; name: string }> }) {
-  const [active, setActive] = useState(sections[0]?.slug);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.filter((e) => e.isIntersecting);
-        const top = visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-        if (top) setActive(top.target.id.replace("seccion-", ""));
-      },
-      { rootMargin: "-30% 0px -60% 0px" },
-    );
-    for (const section of sections) {
-      const element = document.getElementById(`seccion-${section.slug}`);
-      if (element) observer.observe(element);
-    }
-    return () => observer.disconnect();
-  }, [sections]);
-
-  useEffect(() => {
-    document
-      .getElementById(`nav-${active}`)
-      ?.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
-  }, [active]);
-
-  return (
-    <nav
-      aria-label="Secciones de la carta"
-      className="bg-fondo/95 border-borde sticky top-0 z-20 -mx-4 border-b px-4 backdrop-blur md:top-[var(--altura-header)]"
-    >
-      <ul className="flex [scrollbar-width:none] gap-1 overflow-x-auto py-2">
-        {sections.map((section) => (
-          <li key={section.slug} className="shrink-0">
-            <a
-              id={`nav-${section.slug}`}
-              href={`#seccion-${section.slug}`}
-              aria-current={active === section.slug ? "true" : undefined}
-              className={`rounded-pill inline-flex min-h-10 items-center px-4 text-sm font-semibold whitespace-nowrap transition-colors ${
-                active === section.slug ? "bg-marino text-crema" : "hover:bg-crema-200 text-marino"
-              }`}
-            >
-              {section.name}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
 }
 
 /** F1-08 / F1-11 · Carta navegable: filtros, búsqueda, secciones y vista rápida. */
@@ -196,7 +146,8 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
           key={section.category.id}
           id={`seccion-${section.category.slug}`}
           aria-labelledby={`titulo-${section.category.slug}`}
-          className="scroll-mt-40 pt-8"
+          tabIndex={-1}
+          className="scroll-mt-40 pt-8 focus:outline-none"
         >
           <h2 id={`titulo-${section.category.slug}`} className="text-2xl font-semibold">
             {section.category.name}
