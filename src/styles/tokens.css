@@ -1,0 +1,73 @@
+/*
+ * F0-08 · Tokens del sistema de diseño de Berypez.
+ * Concepto: “cevichería de barrio con 14 años de cariño”. La foto del plato manda;
+ * la interfaz es sobria y el mar aparece solo en el borde en ola.
+ *
+ * Contraste medido (WCAG 2.2 AA) sobre crema #FBF7F0:
+ *   marino 13.0:1 · tinta suave 7.3:1 · rocoto-texto 5.2:1 · limón-texto 6.0:1
+ *   Botón ají con texto marino 7.5:1 · texto crema sobre marino 13.0:1.
+ * El rocoto puro (#E4572E) da 3.5:1: solo para fondos de promoción con texto grande.
+ * Foco: marino-600 sobre fondos claros (7.0:1), ají sobre fondos marino (7.5:1).
+ */
+@theme {
+  /* Marca */
+  --color-marino: #082f49;
+  --color-marino-800: #0c3d5e;
+  --color-marino-600: #1d5a80;
+  --color-aji: #f2b33d;
+  --color-aji-600: #d99a1f;
+  --color-aji-100: #fdf0d3;
+  --color-rocoto: #e4572e;
+  --color-rocoto-texto: #b8401d;
+  --color-crema: #fbf7f0;
+  --color-crema-200: #f3ebdd;
+  --color-limon: #7bb661;
+  --color-limon-texto: #356b23;
+  --color-limon-100: #e6f2df;
+
+  /* Roles */
+  --color-fondo: var(--color-crema);
+  --color-superficie: #ffffff;
+  --color-tinta: var(--color-marino);
+  --color-tinta-suave: #3e5566;
+  --color-borde: #e2d8c7;
+  --color-foco: var(--color-marino-600);
+  --color-foco-oscuro: var(--color-aji);
+  --color-error: var(--color-rocoto-texto);
+  --color-exito: var(--color-limon-texto);
+
+  /* Tipografía: Fraunces (títulos, con moderación) + Inter (todo lo demás) */
+  --font-display: var(--font-fraunces), "Georgia", serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  /* Escala 1.2 sobre base 18 px (propuesta §14: base 17–18 px) */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1.125rem;
+  --text-lg: 1.3125rem;
+  --text-xl: 1.5625rem;
+  --text-2xl: 1.875rem;
+  --text-3xl: clamp(2rem, 1.6rem + 1.6vw, 2.75rem);
+  --text-4xl: clamp(2.5rem, 1.8rem + 3vw, 4rem);
+  --leading-base: 1.5;
+
+  /* Radios: botones redondeados, tarjetas suaves */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-pill: 999px;
+
+  /* Sombras cálidas (tinte marino, no gris) */
+  --shadow-sm: 0 1px 2px rgb(8 47 73 / 0.08);
+  --shadow-md: 0 6px 18px -6px rgb(8 47 73 / 0.18);
+  --shadow-lg: 0 18px 40px -12px rgb(8 47 73 / 0.28);
+
+  /* Movimiento: 150–400 ms, curvas suaves (propuesta §13) */
+  --ease-out-suave: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-rapida: 150ms;
+  --duration-normal: 250ms;
+  --duration-lenta: 400ms;
+
+  /* Tamaño táctil mínimo (propuesta §14: 48×48) */
+  --spacing-tactil: 3rem;
+}
