@@ -3,37 +3,19 @@
 import { Bike, Check, ChevronDown, Store } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 
-import {
-  MODE_OPTIONS,
-  modeId,
-  modeLabel,
-  type OrderMode,
-  readStoredMode,
-  writeStoredMode,
-} from "@/features/order-mode/mode";
-
-function sessionStorageOrUndefined(): Storage | undefined {
-  try {
-    return typeof window === "undefined" ? undefined : window.sessionStorage;
-  } catch {
-    return undefined;
-  }
-}
+import { MODE_OPTIONS, modeId, modeLabel, type OrderMode } from "@/features/order-mode/mode";
+import { useOrderMode } from "@/features/order-mode/use-order-mode";
 
 /**
  * Selector de modalidad y sede (Delivery / Recojo Lince / Recojo Jesús María).
  * Se recuerda durante la sesión. La tarifa, el tiempo y el mínimo llegan en F2-07.
  */
 export function ModeSelector() {
-  const [mode, setMode] = useState<OrderMode | null>(null);
+  const [mode, setMode] = useOrderMode();
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setMode(readStoredMode(sessionStorageOrUndefined()));
-  }, []);
 
   useEffect(() => {
     if (!open) {
@@ -61,7 +43,6 @@ export function ModeSelector() {
 
   const choose = (next: OrderMode) => {
     setMode(next);
-    writeStoredMode(sessionStorageOrUndefined(), next);
     setOpen(false);
     buttonRef.current?.focus();
   };

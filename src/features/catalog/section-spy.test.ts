@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import {
   activeSectionIndex,
+  arrowScrollLeft,
   centeredScrollLeft,
+  scrollEdges,
   sectionScrollTarget,
   SPY_TOLERANCE_PX,
 } from "./section-spy";
@@ -58,5 +60,41 @@ describe("sectionScrollTarget", () => {
 
   it("nunca devuelve una posición negativa", () => {
     expect(sectionScrollTarget(50, 0, 160)).toBe(0);
+  });
+});
+
+describe("scrollEdges", () => {
+  it("al inicio solo hay flecha derecha", () => {
+    expect(scrollEdges({ scrollLeft: 0, width: 400, scrollWidth: 1000 })).toEqual({
+      canLeft: false,
+      canRight: true,
+    });
+  });
+
+  it("al final solo hay flecha izquierda (tolera redondeo)", () => {
+    expect(scrollEdges({ scrollLeft: 599, width: 400, scrollWidth: 1000 })).toEqual({
+      canLeft: true,
+      canRight: false,
+    });
+  });
+
+  it("si todo cabe no hay flechas", () => {
+    expect(scrollEdges({ scrollLeft: 0, width: 1000, scrollWidth: 1000 })).toEqual({
+      canLeft: false,
+      canRight: false,
+    });
+  });
+});
+
+describe("arrowScrollLeft", () => {
+  const bar = { scrollLeft: 100, width: 400, scrollWidth: 1000 };
+
+  it("avanza tres cuartos de la barra", () => {
+    expect(arrowScrollLeft(bar, 1)).toBe(400);
+  });
+
+  it("no pasa de los extremos", () => {
+    expect(arrowScrollLeft(bar, -1)).toBe(0);
+    expect(arrowScrollLeft({ ...bar, scrollLeft: 550 }, 1)).toBe(600);
   });
 });

@@ -42,3 +42,27 @@ export function sectionScrollTarget(
 ): number {
   return Math.max(0, Math.round(scrollY + sectionTop - stuckBottom));
 }
+
+/** Margen para no mostrar una flecha por medio píxel de redondeo. */
+const EDGE_PX = 2;
+
+/** ¿Quedan secciones ocultas a la izquierda o a la derecha de la barra? */
+export function scrollEdges(bar: { scrollLeft: number; width: number; scrollWidth: number }): {
+  canLeft: boolean;
+  canRight: boolean;
+} {
+  return {
+    canLeft: bar.scrollLeft > EDGE_PX,
+    canRight: bar.scrollLeft + bar.width < bar.scrollWidth - EDGE_PX,
+  };
+}
+
+/** Destino al tocar una flecha: avanza ~¾ de la barra, sin pasarse de los extremos. */
+export function arrowScrollLeft(
+  bar: { scrollLeft: number; width: number; scrollWidth: number },
+  direction: -1 | 1,
+): number {
+  const max = Math.max(0, bar.scrollWidth - bar.width);
+  const target = bar.scrollLeft + direction * Math.round(bar.width * 0.75);
+  return Math.min(Math.max(0, target), max);
+}

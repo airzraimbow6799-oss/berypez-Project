@@ -12,19 +12,11 @@ import { Stepper } from "@/components/ui/Stepper";
 import { cartSubtotalCents } from "@/features/cart/cart";
 import { useCart } from "@/features/cart/store";
 import { useQuote } from "@/features/cart/use-quote";
-import { readStoredMode } from "@/features/order-mode/mode";
+import { useOrderMode } from "@/features/order-mode/use-order-mode";
 import { formatPrice } from "@/lib/format";
 
 function useSessionMode() {
-  const [mode, setMode] = useState<ReturnType<typeof readStoredMode>>(null);
-  useEffect(() => {
-    try {
-      setMode(readStoredMode(window.sessionStorage));
-    } catch {
-      setMode(null);
-    }
-  }, []);
-  return mode;
+  return useOrderMode()[0];
 }
 
 /** F2-08 · Carrito: edición de cantidades, total real del servidor y avisos de cambios. */

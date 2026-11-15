@@ -19,6 +19,8 @@ export interface ModeOption {
 }
 
 const STORAGE_KEY = "berypez:modo-pedido";
+/** Evento que avisa a toda la página que la modalidad cambió (cabecera, portada, carrito…). */
+export const MODE_CHANGE_EVENT = "berypez:modo-pedido-cambio";
 
 const modeSchema = z.discriminatedUnion("modality", [
   z.object({ modality: z.literal("delivery") }),
@@ -77,5 +79,8 @@ export function writeStoredMode(storage: Storage | undefined, mode: OrderMode): 
     storage?.setItem(STORAGE_KEY, JSON.stringify(mode));
   } catch {
     // Almacenamiento bloqueado: la elección vale solo para esta vista.
+  }
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(MODE_CHANGE_EVENT));
   }
 }

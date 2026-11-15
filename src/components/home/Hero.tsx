@@ -1,19 +1,12 @@
-import { Bike, CreditCard, Store } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/Button";
-import { DELIVERY_FEE_FROM_CENTS } from "@/config/home";
 import { formatPrice } from "@/lib/format";
 import type { Product } from "@/types/catalog";
 
+import { HeroModeChips } from "./HeroModeChips";
 import { HeroVideo } from "./HeroVideo";
-
-const CHIPS = [
-  { icon: Bike, text: `Delivery desde ${formatPrice(DELIVERY_FEE_FROM_CENTS)}` },
-  { icon: Store, text: "Recojo en Lince o Jesús María" },
-  { icon: CreditCard, text: "Yape, Plin y tarjeta" },
-];
 
 function FeaturedDish({ product }: { product: Product }) {
   return (
@@ -66,17 +59,7 @@ export function Hero({ featured }: { featured: Product | null }) {
               Reservar mesa
             </Button>
           </div>
-          <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2" aria-label="Lo que ofrecemos">
-            {CHIPS.map(({ icon: Icon, text }) => (
-              <li
-                key={text}
-                className="text-tinta-suave flex items-center gap-2 text-sm font-medium"
-              >
-                <Icon aria-hidden="true" className="text-marino-600 size-5" />
-                {text}
-              </li>
-            ))}
-          </ul>
+          <HeroModeChips />
         </div>
 
         <div className="relative">
