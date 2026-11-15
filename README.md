@@ -583,7 +583,9 @@ npm run db:types           # regenera src/types/database.ts
 npm run catalog:load       # sube fotos a Storage y carga el catálogo (idempotente)
 ```
 
-**Vercel (F0-03, pendiente)**
+**Vercel (proyecto `berypez-project`)**
+
+Cada push a una rama genera un preview protegido con Vercel Authentication: hay que ser miembro del equipo o usar un enlace para compartir. Las variables ya están cargadas (`SUPABASE_SECRET_KEY` y `TURNSTILE_SECRET_KEY` como _sensitive_). Para usar la CLI:
 
 ```bash
 npx vercel link
