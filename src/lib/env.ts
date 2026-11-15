@@ -8,12 +8,20 @@ const publicSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.url({
     error: "NEXT_PUBLIC_SUPABASE_URL debe ser una URL",
   }),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: required("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+  // Va al navegador: nunca puede ser una clave secreta.
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: required("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY").refine(
+    (value) => !value.startsWith("sb_secret_"),
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY contiene una clave secreta: usa la publishable",
+  ),
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: required("NEXT_PUBLIC_TURNSTILE_SITE_KEY"),
 });
 
 const serverSchema = publicSchema.extend({
-  SUPABASE_SERVICE_ROLE_KEY: required("SUPABASE_SERVICE_ROLE_KEY"),
+  // SECRETA: salta RLS. Solo en /api/* y scripts del servidor.
+  SUPABASE_SECRET_KEY: required("SUPABASE_SECRET_KEY").refine(
+    (value) => !value.startsWith("sb_publishable_"),
+    "SUPABASE_SECRET_KEY debe ser la clave secreta (sb_secret_…), no la publishable",
+  ),
   RESEND_API_KEY: required("RESEND_API_KEY"),
   RESEND_FROM_EMAIL: required("RESEND_FROM_EMAIL"),
   TURNSTILE_SECRET_KEY: required("TURNSTILE_SECRET_KEY"),
@@ -36,6 +44,19 @@ function parseOrThrow<T>(schema: z.ZodType<T>, source: RawEnv, scope: string): T
 /** Variables seguras para el navegador. Nunca incluye secretos. */
 export function parsePublicEnv(source: RawEnv): PublicEnv {
   return parseOrThrow(publicSchema, source, "públicas");
+}
+
+/**
+ * Lee las variables públicas de `process.env`. Next.js solo incluye en el bundle del
+ * navegador las variables referenciadas de forma literal, por eso se nombran una por una.
+ */
+export function readPublicEnv(): PublicEnv {
+  return parsePublicEnv({
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+  });
 }
 
 /** Variables del servidor (incluye secretos). Solo usar en `/api/*` o código de servidor. */

@@ -1,4 +1,4 @@
-# Berypez Web – MVP funcional
+﻿# Berypez Web – MVP funcional
 
 MVP de la nueva web de **Berypez** (cocina marina y criolla, sedes Lince y Jesús María), basado en la auditoría y en la propuesta
 [`docs/propuesta/Propuesta_Mejora_Web_Berypez.pdf`](docs/propuesta/Propuesta_Mejora_Web_Berypez.pdf) (v2.0).
@@ -115,13 +115,13 @@ Todo esto sin tocar la web en producción.
 
 **Quién usa qué clave**
 
-| Clave                            | Dónde                      | Para qué                                                                                                                              |
-| -------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `anon` (pública)                 | Navegador                  | Leer la carta, las sedes y las zonas, y escuchar el estado de **su** pedido por Realtime. Las políticas RLS limitan lo que puede ver. |
-| `service_role` (secreta)         | Solo en `/api/*` en Vercel | Crear pedidos con el precio recalculado, registrar pagos y reclamos. **Nunca** va al navegador.                                       |
-| Sesión del personal              | Panel `/panel`             | Supabase Auth con rol `admin` o `cocina`; RLS solo les deja ver y cambiar pedidos y reservas.                                         |
-| `RESEND_API_KEY` (secreta)       | Solo en `/api/*` en Vercel | Enviar correos. Con permiso solo de envío (_sending access_) y limitada al dominio del proyecto.                                      |
-| `TURNSTILE_SECRET_KEY` (secreta) | Solo en `/api/*` en Vercel | Validar en el servidor el token antibots de cada formulario. La _site key_ sí es pública.                                             |
+| Clave                                      | Dónde                      | Para qué                                                                                                                              |
+| ------------------------------------------ | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Publishable `sb_publishable_…` (pública)   | Navegador                  | Leer la carta, las sedes y las zonas, y escuchar el estado de **su** pedido por Realtime. Las políticas RLS limitan lo que puede ver. |
+| Secreta `sb_secret_…` (rol `service_role`) | Solo en `/api/*` en Vercel | Crear pedidos con el precio recalculado, registrar pagos y reclamos. **Nunca** va al navegador.                                       |
+| Sesión del personal                        | Panel `/panel`             | Supabase Auth con rol `admin` o `cocina`; RLS solo les deja ver y cambiar pedidos y reservas.                                         |
+| `RESEND_API_KEY` (secreta)                 | Solo en `/api/*` en Vercel | Enviar correos. Con permiso solo de envío (_sending access_) y limitada al dominio del proyecto.                                      |
+| `TURNSTILE_SECRET_KEY` (secreta)           | Solo en `/api/*` en Vercel | Validar en el servidor el token antibots de cada formulario. La _site key_ sí es pública.                                             |
 
 ### 2.1 Capas de seguridad
 
@@ -225,7 +225,7 @@ Cada fase tiene una tabla de **desarrollo** (Axel) y una de **QA** (Rafael). La 
 | F0-02 | CI en GitHub Actions           | **A**          | lint → typecheck → tests → build. Lighthouse CI en modo informativo.                                                                                                                                                                                                                                                                                                         |
 | F0-13 | Turnstile                      | **A**          | Crear la cuenta gratuita de Cloudflare y el widget de **Turnstile** (modo _managed_) con los dominios `localhost`, `*.vercel.app` del proyecto y el de la demo. Guardar `NEXT_PUBLIC_TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY` en Vercel. Documentar en `docs/seguridad.md` (ver 2.2).                                                                                    |
 | F0-14 | Resend                         | **A**          | Crear la cuenta, verificar el dominio de envío (por ejemplo `pedidos@<dominio>`) con SPF, DKIM y DMARC cargados en el DNS del dominio (proveedor o Vercel DNS), y crear la API key solo de envío. Enviar un correo de prueba.                                                                                                                                                |
-| F0-03 | Proyectos Supabase + Vercel    | **A**          | Crear `berypez-dev` y `berypez-demo` en Supabase. Conectar el repo a Vercel. Variables `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY` (esta última solo en el servidor). Integración Supabase ↔ Vercel.                                                                                                                           |
+| F0-03 | Proyectos Supabase + Vercel    | **A**          | Crear `berypez-dev` y `berypez-demo` en Supabase. Conectar el repo a Vercel. Variables `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` y `SUPABASE_SECRET_KEY` (esta última solo en el servidor). Integración Supabase ↔ Vercel.                                                                                                                          |
 | F0-04 | Importar y limpiar el catálogo | **A**          | `scripts/import-catalog.ts` **lee** la API pública de berypez.pe y carga `products`, `variants`, `categories` y `menus` en Supabase. Sube las fotos a Storage convertidas a WebP. En la misma carga: quitar “(Copiar)” y “Nov 24”, categorizar Gaseosas/Cervezas/Bebidas calientes y mapear categorías → 6 cartas (Anexo B de la propuesta).                                 |
 | F0-05 | Contrato de datos v1           | **A**          | `src/types` + `docs/api.md`: `Product`, `Variant`, `Menu`, `Category`, `CartItem`, `Cart`, `Branch`, `DeliveryZone`. Rafael lo revisa para preparar los casos de prueba.                                                                                                                                                                                                     |
 | F0-06 | Esquema y seguridad            | **A**          | Migraciones SQL en `supabase/migrations`: `branches`, `delivery_zones`, `orders`, `order_items`, `reservations`, `complaints`, `payment_events`, `staff_roles`. **RLS activado en todas las tablas**: lectura pública solo para la carta, las sedes y las zonas, y escritura solo por el servidor o el personal autenticado. `supabase gen types` → `src/types/database.ts`. |
@@ -547,7 +547,7 @@ npm install
 
 # 2. Variables de entorno
 cp .env.example .env.local
-#    Pedir a Axel las claves de berypez-dev. La service_role nunca se sube al repo.
+#    Pedir a Axel las claves de berypez-dev. La clave secreta (sb_secret_…) nunca se sube al repo.
 #    Las claves de Turnstile del ejemplo son las de prueba de Cloudflare.
 
 # 3. Desarrollo
@@ -565,33 +565,108 @@ npm run dev              # http://localhost:3000
 | `npm run format` / `format:check`           | Prettier (con orden de clases de Tailwind).                |
 | `npm test` / `test:watch` / `test:coverage` | Vitest + Testing Library. La cobertura mínima es del 80 %. |
 | `npm run check`                             | Todo lo anterior junto (lo mismo que corre la CI).         |
+| `npm run catalog:fetch`                     | Única lectura del catálogo de berypez.pe → `data/catalog`. |
+| `npm run catalog:images` / `catalog:build`  | Fotos WebP y catálogo normalizado (sin tocar producción).  |
+
+Los tests de `tests/db/` aplican las migraciones de `supabase/migrations` en un Postgres en memoria (PGlite, sin Docker) y comprueban las políticas RLS y las reglas de datos.
 
 Antes de cada commit, Husky ejecuta `lint-staged` (ESLint + Prettier sobre los archivos modificados).
 
-**Se agregan en las próximas tareas de la Fase 0**
+**Supabase (berypez-dev)**
+
+Los scripts usan la Management API de Supabase: no necesitan Docker ni la contraseña de la base. Requieren en `.env.local` el token personal `SUPABASE_ACCESS_TOKEN` (supabase.com/dashboard/account/tokens) y, para cargar datos, `SUPABASE_SECRET_KEY`.
 
 ```bash
-# Supabase (F0-03 / F0-06)
-npx supabase login
-npx supabase link --project-ref <ref-de-berypez-dev>
-npx supabase db push
-npx supabase gen types typescript --linked > src/types/database.ts
+npm run db:push -- --dry   # muestra las migraciones pendientes
+npm run db:push            # aplica las pendientes y las registra en el historial
+npm run db:types           # regenera src/types/database.ts
+npm run catalog:load       # sube fotos a Storage y carga el catálogo (idempotente)
+```
 
-# Catálogo (F0-04): solo lectura de berypez.pe → Supabase
-npm run import:catalog
+**Vercel (proyecto `berypez-project`)**
 
-# Vercel (F0-03)
+Cada push a una rama genera un preview protegido con Vercel Authentication: hay que ser miembro del equipo o usar un enlace para compartir. Las variables ya están cargadas (`SUPABASE_SECRET_KEY` y `TURNSTILE_SECRET_KEY` como _sensitive_). Para usar la CLI:
+
+```bash
 npx vercel link
 npx vercel env pull .env.local
 ```
 
+### Estado de la Fase 5
+
+| ID                          | Tarea                                                                                                                                                                            | Estado                                                                                                         |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| F5-04                       | Cabeceras de seguridad (CSP con orígenes exactos, HSTS, nosniff, DENY, Referrer y Permissions-Policy), sin `X-Powered-By`; límite de peticiones en checkout, reservas y reclamos | ✅ Hecho (verificado en navegador: 0 violaciones de CSP)                                                       |
+| F1-03 / F1-13               | Búsqueda global `/buscar` (seviche → 20 ceviches), `/nosotros`, `sitemap.xml` y `robots.txt`                                                                                     | ✅ Hecho                                                                                                       |
+| F5-04 · dependencias        | `npm audit` (producción): PostCSS dentro de Next 15 y libvips dentro de sharp 0.34. Ambas se corrigen con versiones mayores (Next 16, sharp 0.35)                                | ⚠️ Riesgo bajo: el CSS es nuestro y `next/image` solo acepta fotos del bucket propio. Migrar en F5 con pruebas |
+| F5-02, F5-03, F5-05 a F5-08 | Rendimiento medido, analítica GA4 (necesita ID), datos de demo, guion y documentación final                                                                                      | ⏳ Pendiente                                                                                                   |
+
+### Estado de la Fase 4
+
+| ID            | Tarea                                                                                                                                                                       | Estado                                                        |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| F4-01 / F4-02 | Disponibilidad en franjas de 30 min (horario, aforo, fechas bloqueadas, 1 h de anticipación) y reserva sin sobreventa (bloqueo por franja en Postgres); cancelar con enlace | ✅ Hecho                                                      |
+| F4-03         | Confirmación en pantalla con enlace para cancelar                                                                                                                           | 🚧 Correo y recordatorio esperan Resend                       |
+| F4-04         | Libro de Reclamaciones virtual con número correlativo y constancia imprimible                                                                                               | ✅ Hecho (constancia por correo espera Resend; RUC pendiente) |
+| F4-05         | Formulario `/reservas` en una pantalla con Turnstile                                                                                                                        | ✅ Hecho                                                      |
+| F4-06         | Reservas en el panel: llegó / no vino / cancelar                                                                                                                            | ✅ Hecho                                                      |
+| F4-07         | Términos, privacidad (Ley 29733), cambios y devoluciones para alimentos                                                                                                     | ✅ Hecho (datos de la empresa pendientes)                     |
+| F4-08         | Aviso de cookies; GA4 solo con consentimiento y `NEXT_PUBLIC_GA_ID`                                                                                                         | ✅ Hecho                                                      |
+
+### Estado de la Fase 3
+
+| ID                           | Tarea                                                                                                  | Estado                                         |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
+| F3-04                        | Estados del pedido con transiciones validadas en la API y en la base (trigger)                         | ✅ Hecho                                       |
+| F3-06                        | Login del personal con Supabase Auth; roles `admin`/`cocina` por sede; alta con `npm run staff:create` | ✅ Hecho                                       |
+| F3-11                        | Seguimiento: la página del pedido se actualiza cada 15 s (sin abrir RLS a anon)                        | ✅ Hecho                                       |
+| F3-12 / F3-14                | Panel `/panel` en vivo (Supabase Realtime), sonido y botones de estado                                 | ✅ Hecho                                       |
+| F3-01 a F3-03, F3-07 a F3-10 | Pagos Yape/Plin/tarjeta                                                                                | ⏸️ Esperan la cuenta de prueba de Mercado Pago |
+| F3-05 / F3-15                | Correos con Resend                                                                                     | ⏸️ Esperan cuenta y dominio de Resend          |
+
+### Estado de la Fase 2
+
+| ID                    | Tarea                                                                                               | Estado                                                           |
+| --------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| F2-01                 | Cotizador: precios siempre desde la base, detecta agotados, variantes y elecciones inválidas        | ✅ Hecho                                                         |
+| F2-02 / F2-03         | Sedes y 7 zonas reales a S/ 7.50; horario en hora de Lima (provisional 11:00–17:00)                 | ✅ Hecho (horario y tiempos por confirmar con la dueña)          |
+| F2-04 / F2-05         | Checkout con pedido y líneas en una transacción (RPC), pedido programado validado contra el horario | ✅ Hecho                                                         |
+| F2-06 / F2-08 / F2-09 | Carrito persistido, página `/carrito` con total del servidor y avisos, contador con rebote          | ✅ Hecho                                                         |
+| F2-07 / F2-10         | Selector de modalidad y checkout en 3 bloques con validación en línea                               | ✅ Hecho                                                         |
+| F2-11                 | Mensaje de pedido por WhatsApp con el carrito completo                                              | 🚧 Lógica lista; el botón aparece cuando haya número de WhatsApp |
+| F2-12                 | Pantalla de pedido recibido `/pedido/[token]`                                                       | ✅ Hecho                                                         |
+| F2-14 / F2-15         | Turnstile (claves de prueba hasta F0-13) y límite de peticiones en Postgres                         | ✅ Hecho                                                         |
+
+### Estado de la Fase 1
+
+| ID                         | Tarea                                                                                                                                                                            | Estado                                                 |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| F1-01                      | Capa de datos del catálogo: `getMenus`, `getMenu(slug)` y `getProduct(slug)` con joins (sin N+1), validación de JSON y errores `CatalogError`                                    | ✅ Hecho                                               |
+| F1-02                      | `GET /api/menus`, `/api/menus/:slug` y `/api/products/:slug` con caché de 10 min y revalidación inmediata por webhook de Postgres (pg_net + Vault)                               | ✅ Hecho                                               |
+| F1-05                      | `next/image` sobre Supabase Storage (AVIF/WebP, tamaños para la cuadrícula)                                                                                                      | ✅ Configurado (se usa en F1-09)                       |
+| F1-06                      | Portada: titular, acciones, chips, plato estrella y video de presentación (MP4 de 1.5–1.7 MB, póster LCP, no se carga con movimiento reducido o ahorro de datos, botón de pausa) | ✅ Hecho                                               |
+| F1-07                      | Secciones: 6 cartas con foto, recomendados de la casa, dúos y tríos, historia y sedes. Sin reseñas hasta tener reseñas reales                                                    | ✅ Hecho                                               |
+| Marca                      | Logo vectorial (`currentColor`) e ícono rehecho en vectorial: favicon.ico, icon.svg, apple-icon y manifest (`npm run brand:icons`)                                               | ✅ Hecho                                               |
+| F1-03 / F1-11              | Búsqueda tolerante (sin tildes, sinónimos como “seviche”, una letra de error) y filtros: sin picante, vegetariano, niños, compartir, hasta S/ 40                                 | ✅ Hecho (en la carta; `/api/search` global pendiente) |
+| F1-08 / F1-09 / F1-10      | Página `/carta/[slug]` estática (ISR), pestañas, barra de secciones fija con scroll-spy, tarjetas y vista rápida con variantes, elecciones, nota y cantidad                      | ✅ Hecho                                               |
+| F1-13                      | Metadatos por carta y JSON-LD `Menu`                                                                                                                                             | 🚧 Falta `sitemap.xml` y `Restaurant` por sede         |
+| Loader                     | Velo de transición entre páginas con los peces del logo animados (vectorial) y `loading.tsx`                                                                                     | ✅ Hecho                                               |
+| F1-04, F1-12, F1-14, F1-15 | Resto de la fase                                                                                                                                                                 | ⏳ Pendiente                                           |
+
 ### Estado de la Fase 0
 
-| ID            | Tarea                                                                                                                                              | Estado                                         |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| F0-01         | Proyecto base (Next.js 15.5, TS estricto, Tailwind 4, ESLint, Prettier, Husky, Vitest, `.env.example`, validación de variables de entorno con Zod) | ✅ Hecho                                       |
-| F0-02         | CI en GitHub Actions (lint, tipos, formato, tests con cobertura, build; Lighthouse informativo)                                                    | ✅ Hecho (se activa al subir el repo a GitHub) |
-| F0-03         | Proyectos Supabase + Vercel                                                                                                                        | ⏳ Pendiente: requiere crear las cuentas       |
-| F0-04 a F0-14 | Resto de la fase                                                                                                                                   | ⏳ Pendiente                                   |
+| ID                         | Tarea                                                                                                                                                                                                                         | Estado                                           |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| F0-01                      | Proyecto base (Next.js 15.5, TS estricto, Tailwind 4, ESLint, Prettier, Husky, Vitest, `.env.example`, validación de variables de entorno con Zod)                                                                            | ✅ Hecho                                         |
+| F0-02                      | CI en GitHub Actions (lint, tipos, formato, tests con cobertura, build; Lighthouse informativo)                                                                                                                               | ✅ Hecho (se activa al subir el repo a GitHub)   |
+| F0-03                      | Supabase `berypez-dev` conectado (clientes, claves publishable/secret, scripts `db:*`). Vercel pendiente                                                                                                                      | 🚧 Supabase ✅ · Vercel ⏳                       |
+| F0-04                      | Catálogo: snapshot único de berypez.pe, 107 productos limpios (Anexo B), mapeo a 6 cartas y 106 fotos WebP, cargados en Supabase y Storage                                                                                    | ✅ Hecho (F0-Q4 de Rafael)                       |
+| F0-05                      | Contrato de datos v1 (`src/types/catalog.ts`) y `docs/api.md`                                                                                                                                                                 | ✅ Hecho (revisión de Rafael)                    |
+| F0-06                      | Esquema SQL (catálogo, sedes, zonas, pedidos, pagos, reservas, reclamos, personal) con RLS en todas las tablas, aplicado en Supabase, sin avisos del advisor                                                                  | ✅ Hecho                                         |
+| F0-08                      | Sistema de diseño: tokens en `src/styles/tokens.css` (paleta con contraste medido, Fraunces + Inter, base 18 px, objetivos táctiles de 48 px) y `docs/design-system.md`                                                       | ✅ Hecho                                         |
+| F0-12                      | Layout global: SkipLink, header con selector de modalidad/sede y carrito, footer con ola, legales y medios de pago, barra inferior móvil                                                                                      | ✅ Hecho (datos de sedes pendientes de la dueña) |
+| F0-09                      | Componentes base accesibles: Button, IconButton, Chip, Badge, Card, Dialog (hoja, modal, panel lateral) sobre `<dialog>` nativo, Input, Select, Stepper, Skeleton y Toast (Sonner). Vitrina en `/componentes` (solo previews) | ✅ Hecho                                         |
+| F0-07                      | Pasarela: Mercado Pago para el sandbox del MVP (Yape con casos de prueba públicos), Plin con adaptador mock; producción Izipay o Culqi según cotización. Ver `docs/decisiones/0001-pasarela-de-pagos.md`                      | ✅ Decidido (falta crear la cuenta de prueba)    |
+| F0-10, F0-11, F0-13, F0-14 | Resto de la fase                                                                                                                                                                                                              | ⏳ Pendiente                                     |
 
 > **Nota de dependencias:** `npm audit` reporta una vulnerabilidad de PostCSS **incluida dentro de Next 15**. Solo afecta al procesamiento de nuestro propio CSS en el build (no a datos de usuarios) y únicamente se corrige migrando a Next 16. Queda registrada para evaluarla en la Fase 5 (F5-04).

@@ -1,0 +1,3456 @@
+{
+  "menus": [
+    {
+      "slug": "marina",
+      "name": "Carta Marina",
+      "description": "Ceviches, arroces, fuentes y lo mejor del mar.",
+      "sortOrder": 1
+    },
+    {
+      "slug": "criolla",
+      "name": "Carta Criolla",
+      "description": "Fondos, tacu tacus, pastas y sabor de casa.",
+      "sortOrder": 2
+    },
+    {
+      "slug": "berycafe",
+      "name": "Berycafé",
+      "description": "Sánguches, jugos, cafés y menú para niños.",
+      "sortOrder": 3
+    },
+    {
+      "slug": "piqueos",
+      "name": "Piqueos y entradas",
+      "description": "Causas, leches de tigre y para picar.",
+      "sortOrder": 4
+    },
+    {
+      "slug": "el-bar",
+      "name": "El Bar",
+      "description": "Cócteles, cervezas y bebidas.",
+      "sortOrder": 5
+    },
+    {
+      "slug": "vegetariana",
+      "name": "Carta Vegetariana",
+      "description": "Platos sin carne ni pescado.",
+      "sortOrder": 6
+    }
+  ],
+  "categories": [
+    {
+      "id": 73,
+      "slug": "ceviches",
+      "name": "Ceviches",
+      "sortOrder": 1
+    },
+    {
+      "id": 59,
+      "slug": "duos-y-trios",
+      "name": "Dúos y tríos",
+      "sortOrder": 2
+    },
+    {
+      "id": 79,
+      "slug": "duos-calientes",
+      "name": "Dúos calientes",
+      "sortOrder": 3
+    },
+    {
+      "id": 78,
+      "slug": "causas",
+      "name": "Causas",
+      "sortOrder": 4
+    },
+    {
+      "id": 77,
+      "slug": "piqueos",
+      "name": "Piqueos",
+      "sortOrder": 5
+    },
+    {
+      "id": 71,
+      "slug": "entradas",
+      "name": "Entradas",
+      "sortOrder": 6
+    },
+    {
+      "id": 74,
+      "slug": "chicharrones",
+      "name": "Chicharrones",
+      "sortOrder": 7
+    },
+    {
+      "id": 75,
+      "slug": "jaleas",
+      "name": "Jaleas",
+      "sortOrder": 8
+    },
+    {
+      "id": 65,
+      "slug": "pescados-fritos",
+      "name": "Pescados fritos",
+      "sortOrder": 9
+    },
+    {
+      "id": 16,
+      "slug": "arroces",
+      "name": "Arroces",
+      "sortOrder": 10
+    },
+    {
+      "id": 61,
+      "slug": "fuentes",
+      "name": "Fuentes",
+      "sortOrder": 11
+    },
+    {
+      "id": 76,
+      "slug": "sudados",
+      "name": "Sudados",
+      "sortOrder": 12
+    },
+    {
+      "id": 63,
+      "slug": "parihuelas",
+      "name": "Parihuelas",
+      "sortOrder": 13
+    },
+    {
+      "id": 40,
+      "slug": "chupes",
+      "name": "Chupes",
+      "sortOrder": 14
+    },
+    {
+      "id": 60,
+      "slug": "fondos",
+      "name": "Fondos",
+      "sortOrder": 15
+    },
+    {
+      "id": 67,
+      "slug": "tacu-tacus",
+      "name": "Tacu tacus",
+      "sortOrder": 16
+    },
+    {
+      "id": 66,
+      "slug": "platos-nortenos",
+      "name": "Platos norteños",
+      "sortOrder": 17
+    },
+    {
+      "id": 64,
+      "slug": "pastas",
+      "name": "Pastas",
+      "sortOrder": 18
+    },
+    {
+      "id": 62,
+      "slug": "los-vegetarianos",
+      "name": "Vegetarianos",
+      "sortOrder": 19
+    },
+    {
+      "id": 80,
+      "slug": "sanguches",
+      "name": "Sánguches",
+      "sortOrder": 20
+    },
+    {
+      "id": 57,
+      "slug": "bery-ninos",
+      "name": "Beryniños",
+      "sortOrder": 21
+    },
+    {
+      "id": 81,
+      "slug": "jugos-naturales",
+      "name": "Jugos naturales",
+      "sortOrder": 22
+    },
+    {
+      "id": 88,
+      "slug": "bebidas-calientes",
+      "name": "Bebidas calientes",
+      "sortOrder": 23
+    },
+    {
+      "id": 82,
+      "slug": "bebidas-frias",
+      "name": "Bebidas frías",
+      "sortOrder": 24
+    },
+    {
+      "id": 84,
+      "slug": "gaseosas",
+      "name": "Gaseosas",
+      "sortOrder": 25
+    },
+    {
+      "id": 86,
+      "slug": "cocteles",
+      "name": "Cócteles",
+      "sortOrder": 26
+    },
+    {
+      "id": 87,
+      "slug": "sin-alcohol",
+      "name": "Sin alcohol",
+      "sortOrder": 27
+    },
+    {
+      "id": 85,
+      "slug": "cervezas",
+      "name": "Cervezas",
+      "sortOrder": 28
+    }
+  ],
+  "products": [
+    {
+      "id": 1667,
+      "slug": "sudados",
+      "name": "Sudados",
+      "description": "Filete de pescado 200 GR o entero de 550 GR chicha de jora, tomate, cebolla. Yuca perfumada con culantro, acompañado de arroz.",
+      "priceCents": 4000,
+      "variantLabel": "Elige tu pescado",
+      "categoryId": 76,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/sudados.webp",
+        "alt": "Sudados"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 1670,
+          "label": "Pesca del día",
+          "priceCents": 4000,
+          "isAvailable": true,
+          "selections": {
+            "De": "Pesca del día",
+            "Tipo": null
+          }
+        },
+        {
+          "id": 1671,
+          "label": "Cabrilla",
+          "priceCents": 4800,
+          "isAvailable": true,
+          "selections": {
+            "De": "Cabrilla",
+            "Tipo": null
+          }
+        },
+        {
+          "id": 1672,
+          "label": "Tramboyo",
+          "priceCents": 5000,
+          "isAvailable": true,
+          "selections": {
+            "De": "Tramboyo",
+            "Tipo": null
+          }
+        },
+        {
+          "id": 1673,
+          "label": "Chita",
+          "priceCents": 6800,
+          "isAvailable": true,
+          "selections": {
+            "De": "Chita",
+            "Tipo": null
+          }
+        }
+      ],
+      "choiceGroups": [
+        {
+          "key": "Tipo",
+          "label": "Elige el tipo",
+          "options": [
+            "Filete de pescado 200 GR",
+            "Pescado entero de 550 GR"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1662,
+      "slug": "jaleas",
+      "name": "Jaleas",
+      "description": "Acompañado de yuca frita, filete de pescado, salsa criolla y salsa tártara.",
+      "priceCents": 4800,
+      "variantLabel": "Elige tu jalea",
+      "categoryId": 75,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/jaleas.webp",
+        "alt": "Jaleas"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 1665,
+          "label": "Calamar",
+          "priceCents": 4800,
+          "isAvailable": true,
+          "selections": {
+            "De": "Calamar"
+          }
+        },
+        {
+          "id": 1664,
+          "label": "Mixta",
+          "priceCents": 4800,
+          "isAvailable": true,
+          "selections": {
+            "De": "Mixta"
+          }
+        },
+        {
+          "id": 1663,
+          "label": "Pescado",
+          "priceCents": 4800,
+          "isAvailable": true,
+          "selections": {
+            "De": "Pescado"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 1657,
+      "slug": "chicharrones",
+      "name": "Chicharrones",
+      "description": "Acompañado de yuca frita y salsa tártara.",
+      "priceCents": 4000,
+      "variantLabel": "Elige tu chicharrón",
+      "categoryId": 74,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/chicharrones.webp",
+        "alt": "Chicharrones"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 1659,
+          "label": "Pesca del día",
+          "priceCents": 4000,
+          "isAvailable": true,
+          "selections": {
+            "De": "Pesca del día"
+          }
+        },
+        {
+          "id": 1660,
+          "label": "Mixto",
+          "priceCents": 4200,
+          "isAvailable": true,
+          "selections": {
+            "De": "Mixto"
+          }
+        },
+        {
+          "id": 1661,
+          "label": "Calamar",
+          "priceCents": 4800,
+          "isAvailable": true,
+          "selections": {
+            "De": "Calamar"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 1655,
+      "slug": "tiradito-de-pescado",
+      "name": "Tiradito de pescado",
+      "description": "Tiras de pescado, sazonado con limón, culantro, ají amarillo.",
+      "priceCents": 4000,
+      "variantLabel": null,
+      "categoryId": 73,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/tiradito-de-pescado.webp",
+        "alt": "Tiradito de pescado"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1651,
+      "slug": "ceviche-de-conchas-negras",
+      "name": "Ceviche de conchas negras",
+      "description": "Sazonado con sal, limón, ají limo, ajos culantro y cebolla en brunoise.",
+      "priceCents": 4800,
+      "variantLabel": null,
+      "categoryId": 73,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/ceviche-de-conchas-negras.webp",
+        "alt": "Ceviche de conchas negras"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1647,
+      "slug": "ceviche-berypez",
+      "name": "Ceviche Berypez",
+      "description": "Ceviche mixto, champiñones, crema de ají amarillo, cebolla en pluma.",
+      "priceCents": 4800,
+      "variantLabel": null,
+      "categoryId": 73,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/ceviche-berypez.webp",
+        "alt": "Ceviche Berypez"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1645,
+      "slug": "ceviche-carretillero",
+      "name": "Ceviche carretillero",
+      "description": "Pescado del día y chicharrón de calamar. Una combinación tradicional de gusto general.",
+      "priceCents": 4500,
+      "variantLabel": null,
+      "categoryId": 73,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/ceviche-carretillero.webp",
+        "alt": "Ceviche carretillero"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1643,
+      "slug": "ceviche-al-rojo-vivo",
+      "name": "Ceviche al rojo vivo",
+      "description": "Pescado, crema de rocoto, ají limo, culantro y pulpa de cangrejo.",
+      "priceCents": 4500,
+      "variantLabel": null,
+      "categoryId": 73,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/ceviche-al-rojo-vivo.webp",
+        "alt": "Ceviche al rojo vivo"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1641,
+      "slug": "ceviche-mixto",
+      "name": "Ceviche mixto",
+      "description": "Pescado, caracol, pulpo, langostino y conchas de abanico.",
+      "priceCents": 4500,
+      "variantLabel": null,
+      "categoryId": 73,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/ceviche-mixto.webp",
+        "alt": "Ceviche mixto"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1639,
+      "slug": "ceviche-de-pesca-del-dia",
+      "name": "Ceviche de pesca del día",
+      "description": "Sazonado con limón, sal, ají limo, culantro y cebolla roja en pluma.",
+      "priceCents": 4000,
+      "variantLabel": null,
+      "categoryId": 73,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/ceviche-de-pesca-del-dia.webp",
+        "alt": "Ceviche de pesca del día"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1628,
+      "slug": "causa-acevichada",
+      "name": "Causa acevichada",
+      "description": "Causa de pulpa de cangrejo + ceviche al rojo vivo.",
+      "priceCents": 4500,
+      "variantLabel": null,
+      "categoryId": 78,
+      "menus": [
+        "piqueos"
+      ],
+      "image": {
+        "url": "/catalog/causa-acevichada.webp",
+        "alt": "Causa acevichada"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1625,
+      "slug": "causa-tricolor",
+      "name": "Causa Tricolor",
+      "description": "Elige entre 3 opciones.",
+      "priceCents": 6500,
+      "variantLabel": null,
+      "categoryId": 78,
+      "menus": [
+        "piqueos"
+      ],
+      "image": {
+        "url": "/catalog/causa-tricolor.webp",
+        "alt": "Causa Tricolor"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 1626,
+          "label": "Causa Tricolor",
+          "priceCents": 6500,
+          "isAvailable": true,
+          "selections": {
+            "Opción 1": null,
+            "Opción 2": null,
+            "Opción 3": null
+          }
+        }
+      ],
+      "choiceGroups": [
+        {
+          "key": "Opción 1",
+          "label": "Primera capa de tu causa",
+          "options": [
+            "Pollo",
+            "Pulpa de cangrejo",
+            "Langostino",
+            "Al olivo"
+          ]
+        },
+        {
+          "key": "Opción 2",
+          "label": "Segunda capa de tu causa",
+          "options": [
+            "Pollo",
+            "Pulpa de cangrejo",
+            "Langostino",
+            "Al olivo"
+          ]
+        },
+        {
+          "key": "Opción 3",
+          "label": "Tercera capa de tu causa",
+          "options": [
+            "Pollo",
+            "Pulpa de cangrejo",
+            "Langostino",
+            "Al olivo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1619,
+      "slug": "causas",
+      "name": "Causas",
+      "description": "Suave masa de papa amarilla ambo sazonado con pasta de ají amarillo, aceite y un punto de limón.",
+      "priceCents": 2500,
+      "variantLabel": "Elige el relleno",
+      "categoryId": 78,
+      "menus": [
+        "piqueos"
+      ],
+      "image": {
+        "url": "/catalog/causas.webp",
+        "alt": "Causas"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 1620,
+          "label": "Pollo",
+          "priceCents": 2500,
+          "isAvailable": true,
+          "selections": {
+            "De": "Pollo"
+          }
+        },
+        {
+          "id": 1621,
+          "label": "Pulpa de cangrejo",
+          "priceCents": 3000,
+          "isAvailable": true,
+          "selections": {
+            "De": "Pulpa de cangrejo"
+          }
+        },
+        {
+          "id": 1622,
+          "label": "Langostino",
+          "priceCents": 3200,
+          "isAvailable": true,
+          "selections": {
+            "De": "Langostino"
+          }
+        },
+        {
+          "id": 1623,
+          "label": "Al olivo",
+          "priceCents": 3500,
+          "isAvailable": true,
+          "selections": {
+            "De": "Al olivo"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 1617,
+      "slug": "dieta-de-pollo",
+      "name": "Dieta de pollo",
+      "description": "Dieta de pollo.",
+      "priceCents": 3000,
+      "variantLabel": null,
+      "categoryId": 77,
+      "menus": [
+        "piqueos"
+      ],
+      "image": {
+        "url": "/catalog/dieta-de-pollo.webp",
+        "alt": "Dieta de pollo"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1615,
+      "slug": "chilcano-de-filete",
+      "name": "Chilcano de filete",
+      "description": "Chilcano de filete.",
+      "priceCents": 3500,
+      "variantLabel": null,
+      "categoryId": 77,
+      "menus": [
+        "piqueos"
+      ],
+      "image": {
+        "url": "/catalog/chilcano-de-filete.webp",
+        "alt": "Chilcano de filete"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1613,
+      "slug": "langostino-al-panco-6-unid",
+      "name": "Langostino al panco (6 unid)",
+      "description": "Colitas de langostino fritas al panco acompañadas de salsa golf y tártara.",
+      "priceCents": 2400,
+      "variantLabel": null,
+      "categoryId": 77,
+      "menus": [
+        "piqueos"
+      ],
+      "image": {
+        "url": "/catalog/langostino-al-panco-6-unid.webp",
+        "alt": "Langostino al panco (6 unid)"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1611,
+      "slug": "conchitas-a-la-parmesana",
+      "name": "Conchitas a la parmesana 6 unid",
+      "description": "Conchas de abanico gratinado con parmesano.",
+      "priceCents": 2800,
+      "variantLabel": null,
+      "categoryId": 77,
+      "menus": [
+        "piqueos"
+      ],
+      "image": {
+        "url": "/catalog/conchitas-a-la-parmesana.webp",
+        "alt": "Conchitas a la parmesana 6 unid"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1609,
+      "slug": "tequenos-de-queso-6-unid",
+      "name": "Tequeños de queso (6 unid)",
+      "description": "Acompañado con salsa guacamole.",
+      "priceCents": 1700,
+      "variantLabel": null,
+      "categoryId": 77,
+      "menus": [
+        "piqueos"
+      ],
+      "image": {
+        "url": "/catalog/tequenos-de-queso-6-unid.webp",
+        "alt": "Tequeños de queso (6 unid)"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1607,
+      "slug": "tequenos-de-langostinos-6-unid",
+      "name": "Tequeños de langostinos (6 unid)",
+      "description": "Acompañado con salsa de la casa.",
+      "priceCents": 2200,
+      "variantLabel": null,
+      "categoryId": 77,
+      "menus": [
+        "piqueos"
+      ],
+      "image": {
+        "url": "/catalog/tequenos-de-langostinos-6-unid.webp",
+        "alt": "Tequeños de langostinos (6 unid)"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1599,
+      "slug": "choritos-a-la-chalaca-6-unid",
+      "name": "Choritos a la chalaca (6 unid)",
+      "description": "Marinado con limón, cebolla en brunoise, choclo, tomate, ají limo y culantro.",
+      "priceCents": 2400,
+      "variantLabel": null,
+      "categoryId": 77,
+      "menus": [
+        "piqueos"
+      ],
+      "image": {
+        "url": "/catalog/choritos-a-la-chalaca-6-unid.webp",
+        "alt": "Choritos a la chalaca (6 unid)"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1597,
+      "slug": "leche-de-pantera",
+      "name": "Leche de pantera 12 oz",
+      "description": "Concentrado de ceviche de conchas negras.",
+      "priceCents": 2500,
+      "variantLabel": null,
+      "categoryId": 77,
+      "menus": [
+        "piqueos"
+      ],
+      "image": {
+        "url": "/catalog/leche-de-pantera.webp",
+        "alt": "Leche de pantera 12 oz"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1595,
+      "slug": "leche-de-tigre",
+      "name": "Leche de tigre 12 oz",
+      "description": "Delicioso concentrado de ceviche.",
+      "priceCents": 2000,
+      "variantLabel": null,
+      "categoryId": 77,
+      "menus": [
+        "piqueos"
+      ],
+      "image": {
+        "url": "/catalog/leche-de-tigre.webp",
+        "alt": "Leche de tigre 12 oz"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1583,
+      "slug": "virgen-colada",
+      "name": "Virgen colada",
+      "description": "Crema de coco, jugo de piña, leche y hielo.",
+      "priceCents": 1800,
+      "variantLabel": null,
+      "categoryId": 87,
+      "menus": [
+        "el-bar"
+      ],
+      "image": {
+        "url": "/catalog/virgen-colada.webp",
+        "alt": "Virgen colada"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1575,
+      "slug": "daiquiri",
+      "name": "Daiquiri",
+      "description": "Ron rubio, jarabe de goma, limón, fresa o durazno.",
+      "priceCents": 2500,
+      "variantLabel": "Elige el sabor",
+      "categoryId": 86,
+      "menus": [
+        "el-bar"
+      ],
+      "image": {
+        "url": "/catalog/daiquiri.webp",
+        "alt": "Daiquiri"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 1577,
+          "label": "Durazno",
+          "priceCents": 2500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Durazno"
+          }
+        },
+        {
+          "id": 1576,
+          "label": "Fresa",
+          "priceCents": 2500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Fresa"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 1573,
+      "slug": "pina-colada",
+      "name": "Piña Colada",
+      "description": "Ron blanco, crema de coco, jugo de piña, leche.",
+      "priceCents": 2800,
+      "variantLabel": null,
+      "categoryId": 86,
+      "menus": [
+        "el-bar"
+      ],
+      "image": {
+        "url": "/catalog/pina-colada.webp",
+        "alt": "Piña Colada"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1568,
+      "slug": "mojito",
+      "name": "Mojito",
+      "description": "Tradicional, Maracuyá o Fresa. Ron blanco, limón, hierba buena, azúcar, hielo y agua con gas.",
+      "priceCents": 2500,
+      "variantLabel": "Elige el sabor",
+      "categoryId": 86,
+      "menus": [
+        "el-bar"
+      ],
+      "image": {
+        "url": "/catalog/mojito.webp",
+        "alt": "Mojito"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 1571,
+          "label": "Fresa",
+          "priceCents": 2500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Fresa"
+          }
+        },
+        {
+          "id": 1570,
+          "label": "Maracuyá",
+          "priceCents": 2500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Maracuyá"
+          }
+        },
+        {
+          "id": 1569,
+          "label": "Tradicional",
+          "priceCents": 2500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Tradicional"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 1564,
+      "slug": "pisco-sour",
+      "name": "Pisco Sour",
+      "description": "Tradicional o de Maracuyá.",
+      "priceCents": 2500,
+      "variantLabel": "Elige el sabor",
+      "categoryId": 86,
+      "menus": [
+        "el-bar"
+      ],
+      "image": {
+        "url": "/catalog/pisco-sour.webp",
+        "alt": "Pisco Sour"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 1566,
+          "label": "Maracuyá",
+          "priceCents": 2500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Maracuyá"
+          }
+        },
+        {
+          "id": 1565,
+          "label": "Tradicional",
+          "priceCents": 2500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Tradicional"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 1558,
+      "slug": "chilcano",
+      "name": "Chilcano",
+      "description": "Tradicional, Maracuyá, Fresa o Aguaymanto.",
+      "priceCents": 2500,
+      "variantLabel": "Elige el sabor",
+      "categoryId": 86,
+      "menus": [
+        "el-bar"
+      ],
+      "image": {
+        "url": "/catalog/chilcano.webp",
+        "alt": "Chilcano"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 1562,
+          "label": "Aguaymanto",
+          "priceCents": 2500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Aguaymanto"
+          }
+        },
+        {
+          "id": 1561,
+          "label": "Fresa",
+          "priceCents": 2500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Fresa"
+          }
+        },
+        {
+          "id": 1560,
+          "label": "Maracuyá",
+          "priceCents": 2500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Maracuyá"
+          }
+        },
+        {
+          "id": 1559,
+          "label": "Tradicional",
+          "priceCents": 2500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Tradicional"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 1555,
+      "slug": "cervezas-internacionales",
+      "name": "Cervezas Internacionales",
+      "description": "Corona o Stella Artois.",
+      "priceCents": 1200,
+      "variantLabel": null,
+      "categoryId": 85,
+      "menus": [
+        "el-bar"
+      ],
+      "image": {
+        "url": "/catalog/cervezas-internacionales.webp",
+        "alt": "Cervezas Internacionales"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1551,
+      "slug": "cervezas-nacionales",
+      "name": "Cervezas Nacionales",
+      "description": "Pilsen, Cusqueña dorada, Cusqueña de trigo o Cusqueña negra.",
+      "priceCents": 900,
+      "variantLabel": "Elige el tamaño",
+      "categoryId": 85,
+      "menus": [
+        "el-bar"
+      ],
+      "image": {
+        "url": "/catalog/cervezas-nacionales.webp",
+        "alt": "Cervezas Nacionales"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 1553,
+          "label": "Chica 330 ml",
+          "priceCents": 900,
+          "isAvailable": true,
+          "selections": {
+            "Cerveza": null,
+            "Tamaño": "Chica 330 ml"
+          }
+        },
+        {
+          "id": 1552,
+          "label": "Pilsen · Grande 660 ml",
+          "priceCents": 1300,
+          "isAvailable": true,
+          "selections": {
+            "Cerveza": "Pilsen",
+            "Tamaño": "Grande 660 ml"
+          }
+        }
+      ],
+      "choiceGroups": [
+        {
+          "key": "Cerveza",
+          "label": "Elige la cerveza",
+          "options": [
+            "Pilsen",
+            "Cusqueña dorada",
+            "Cusqueña de trigo",
+            "Cusqueña negra"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1546,
+      "slug": "gaseosa-descartable",
+      "name": "Gaseosa descartable",
+      "description": "Gaseosa descartable.",
+      "priceCents": 700,
+      "variantLabel": "Elige el tamaño",
+      "categoryId": 84,
+      "menus": [
+        "berycafe",
+        "el-bar"
+      ],
+      "image": {
+        "url": "/catalog/gaseosa-descartable.webp",
+        "alt": "Gaseosa descartable"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 1549,
+          "label": "600 ml",
+          "priceCents": 700,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "600 ml"
+          }
+        },
+        {
+          "id": 1548,
+          "label": "Litro",
+          "priceCents": 1200,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "Litro"
+          }
+        },
+        {
+          "id": 1547,
+          "label": "Litro y medio",
+          "priceCents": 1500,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "Litro y medio"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 1538,
+      "slug": "agua-con-gas-o-sin-gas",
+      "name": "Agua con gas o sin gas",
+      "description": "Agua con gas o sin gas.",
+      "priceCents": 500,
+      "variantLabel": null,
+      "categoryId": 84,
+      "menus": [
+        "berycafe",
+        "el-bar"
+      ],
+      "image": {
+        "url": "/catalog/agua-con-gas-o-sin-gas.webp",
+        "alt": "Agua con gas o sin gas"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 1539,
+          "label": "Agua con gas o sin gas",
+          "priceCents": 500,
+          "isAvailable": true,
+          "selections": {
+            "Agua": null
+          }
+        },
+        {
+          "id": 1540,
+          "label": "Agua con gas o sin gas",
+          "priceCents": 500,
+          "isAvailable": true,
+          "selections": {
+            "Agua": null
+          }
+        }
+      ],
+      "choiceGroups": [
+        {
+          "key": "Agua",
+          "label": "¿Con gas o sin gas?",
+          "options": [
+            "Con gas",
+            "Sin gas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1527,
+      "slug": "bebidas-frias",
+      "name": "Bebidas frías",
+      "description": "Limonada, Naranjada, Chicha Morada, Chicha de Jora, Maracuyá o Maracumango.",
+      "priceCents": 600,
+      "variantLabel": "Elige el tamaño",
+      "categoryId": 82,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/bebidas-frias.webp",
+        "alt": "Bebidas frías"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 1528,
+          "label": "Vaso",
+          "priceCents": 600,
+          "isAvailable": true,
+          "selections": {
+            "Bebida": null,
+            "Tamaño": "Vaso"
+          }
+        },
+        {
+          "id": 1529,
+          "label": "Media jarra",
+          "priceCents": 1200,
+          "isAvailable": true,
+          "selections": {
+            "Bebida": null,
+            "Tamaño": "Media jarra"
+          }
+        },
+        {
+          "id": 1530,
+          "label": "Jarra",
+          "priceCents": 2000,
+          "isAvailable": true,
+          "selections": {
+            "Bebida": null,
+            "Tamaño": "Jarra"
+          }
+        }
+      ],
+      "choiceGroups": [
+        {
+          "key": "Bebida",
+          "label": "Elige la bebida",
+          "options": [
+            "Limonada",
+            "Naranjada",
+            "Chicha Morada",
+            "Chicha de Jora",
+            "Maracuyá",
+            "Maracumango"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1523,
+      "slug": "cafe-con-leche",
+      "name": "Café con leche",
+      "description": "Café con leche.",
+      "priceCents": 700,
+      "variantLabel": null,
+      "categoryId": 88,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/cafe-con-leche.webp",
+        "alt": "Café con leche"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1520,
+      "slug": "cafe-pasado",
+      "name": "Café pasado",
+      "description": "Café pasado.",
+      "priceCents": 600,
+      "variantLabel": null,
+      "categoryId": 88,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/cafe-pasado.webp",
+        "alt": "Café pasado"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1506,
+      "slug": "jugo-con-leche",
+      "name": "Fresa con leche",
+      "description": "Jugo con leche.",
+      "priceCents": 1200,
+      "variantLabel": null,
+      "categoryId": 81,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/jugo-con-leche.webp",
+        "alt": "Fresa con leche"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1504,
+      "slug": "surtido",
+      "name": "Surtido",
+      "description": "Surtido de diversas frutas.",
+      "priceCents": 1000,
+      "variantLabel": null,
+      "categoryId": 81,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/surtido.webp",
+        "alt": "Surtido"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1498,
+      "slug": "papaya-pina-fresa-o-naranja",
+      "name": "Papaya, piña, fresa o naranja",
+      "description": "Papaya, piña, fresa o naranja.",
+      "priceCents": 900,
+      "variantLabel": "Elige la fruta",
+      "categoryId": 81,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/papaya-pina-fresa-o-naranja.webp",
+        "alt": "Papaya, piña, fresa o naranja"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 1501,
+          "label": "Fresa",
+          "priceCents": 900,
+          "isAvailable": true,
+          "selections": {
+            "Base de": "Fresa"
+          }
+        },
+        {
+          "id": 1502,
+          "label": "Naranja",
+          "priceCents": 900,
+          "isAvailable": true,
+          "selections": {
+            "Base de": "Naranja"
+          }
+        },
+        {
+          "id": 1499,
+          "label": "Papaya",
+          "priceCents": 900,
+          "isAvailable": true,
+          "selections": {
+            "Base de": "Papaya"
+          }
+        },
+        {
+          "id": 1500,
+          "label": "Piña",
+          "priceCents": 900,
+          "isAvailable": true,
+          "selections": {
+            "Base de": "Piña"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 1496,
+      "slug": "arroz-a-la-cubana",
+      "name": "Arroz a la cubana",
+      "description": "Dos huevos fritos, plátano frito y arroz.",
+      "priceCents": 1700,
+      "variantLabel": null,
+      "categoryId": 80,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/arroz-a-la-cubana.webp",
+        "alt": "Arroz a la cubana"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1494,
+      "slug": "lomito-al-jugo-de-bisteck",
+      "name": "Lomito al jugo (de bistec)",
+      "description": "Servido con dos panes o arroz.",
+      "priceCents": 1500,
+      "variantLabel": null,
+      "categoryId": 80,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/lomito-al-jugo-de-bisteck.webp",
+        "alt": "Lomito al jugo (de bistec)"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1492,
+      "slug": "huevo-revuelto-y-jamon",
+      "name": "Huevo revuelto y jamón",
+      "description": "Servido con dos panes.",
+      "priceCents": 1500,
+      "variantLabel": null,
+      "categoryId": 80,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/huevo-revuelto-y-jamon.webp",
+        "alt": "Huevo revuelto y jamón"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1490,
+      "slug": "pan-con-pollo-deshilachado",
+      "name": "Pan con pollo deshilachado",
+      "description": "Preferido por los limeños, ideal para disfrutarlo en toda temporada.",
+      "priceCents": 1400,
+      "variantLabel": null,
+      "categoryId": 80,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/pan-con-pollo-deshilachado.webp",
+        "alt": "Pan con pollo deshilachado"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1488,
+      "slug": "pan-con-pollo-a-la-plancha",
+      "name": "Pan con pollo a la plancha",
+      "description": "Pan con pollo a la plancha.",
+      "priceCents": 1400,
+      "variantLabel": null,
+      "categoryId": 80,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/pan-con-pollo-a-la-plancha.webp",
+        "alt": "Pan con pollo a la plancha"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1484,
+      "slug": "mixto-de-la-selva",
+      "name": "Mixto de la Selva",
+      "description": "Cecina y chorizo acompañado con salsa de cocona.",
+      "priceCents": 1500,
+      "variantLabel": null,
+      "categoryId": 80,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/mixto-de-la-selva.webp",
+        "alt": "Mixto de la Selva"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 1475,
+      "slug": "pan-con-pejerrey",
+      "name": "Pan con pejerrey",
+      "description": "1 pan ciabatta,pejerrey frito y salasa criolla.",
+      "priceCents": 1400,
+      "variantLabel": null,
+      "categoryId": 80,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/pan-con-pejerrey.webp",
+        "alt": "Pan con pejerrey"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 547,
+      "slug": "pescado-en-salsa-de-mariscos",
+      "name": "Pescado a lo macho",
+      "description": "Pescado en salsa de mariscos.",
+      "priceCents": 5200,
+      "variantLabel": null,
+      "categoryId": 60,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/pescado-en-salsa-de-mariscos.webp",
+        "alt": "Pescado a lo macho"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 546,
+      "slug": "pescado-en-salsa-de-champinones",
+      "name": "Pescado en salsa de champiñones",
+      "description": "Pescado en salsa de champiñones.",
+      "priceCents": 4000,
+      "variantLabel": null,
+      "categoryId": 60,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/pescado-en-salsa-de-champinones.webp",
+        "alt": "Pescado en salsa de champiñones"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 545,
+      "slug": "lomo-saltado",
+      "name": "Lomo saltado",
+      "description": "Dados de lomo fino salteado al wok, cebolla, tomate en gajos, perfumado con culantro, arroz y papa frita.",
+      "priceCents": 4800,
+      "variantLabel": null,
+      "categoryId": 60,
+      "menus": [
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/lomo-saltado.webp",
+        "alt": "Lomo saltado"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 543,
+      "slug": "milanesa-de-la-pesca-del-dia",
+      "name": "Milanesa de la pesca del día",
+      "description": "Milanesa de la pesca del día.",
+      "priceCents": 4000,
+      "variantLabel": null,
+      "categoryId": 60,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/milanesa-de-la-pesca-del-dia.webp",
+        "alt": "Milanesa de la pesca del día"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 544,
+          "label": "Milanesa de la pesca del día",
+          "priceCents": 4000,
+          "isAvailable": true,
+          "selections": {
+            "Guarnición 01": null,
+            "Guarnición 02": null
+          }
+        }
+      ],
+      "choiceGroups": [
+        {
+          "key": "Guarnición 01",
+          "label": "Elige tu primer acompañamiento",
+          "options": [
+            "Arroz",
+            "Papitas bebe",
+            "Papa frita",
+            "Ensalada cocida",
+            "Ensalada mixta"
+          ]
+        },
+        {
+          "key": "Guarnición 02",
+          "label": "Elige tu segundo acompañamiento",
+          "options": [
+            "Arroz",
+            "Papitas bebe",
+            "Papa frita",
+            "Ensalada cocida",
+            "Ensalada mixta"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 541,
+      "slug": "milanesa-de-pollo",
+      "name": "Milanesa de pollo",
+      "description": "Milanesa de pollo.",
+      "priceCents": 3500,
+      "variantLabel": null,
+      "categoryId": 60,
+      "menus": [
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/milanesa-de-pollo.webp",
+        "alt": "Milanesa de pollo"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 542,
+          "label": "Milanesa de pollo",
+          "priceCents": 3500,
+          "isAvailable": true,
+          "selections": {
+            "Guarnición 01": null,
+            "Guarnición 02": null
+          }
+        }
+      ],
+      "choiceGroups": [
+        {
+          "key": "Guarnición 01",
+          "label": "Elige tu primer acompañamiento",
+          "options": [
+            "Arroz",
+            "Papitas bebe",
+            "Papa frita",
+            "Ensalada cocida",
+            "Ensalada mixta"
+          ]
+        },
+        {
+          "key": "Guarnición 02",
+          "label": "Elige tu segundo acompañamiento",
+          "options": [
+            "Arroz",
+            "Papitas bebe",
+            "Papa frita",
+            "Ensalada cocida",
+            "Ensalada mixta"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 405,
+      "slug": "pollo-a-la-plancha",
+      "name": "Pollo a la plancha",
+      "description": "Pollo a la plancha.",
+      "priceCents": 3200,
+      "variantLabel": null,
+      "categoryId": 60,
+      "menus": [
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/pollo-a-la-plancha.webp",
+        "alt": "Pollo a la plancha"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 372,
+      "slug": "pescado-a-la-plancha",
+      "name": "Pescado a la plancha",
+      "description": "Pescado a la plancha.",
+      "priceCents": 3800,
+      "variantLabel": null,
+      "categoryId": 60,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/pescado-a-la-plancha.webp",
+        "alt": "Pescado a la plancha"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 370,
+      "slug": "tacu-tacu-con-lomo-saltado",
+      "name": "Tacu tacu con lomo saltado",
+      "description": "De frejol canario, arroz y aceite de oliva doradito acompañado de salsa criolla.",
+      "priceCents": 5000,
+      "variantLabel": null,
+      "categoryId": 67,
+      "menus": [
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/tacu-tacu-con-lomo-saltado.webp",
+        "alt": "Tacu tacu con lomo saltado"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 367,
+      "slug": "tacu-tacu-con-bisteck-a-lo-pobre",
+      "name": "Tacu tacu con bistec a lo pobre",
+      "description": "De frejol canario, arroz y aceite de oliva doradito acompañado de salsa criolla.",
+      "priceCents": 4000,
+      "variantLabel": null,
+      "categoryId": 67,
+      "menus": [
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/tacu-tacu-con-bisteck-a-lo-pobre.webp",
+        "alt": "Tacu tacu con bistec a lo pobre"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 368,
+      "slug": "tacu-tacu-a-lo-macho",
+      "name": "Tacu tacu con pescado a lo macho",
+      "description": "De frejol canario, arroz y aceite de oliva doradito acompañado de salsa criolla con salsa de mariscos con un toque de picor.",
+      "priceCents": 5200,
+      "variantLabel": null,
+      "categoryId": 67,
+      "menus": [
+        "marina",
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/tacu-tacu-a-lo-macho.webp",
+        "alt": "Tacu tacu con pescado a lo macho"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 369,
+      "slug": "tacu-tacu-con-salsa-de-langostinos",
+      "name": "Tacu tacu con salsa de langostinos",
+      "description": "De frejol canario, arroz y aceite de oliva doradito acompañado de salsa criolla.",
+      "priceCents": 4800,
+      "variantLabel": null,
+      "categoryId": 67,
+      "menus": [
+        "marina",
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/tacu-tacu-con-salsa-de-langostinos.webp",
+        "alt": "Tacu tacu con salsa de langostinos"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 366,
+      "slug": "tacu-tacu-con-pescado-a-lo-macho",
+      "name": "Tacu tacu con pescado en salsa de mariscos",
+      "description": "Filete con salsa mariscos con un toque de picor. De frejol canario, arroz y aceite de oliva doradito acompañado de salsa criolla.",
+      "priceCents": 5200,
+      "variantLabel": null,
+      "categoryId": 67,
+      "menus": [
+        "marina",
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/tacu-tacu-con-pescado-a-lo-macho.webp",
+        "alt": "Tacu tacu con pescado en salsa de mariscos"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 365,
+      "slug": "tacu-tacu-con-cabrilla-frita",
+      "name": "Tacu tacu con cabrilla frita",
+      "description": "De frejol canario, arroz y aceite de oliva doradito acompañado de salsa criolla.",
+      "priceCents": 5000,
+      "variantLabel": null,
+      "categoryId": 67,
+      "menus": [
+        "marina",
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/tacu-tacu-con-cabrilla-frita.webp",
+        "alt": "Tacu tacu con cabrilla frita"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 363,
+      "slug": "tacu-tacu-con-pescado-fritofilete",
+      "name": "Tacu tacu con pescado frito(filete)",
+      "description": "De frejol canario, arroz y aceite de oliva doradito acompañado de salsa criolla.",
+      "priceCents": 4000,
+      "variantLabel": null,
+      "categoryId": 67,
+      "menus": [
+        "marina",
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/tacu-tacu-con-pescado-fritofilete.webp",
+        "alt": "Tacu tacu con pescado frito(filete)"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 362,
+      "slug": "chita-al-ajo-crocante",
+      "name": "Chita al ajo crocante",
+      "description": "Acompañado de arroz, yuca frita y salsa criolla.",
+      "priceCents": 7200,
+      "variantLabel": null,
+      "categoryId": 65,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/chita-al-ajo-crocante.webp",
+        "alt": "Chita al ajo crocante"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 361,
+      "slug": "cabrilla-al-ajo-crocante",
+      "name": "Cabrilla al ajo crocante",
+      "description": "Acompañado de arroz, yuca frita y salsa criolla.",
+      "priceCents": 5000,
+      "variantLabel": null,
+      "categoryId": 65,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/cabrilla-al-ajo-crocante.webp",
+        "alt": "Cabrilla al ajo crocante"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 360,
+      "slug": "filete-al-ajo-crocante",
+      "name": "Filete al ajo crocante",
+      "description": "Acompañado de arroz, yuca frita y salsa criolla.",
+      "priceCents": 4000,
+      "variantLabel": null,
+      "categoryId": 65,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/filete-al-ajo-crocante.webp",
+        "alt": "Filete al ajo crocante"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 359,
+      "slug": "trucha-frita",
+      "name": "Trucha frita",
+      "description": "Acompañado de arroz, yuca frita y salsa criolla.",
+      "priceCents": 3200,
+      "variantLabel": null,
+      "categoryId": 65,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/trucha-frita.webp",
+        "alt": "Trucha frita"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 358,
+      "slug": "chita-600grs-frita",
+      "name": "Chita 600grs frita",
+      "description": "Acompañado de arroz, yuca frita y salsa criolla.",
+      "priceCents": 6800,
+      "variantLabel": null,
+      "categoryId": 65,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/chita-600grs-frita.webp",
+        "alt": "Chita 600grs frita"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 357,
+      "slug": "cabrilla-550grs-frita",
+      "name": "Cabrilla 550grs frita",
+      "description": "Acompañado de arroz, yuca frita y salsa criolla.",
+      "priceCents": 4800,
+      "variantLabel": null,
+      "categoryId": 65,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/cabrilla-550grs-frita.webp",
+        "alt": "Cabrilla 550grs frita"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 356,
+      "slug": "filete-frito",
+      "name": "Filete frito",
+      "description": "Acompañado de arroz, yuca frita y salsa criolla.",
+      "priceCents": 3800,
+      "variantLabel": null,
+      "categoryId": 65,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/filete-frito.webp",
+        "alt": "Filete frito"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 355,
+      "slug": "arroz-arrisotado-con-saltado-de-champinones",
+      "name": "Arroz arrisotado con saltado de champiñones",
+      "description": "Arroz arrisotado con saltado de champiñones.",
+      "priceCents": 4200,
+      "variantLabel": null,
+      "categoryId": 62,
+      "menus": [
+        "criolla",
+        "vegetariana"
+      ],
+      "image": {
+        "url": "/catalog/arroz-arrisotado-con-saltado-de-champinones.webp",
+        "alt": "Arroz arrisotado con saltado de champiñones"
+      },
+      "tags": [
+        "vegetariano"
+      ],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 354,
+      "slug": "espaguetti-a-la-huancaina-con-champinones",
+      "name": "Espagueti a la huancaína con champiñones",
+      "description": "Champiñones enteros a la plancha con ajos y perejil.",
+      "priceCents": 3800,
+      "variantLabel": null,
+      "categoryId": 62,
+      "menus": [
+        "criolla",
+        "vegetariana"
+      ],
+      "image": {
+        "url": "/catalog/espaguetti-a-la-huancaina-con-champinones.webp",
+        "alt": "Espagueti a la huancaína con champiñones"
+      },
+      "tags": [
+        "vegetariano"
+      ],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 353,
+      "slug": "ceviche-de-champinones",
+      "name": "Ceviche de champiñones",
+      "description": "Ceviche de champiñones.",
+      "priceCents": 3500,
+      "variantLabel": null,
+      "categoryId": 73,
+      "menus": [
+        "marina",
+        "vegetariana"
+      ],
+      "image": {
+        "url": "/catalog/ceviche-de-champinones.webp",
+        "alt": "Ceviche de champiñones"
+      },
+      "tags": [
+        "vegetariano"
+      ],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 352,
+      "slug": "causa-de-verduras",
+      "name": "Causa de verduras",
+      "description": "Vainita, zanahoria, tomate, palta y mayonesa.",
+      "priceCents": 2000,
+      "variantLabel": null,
+      "categoryId": 71,
+      "menus": [
+        "vegetariana"
+      ],
+      "image": {
+        "url": "/catalog/causa-de-verduras.webp",
+        "alt": "Causa de verduras"
+      },
+      "tags": [
+        "vegetariano"
+      ],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 351,
+      "slug": "arroz-con-pato",
+      "name": "Arroz con pato",
+      "description": "Patita hembra(únicamente viernes, sábado y domingo).",
+      "priceCents": 4000,
+      "variantLabel": null,
+      "categoryId": 66,
+      "menus": [
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/arroz-con-pato.webp",
+        "alt": "Arroz con pato"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 350,
+      "slug": "tortilla-de-raya",
+      "name": "Tortilla de raya",
+      "description": "Acompañada con yuca sancochada y salsa criolla.",
+      "priceCents": 3800,
+      "variantLabel": null,
+      "categoryId": 66,
+      "menus": [
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/tortilla-de-raya.webp",
+        "alt": "Tortilla de raya"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 347,
+      "slug": "ceviche-norteno",
+      "name": "Ceviche Norteño",
+      "description": "Ceviche de pesca del día más 2 tortitas de choclo.",
+      "priceCents": 4500,
+      "variantLabel": null,
+      "categoryId": 73,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/ceviche-norteno.webp",
+        "alt": "Ceviche Norteño"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 343,
+      "slug": "tallarin-saltado-de-pollo",
+      "name": "Tallarín saltado de pollo",
+      "description": "Tallarín saltado de pollo.",
+      "priceCents": 3500,
+      "variantLabel": null,
+      "categoryId": 64,
+      "menus": [
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/tallarin-saltado-de-pollo.webp",
+        "alt": "Tallarín saltado de pollo"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 342,
+      "slug": "espaguetti-en-salsa-de-langostinos-gratinados",
+      "name": "Espagueti en salsa de langostinos gratinados",
+      "description": "Espagueti en salsa de langostinos gratinados.",
+      "priceCents": 4500,
+      "variantLabel": null,
+      "categoryId": 64,
+      "menus": [
+        "marina",
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/espaguetti-en-salsa-de-langostinos-gratinados.webp",
+        "alt": "Espagueti en salsa de langostinos gratinados"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 341,
+      "slug": "espaguetti-a-la-huancaina-con-pescado-a-la-plancha-y-salsa-de-lomo-saltado",
+      "name": "Espagueti a la huancaína con pescado a la plancha y salsa de lomo saltado",
+      "description": "Espagueti a la huancaína con pescado a la plancha y salsa de lomo saltado.",
+      "priceCents": 4200,
+      "variantLabel": null,
+      "categoryId": 64,
+      "menus": [
+        "marina",
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/espaguetti-a-la-huancaina-con-pescado-a-la-plancha-y-salsa-de-lomo-saltado.webp",
+        "alt": "Espagueti a la huancaína con pescado a la plancha y salsa de lomo saltado"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 340,
+      "slug": "espaguetti-al-alfredo",
+      "name": "Espagueti al alfredo",
+      "description": "Espagueti a lo alfredo.",
+      "priceCents": 3200,
+      "variantLabel": null,
+      "categoryId": 64,
+      "menus": [
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/espaguetti-al-alfredo.webp",
+        "alt": "Espagueti al alfredo"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 339,
+      "slug": "espaguetti-al-pesto-con-bisteck",
+      "name": "Espagueti al pesto con bistec",
+      "description": "Espagueti al pesto con bistec.",
+      "priceCents": 4000,
+      "variantLabel": null,
+      "categoryId": 64,
+      "menus": [
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/espaguetti-al-pesto-con-bisteck.webp",
+        "alt": "Espagueti al pesto con bistec"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 338,
+      "slug": "espaguetti-a-la-huancaina-con-lomo-saltado",
+      "name": "Espagueti a la huancaína con lomo saltado",
+      "description": "Espagueti a la huancaína con lomo saltado.",
+      "priceCents": 5000,
+      "variantLabel": null,
+      "categoryId": 64,
+      "menus": [
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/espaguetti-a-la-huancaina-con-lomo-saltado.webp",
+        "alt": "Espagueti a la huancaína con lomo saltado"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 335,
+      "slug": "chaufa-de-mariscos",
+      "name": "Chaufa de mariscos",
+      "description": "Chaufa de mariscos.",
+      "priceCents": 8000,
+      "variantLabel": "Elige el tamaño",
+      "categoryId": 61,
+      "menus": [
+        "marina",
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/chaufa-de-mariscos.webp",
+        "alt": "Chaufa de mariscos"
+      },
+      "tags": [
+        "compartir"
+      ],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 336,
+          "label": "1/2 fuente (2 porc)",
+          "priceCents": 8000,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "1/2 fuente (2 porc)"
+          }
+        },
+        {
+          "id": 337,
+          "label": "1 fuente (4 porc)",
+          "priceCents": 15500,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "1 fuente (4 porc)"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 332,
+      "slug": "arroz-con-mariscos-2",
+      "name": "Arroz con mariscos",
+      "description": "Arroz con mariscos",
+      "priceCents": 8000,
+      "variantLabel": "Elige el tamaño",
+      "categoryId": 61,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/arroz-con-mariscos-2.webp",
+        "alt": "Arroz con mariscos"
+      },
+      "tags": [
+        "compartir"
+      ],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 333,
+          "label": "1/2 fuente (2 porc)",
+          "priceCents": 8000,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "1/2 fuente (2 porc)"
+          }
+        },
+        {
+          "id": 334,
+          "label": "1 fuente (4 porc)",
+          "priceCents": 15500,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "1 fuente (4 porc)"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 329,
+      "slug": "chicharron-mixto",
+      "name": "Chicharrón mixto",
+      "description": "Chicharrón mixto.",
+      "priceCents": 8000,
+      "variantLabel": "Elige el tamaño",
+      "categoryId": 61,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/chicharron-mixto.webp",
+        "alt": "Chicharrón mixto"
+      },
+      "tags": [
+        "compartir"
+      ],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 330,
+          "label": "1/2 fuente (2 porc)",
+          "priceCents": 8000,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "1/2 fuente (2 porc)"
+          }
+        },
+        {
+          "id": 331,
+          "label": "1 fuente (4 porc)",
+          "priceCents": 15500,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "1 fuente (4 porc)"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 326,
+      "slug": "chicharron-de-pescado",
+      "name": "Chicharrón de pescado",
+      "description": "Chicharrón de pescado.",
+      "priceCents": 7500,
+      "variantLabel": "Elige el tamaño",
+      "categoryId": 61,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/chicharron-de-pescado.webp",
+        "alt": "Chicharrón de pescado"
+      },
+      "tags": [
+        "compartir"
+      ],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 327,
+          "label": "1/2 fuente (2 porc)",
+          "priceCents": 7500,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "1/2 fuente (2 porc)"
+          }
+        },
+        {
+          "id": 328,
+          "label": "1 fuente (4 porc)",
+          "priceCents": 14500,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "1 fuente (4 porc)"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 323,
+      "slug": "fuente-ceviche-mixto",
+      "name": "Fuente de Ceviche mixto",
+      "description": "Ceviche mixto.",
+      "priceCents": 8000,
+      "variantLabel": "Elige el tamaño",
+      "categoryId": 61,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/fuente-ceviche-mixto.webp",
+        "alt": "Fuente de Ceviche mixto"
+      },
+      "tags": [
+        "compartir"
+      ],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 324,
+          "label": "1/2 fuente (2 porc)",
+          "priceCents": 8000,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "1/2 fuente (2 porc)"
+          }
+        },
+        {
+          "id": 325,
+          "label": "1 fuente (4 porc)",
+          "priceCents": 15500,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "1 fuente (4 porc)"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 319,
+      "slug": "fuente-ceviche-pescado",
+      "name": "Fuente de Ceviche de pescado",
+      "description": "Ceviche de pescado.",
+      "priceCents": 7500,
+      "variantLabel": "Elige el tamaño",
+      "categoryId": 61,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/fuente-ceviche-pescado.webp",
+        "alt": "Fuente de Ceviche de pescado"
+      },
+      "tags": [
+        "compartir"
+      ],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 321,
+          "label": "1/2 fuente (2 porc)",
+          "priceCents": 7500,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "1/2 fuente (2 porc)"
+          }
+        },
+        {
+          "id": 322,
+          "label": "1 fuente (4 porc)",
+          "priceCents": 14500,
+          "isAvailable": true,
+          "selections": {
+            "Tamaño": "1 fuente (4 porc)"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 318,
+      "slug": "triple-marino",
+      "name": "Triple marino",
+      "description": "Ceviche de pescado, arroz con mariscos y chicharrón mixto.",
+      "priceCents": 5600,
+      "variantLabel": null,
+      "categoryId": 59,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/triple-marino.webp",
+        "alt": "Triple marino"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 317,
+      "slug": "trio-con-causa",
+      "name": "Trío con causa",
+      "description": "Ceviche de pescado, causa de pulpa de cangrejo y chaufa de mariscos.",
+      "priceCents": 5600,
+      "variantLabel": null,
+      "categoryId": 59,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/trio-con-causa.webp",
+        "alt": "Trío con causa"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 316,
+      "slug": "duo-vegetariano",
+      "name": "Dúo vegetariano",
+      "description": "Ceviche de champiñones con arroz chaufa de verduras.",
+      "priceCents": 4200,
+      "variantLabel": null,
+      "categoryId": 59,
+      "menus": [
+        "marina",
+        "vegetariana"
+      ],
+      "image": null,
+      "tags": [
+        "vegetariano"
+      ],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 315,
+      "slug": "duo-de-infarto",
+      "name": "Dúo de infarto",
+      "description": "Parihuela + chaufa de pescado.",
+      "priceCents": 4800,
+      "variantLabel": null,
+      "categoryId": 79,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/duo-de-infarto.webp",
+        "alt": "Dúo de infarto"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 314,
+      "slug": "cevichaufa",
+      "name": "Cevichaufa",
+      "description": "Ceviche de pescado + chaufa de mariscos.",
+      "priceCents": 4200,
+      "variantLabel": null,
+      "categoryId": 59,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/cevichaufa.webp",
+        "alt": "Cevichaufa"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 313,
+      "slug": "combinado-marino",
+      "name": "Combinado marino",
+      "description": "Ceviche de pescado y arroz con mariscos.",
+      "priceCents": 4400,
+      "variantLabel": null,
+      "categoryId": 59,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/combinado-marino.webp",
+        "alt": "Combinado marino"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 312,
+      "slug": "combinado",
+      "name": "Combinado",
+      "description": "Ceviche de pescado y chicharrón mixto.",
+      "priceCents": 4200,
+      "variantLabel": null,
+      "categoryId": 59,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/combinado.webp",
+        "alt": "Combinado"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 311,
+      "slug": "duo-de-ceviches",
+      "name": "Dúo de ceviches",
+      "description": "Ceviche de pescado y ceviche de conchas negras.",
+      "priceCents": 4500,
+      "variantLabel": null,
+      "categoryId": 59,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/duo-de-ceviches.webp",
+        "alt": "Dúo de ceviches"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 310,
+      "slug": "leche-combinada",
+      "name": "Leche carretillera",
+      "description": "Leche de tigre + chicharrón de pota",
+      "priceCents": 3800,
+      "variantLabel": null,
+      "categoryId": 59,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/leche-combinada.webp",
+        "alt": "Leche carretillera"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 300,
+      "slug": "parihuelas",
+      "name": "Parihuelas",
+      "description": "Concentrada de pescado (filete o entero) mariscos y pulpa de cangrejo.",
+      "priceCents": 4200,
+      "variantLabel": "Elige tu pescado",
+      "categoryId": 63,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/parihuelas.webp",
+        "alt": "Parihuelas"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 301,
+          "label": "Pesca del día (filete)",
+          "priceCents": 4200,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Pesca del día (filete)"
+          }
+        },
+        {
+          "id": 302,
+          "label": "Cabrilla",
+          "priceCents": 5800,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Cabrilla"
+          }
+        },
+        {
+          "id": 303,
+          "label": "Tramboyo",
+          "priceCents": 6000,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Tramboyo"
+          }
+        },
+        {
+          "id": 304,
+          "label": "Chita",
+          "priceCents": 7800,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Chita"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 295,
+      "slug": "chupes",
+      "name": "Chupes",
+      "description": "Un clásico del Sur con arroz reventado, zapallo, choclo, alverja, papa amarilla, salsa madre, leche y su huevo pochado.",
+      "priceCents": 4500,
+      "variantLabel": "Elige tu chupe",
+      "categoryId": 40,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/chupes.webp",
+        "alt": "Chupes"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 297,
+          "label": "de Choros",
+          "priceCents": 4500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "de Choros"
+          }
+        },
+        {
+          "id": 298,
+          "label": "de Langostinos",
+          "priceCents": 4500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "de Langostinos"
+          }
+        },
+        {
+          "id": 296,
+          "label": "Pesca del día",
+          "priceCents": 4500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "Pesca del día"
+          }
+        },
+        {
+          "id": 299,
+          "label": "de Camarones",
+          "priceCents": 5500,
+          "isAvailable": true,
+          "selections": {
+            "Hecho de": "de Camarones"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 292,
+      "slug": "chicharron-de-pescado-con-papa-frita",
+      "name": "Chicharrón de pescado con papa frita",
+      "description": "Chicharrón de pescado con papa frita.",
+      "priceCents": 2500,
+      "variantLabel": null,
+      "categoryId": 57,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/chicharron-de-pescado-con-papa-frita.webp",
+        "alt": "Chicharrón de pescado con papa frita"
+      },
+      "tags": [
+        "ninos"
+      ],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 291,
+      "slug": "espaguetti-al-alfredo-nino",
+      "name": "Espagueti al alfredo – niño",
+      "description": "Espagueti al alfredo.",
+      "priceCents": 2500,
+      "variantLabel": null,
+      "categoryId": 57,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/espaguetti-al-alfredo-nino.webp",
+        "alt": "Espagueti al alfredo – niño"
+      },
+      "tags": [
+        "ninos"
+      ],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 290,
+      "slug": "arroz-espanol",
+      "name": "Arroz español",
+      "description": "Arroz azafranado, langostinos, champiñones, chorizo español, cabanosi, crema de leche y vino blanco.",
+      "priceCents": 4800,
+      "variantLabel": null,
+      "categoryId": 16,
+      "menus": [
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/arroz-espanol.webp",
+        "alt": "Arroz español"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 289,
+      "slug": "arroz-norteno-de-mariscos",
+      "name": "Arroz norteño de mariscos",
+      "description": "Mixtura de mariscos, salsa madre de culantro.",
+      "priceCents": 4200,
+      "variantLabel": null,
+      "categoryId": 16,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/arroz-norteno-de-mariscos.webp",
+        "alt": "Arroz norteño de mariscos"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 288,
+      "slug": "arroz-con-mariscos",
+      "name": "Arroz con mariscos",
+      "description": "Arroz con mixtura de mariscos, con salsa madre, queso parmesano perfumado con culantro.",
+      "priceCents": 4200,
+      "variantLabel": null,
+      "categoryId": 16,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/arroz-con-mariscos.webp",
+        "alt": "Arroz con mariscos"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 287,
+      "slug": "berychaufa-amazonico",
+      "name": "Berychaufa Amazónico",
+      "description": "Langostino, cecina, chorizo de la selva y salsa de cocona.",
+      "priceCents": 4800,
+      "variantLabel": null,
+      "categoryId": 16,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/berychaufa-amazonico.webp",
+        "alt": "Berychaufa Amazónico"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 282,
+      "slug": "chaufa-salvaje",
+      "name": "Chaufa Salvaje",
+      "description": "Cecina y chorizo de la selva",
+      "priceCents": 4000,
+      "variantLabel": null,
+      "categoryId": 16,
+      "menus": [
+        "marina",
+        "criolla"
+      ],
+      "image": {
+        "url": "/catalog/chaufa-salvaje.webp",
+        "alt": "Chaufa Salvaje"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [],
+      "choiceGroups": []
+    },
+    {
+      "id": 277,
+      "slug": "arroz-chaufa",
+      "name": "Arroz chaufa",
+      "description": "Saltado al wok sazonado con sillao, salsa de ostión, lechuga, cebolla china y huevo batido.",
+      "priceCents": 3200,
+      "variantLabel": "Elige la proteína",
+      "categoryId": 16,
+      "menus": [
+        "marina"
+      ],
+      "image": {
+        "url": "/catalog/arroz-chaufa.webp",
+        "alt": "Arroz chaufa"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 278,
+          "label": "de pollo",
+          "priceCents": 3200,
+          "isAvailable": true,
+          "selections": {
+            "Proteína": "de pollo"
+          }
+        },
+        {
+          "id": 280,
+          "label": "de mariscos",
+          "priceCents": 4000,
+          "isAvailable": true,
+          "selections": {
+            "Proteína": "de mariscos"
+          }
+        },
+        {
+          "id": 279,
+          "label": "de pescado",
+          "priceCents": 4000,
+          "isAvailable": true,
+          "selections": {
+            "Proteína": "de pescado"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 154,
+      "slug": "gaseosas",
+      "name": "Gaseosas",
+      "description": "Variedad de gaseosas y aguas minerales de diferentes marcas.",
+      "priceCents": 500,
+      "variantLabel": "Elige una opción",
+      "categoryId": 84,
+      "menus": [
+        "berycafe",
+        "el-bar"
+      ],
+      "image": {
+        "url": "/catalog/gaseosas.webp",
+        "alt": "Gaseosas"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 156,
+          "label": "Agua San Luis · Personal",
+          "priceCents": 500,
+          "isAvailable": true,
+          "selections": {
+            "Marca gaseosa": "Agua San Luis",
+            "Tamaño": "Personal"
+          }
+        },
+        {
+          "id": 157,
+          "label": "Agua San Mateo · Personal",
+          "priceCents": 500,
+          "isAvailable": true,
+          "selections": {
+            "Marca gaseosa": "Agua San Mateo",
+            "Tamaño": "Personal"
+          }
+        },
+        {
+          "id": 158,
+          "label": "Coca cola · Personal",
+          "priceCents": 700,
+          "isAvailable": true,
+          "selections": {
+            "Marca gaseosa": "Coca cola",
+            "Tamaño": "Personal"
+          }
+        },
+        {
+          "id": 159,
+          "label": "Inka kola · Personal",
+          "priceCents": 700,
+          "isAvailable": true,
+          "selections": {
+            "Marca gaseosa": "Inka kola",
+            "Tamaño": "Personal"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 149,
+      "slug": "cervezas",
+      "name": "Cervezas",
+      "description": "Cervezas nacionales e internacionales",
+      "priceCents": 900,
+      "variantLabel": "Elige una opción",
+      "categoryId": 85,
+      "menus": [
+        "el-bar"
+      ],
+      "image": {
+        "url": "/catalog/cervezas.webp",
+        "alt": "Cervezas"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 152,
+          "label": "Cusqueña · Personal",
+          "priceCents": 900,
+          "isAvailable": true,
+          "selections": {
+            "Marca cerveza": "Cusqueña",
+            "Tamaño": "Personal"
+          }
+        },
+        {
+          "id": 153,
+          "label": "Pilsen · Personal",
+          "priceCents": 900,
+          "isAvailable": true,
+          "selections": {
+            "Marca cerveza": "Pilsen",
+            "Tamaño": "Personal"
+          }
+        },
+        {
+          "id": 150,
+          "label": "Corona · Personal",
+          "priceCents": 1200,
+          "isAvailable": true,
+          "selections": {
+            "Marca cerveza": "Corona",
+            "Tamaño": "Personal"
+          }
+        }
+      ],
+      "choiceGroups": []
+    },
+    {
+      "id": 126,
+      "slug": "bebidas-calientes",
+      "name": "Bebidas calientes",
+      "description": "Infusión natural: Hierba luisa, manzanilla, muña, toronjil, cedrón, menta, orégano",
+      "priceCents": 600,
+      "variantLabel": "Elige la bebida",
+      "categoryId": 88,
+      "menus": [
+        "berycafe"
+      ],
+      "image": {
+        "url": "/catalog/bebidas-calientes.webp",
+        "alt": "Bebidas calientes"
+      },
+      "tags": [],
+      "allergens": [],
+      "portion": null,
+      "isAvailable": true,
+      "variants": [
+        {
+          "id": 127,
+          "label": "Café pasado",
+          "priceCents": 600,
+          "isAvailable": true,
+          "selections": {
+            "Bebida caliente": "Café pasado"
+          }
+        },
+        {
+          "id": 129,
+          "label": "Hierba Luisa",
+          "priceCents": 600,
+          "isAvailable": true,
+          "selections": {
+            "Bebida caliente": "Hierba Luisa"
+          }
+        },
+        {
+          "id": 130,
+          "label": "Manzanilla",
+          "priceCents": 600,
+          "isAvailable": true,
+          "selections": {
+            "Bebida caliente": "Manzanilla"
+          }
+        },
+        {
+          "id": 132,
+          "label": "Muña",
+          "priceCents": 600,
+          "isAvailable": true,
+          "selections": {
+            "Bebida caliente": "Muña"
+          }
+        }
+      ],
+      "choiceGroups": []
+    }
+  ]
+}

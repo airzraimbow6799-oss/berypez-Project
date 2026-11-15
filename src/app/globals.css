@@ -1,1 +1,117 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
+@import "../styles/tokens.css";
+
+@layer base {
+  :root {
+    /* Alto del header fijo (solo en escritorio): la barra de secciones se pega debajo. */
+    --altura-header: 0px;
+  }
+
+  @media (min-width: 48rem) {
+    :root {
+      --altura-header: 6.85rem;
+    }
+  }
+
+  html {
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--altura-header) + 4.5rem);
+  }
+
+  body {
+    background-color: var(--color-fondo);
+    color: var(--color-tinta);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-foco);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Superficies marino (header superior, footer): el foco cambia a ají. */
+  .sobre-marino :focus-visible {
+    outline-color: var(--color-foco-oscuro);
+  }
+
+  /* F2-09 · El contador del carrito rebota al cambiar (la clave del span fuerza la animación). */
+  .contador-rebote {
+    animation: rebote 400ms var(--ease-out-suave);
+  }
+
+  @keyframes rebote {
+    0% {
+      transform: scale(0.6);
+    }
+    60% {
+      transform: scale(1.25);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Loader de los peces del logo: entran nadando en secuencia y luego se mecen. */
+  .cardumen .pez {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation:
+      pez-entra 420ms var(--ease-out-suave) both,
+      pez-mece 1200ms ease-in-out 420ms infinite alternate;
+    animation-delay: calc(var(--pez, 0) * 90ms), calc(420ms + var(--pez, 0) * 120ms);
+  }
+
+  @keyframes pez-entra {
+    from {
+      opacity: 0;
+      transform: translateX(-14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes pez-mece {
+    from {
+      transform: translate(0, -1.5px) rotate(-3deg);
+    }
+    to {
+      transform: translate(2px, 1.5px) rotate(3deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Borde inferior troquelado del ticket de reserva (como una comanda). */
+  .ticket {
+    -webkit-mask: radial-gradient(circle 6px at 8px 100%, #0000 98%, #000) 0 0 / 16px 100% repeat-x;
+    mask: radial-gradient(circle 6px at 8px 100%, #0000 98%, #000) 0 0 / 16px 100% repeat-x;
+  }
+}

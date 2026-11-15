@@ -14,15 +14,30 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "check": "npm run lint && npm run typecheck && npm run format:check && npm run test:coverage",
-    "prepare": "husky"
+    "prepare": "husky",
+    "catalog:fetch": "tsx scripts/catalog/fetch.ts",
+    "catalog:build": "tsx scripts/catalog/build.ts",
+    "catalog:images": "tsx scripts/catalog/fetch-images.ts",
+    "db:push": "tsx --env-file=.env.local scripts/db/push.ts",
+    "catalog:load": "tsx --env-file=.env.local scripts/catalog/load.ts",
+    "db:types": "tsx --env-file=.env.local scripts/db/types.ts",
+    "brand:icons": "tsx scripts/brand/build-icons.ts",
+    "staff:create": "tsx --env-file=.env.local scripts/db/create-staff.ts"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.119.0",
+    "lucide-react": "^0.468.0",
     "next": "15.5.29",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "zod": "4.6.7"
+    "server-only": "^0.0.1",
+    "sonner": "^2.0.7",
+    "zod": "4.6.7",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.3.11",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "7.0.1",
@@ -40,7 +55,9 @@
     "lint-staged": "16.4.0",
     "prettier": "3.10.1",
     "prettier-plugin-tailwindcss": "0.8.1",
+    "sharp": "^0.34.4",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5",
     "vitest": "5.1.0"
   },
