@@ -574,6 +574,24 @@ export type Database = {
           },
         ]
       }
+      rate_limits: {
+        Row: {
+          hits: number
+          key: string
+          window_start: string
+        }
+        Insert: {
+          hits?: number
+          key: string
+          window_start: string
+        }
+        Update: {
+          hits?: number
+          key?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       reservations: {
         Row: {
           area: string | null
@@ -699,7 +717,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      checkout_create_order: {
+        Args: { p_items: Json; p_order: Json }
+        Returns: {
+          order_id: number
+          tracking_token: string
+        }[]
+      }
+      checkout_hit_rate_limit: {
+        Args: { p_key: string; p_limit: number; p_window_seconds: number }
+        Returns: boolean
+      }
     }
     Enums: {
       menu_slug:

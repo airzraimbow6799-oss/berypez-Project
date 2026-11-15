@@ -152,6 +152,21 @@ describe("getProductsBySlugs", () => {
   });
 });
 
+describe("getProductsByIds", () => {
+  it("devuelve un mapa por id con ids sin repetir", async () => {
+    const { client, calls } = fakeClient({ products: { data: [PARIHUELA_ROW], error: null } });
+    const map = await createCatalogRepository(client, STORAGE).getProductsByIds([300, 300, 9]);
+    expect([...map.keys()]).toEqual([300]);
+    expect(calls[0]?.filters).toContainEqual(["id:in", [300, 9]]);
+  });
+
+  it("no consulta con una lista vacía", async () => {
+    const { client, calls } = fakeClient({});
+    expect((await createCatalogRepository(client, STORAGE).getProductsByIds([])).size).toBe(0);
+    expect(calls).toHaveLength(0);
+  });
+});
+
 describe("getProduct", () => {
   it("devuelve el producto con variantes", async () => {
     const { client, calls } = fakeClient({ products: { data: [PARIHUELA_ROW], error: null } });

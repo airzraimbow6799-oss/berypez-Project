@@ -592,6 +592,19 @@ npx vercel link
 npx vercel env pull .env.local
 ```
 
+### Estado de la Fase 2
+
+| ID                    | Tarea                                                                                               | Estado                                                           |
+| --------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| F2-01                 | Cotizador: precios siempre desde la base, detecta agotados, variantes y elecciones inválidas        | ✅ Hecho                                                         |
+| F2-02 / F2-03         | Sedes y 7 zonas reales a S/ 7.50; horario en hora de Lima (provisional 11:00–17:00)                 | ✅ Hecho (horario y tiempos por confirmar con la dueña)          |
+| F2-04 / F2-05         | Checkout con pedido y líneas en una transacción (RPC), pedido programado validado contra el horario | ✅ Hecho                                                         |
+| F2-06 / F2-08 / F2-09 | Carrito persistido, página `/carrito` con total del servidor y avisos, contador con rebote          | ✅ Hecho                                                         |
+| F2-07 / F2-10         | Selector de modalidad y checkout en 3 bloques con validación en línea                               | ✅ Hecho                                                         |
+| F2-11                 | Mensaje de pedido por WhatsApp con el carrito completo                                              | 🚧 Lógica lista; el botón aparece cuando haya número de WhatsApp |
+| F2-12                 | Pantalla de pedido recibido `/pedido/[token]`                                                       | ✅ Hecho                                                         |
+| F2-14 / F2-15         | Turnstile (claves de prueba hasta F0-13) y límite de peticiones en Postgres                         | ✅ Hecho                                                         |
+
 ### Estado de la Fase 1
 
 | ID                         | Tarea                                                                                                                                                                            | Estado                                                 |
