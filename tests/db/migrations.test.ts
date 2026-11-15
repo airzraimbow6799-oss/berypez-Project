@@ -80,6 +80,14 @@ describe("RLS", () => {
     expect(rows).toEqual([]);
   });
 
+  it("no deja funciones SECURITY DEFINER en el esquema expuesto public", async () => {
+    const { rows } = await db.query<{ proname: string }>(
+      `select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+       where n.nspname = 'public' and p.prosecdef`,
+    );
+    expect(rows).toEqual([]);
+  });
+
   it("anon lee solo productos publicados", async () => {
     const { rows } = await as<{ id: number }>("anon", null, "select id from products order by id");
     expect(rows.map((r) => Number(r.id))).toEqual([1]);

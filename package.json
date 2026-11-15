@@ -17,7 +17,10 @@
     "prepare": "husky",
     "catalog:fetch": "tsx scripts/catalog/fetch.ts",
     "catalog:build": "tsx scripts/catalog/build.ts",
-    "catalog:images": "tsx scripts/catalog/fetch-images.ts"
+    "catalog:images": "tsx scripts/catalog/fetch-images.ts",
+    "db:push": "tsx --env-file=.env.local scripts/db/push.ts",
+    "catalog:load": "tsx --env-file=.env.local scripts/catalog/load.ts",
+    "db:types": "tsx --env-file=.env.local scripts/db/types.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

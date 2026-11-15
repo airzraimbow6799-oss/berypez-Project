@@ -572,33 +572,34 @@ Los tests de `tests/db/` aplican las migraciones de `supabase/migrations` en un 
 
 Antes de cada commit, Husky ejecuta `lint-staged` (ESLint + Prettier sobre los archivos modificados).
 
-**Se agregan en las próximas tareas de la Fase 0**
+**Supabase (berypez-dev)**
+
+Los scripts usan la Management API de Supabase: no necesitan Docker ni la contraseña de la base. Requieren en `.env.local` el token personal `SUPABASE_ACCESS_TOKEN` (supabase.com/dashboard/account/tokens) y, para cargar datos, `SUPABASE_SECRET_KEY`.
 
 ```bash
-# Supabase (F0-03 / F0-06)
-npx supabase login
-npx supabase link --project-ref <ref-de-berypez-dev>
-npx supabase db push
-npx supabase gen types typescript --linked > src/types/database.ts
+npm run db:push -- --dry   # muestra las migraciones pendientes
+npm run db:push            # aplica las pendientes y las registra en el historial
+npm run db:types           # regenera src/types/database.ts
+npm run catalog:load       # sube fotos a Storage y carga el catálogo (idempotente)
+```
 
-# Catálogo (F0-04): solo lectura de berypez.pe → Supabase
-npm run import:catalog
+**Vercel (F0-03, pendiente)**
 
-# Vercel (F0-03)
+```bash
 npx vercel link
 npx vercel env pull .env.local
 ```
 
 ### Estado de la Fase 0
 
-| ID            | Tarea                                                                                                                                              | Estado                                         |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| F0-01         | Proyecto base (Next.js 15.5, TS estricto, Tailwind 4, ESLint, Prettier, Husky, Vitest, `.env.example`, validación de variables de entorno con Zod) | ✅ Hecho                                       |
-| F0-02         | CI en GitHub Actions (lint, tipos, formato, tests con cobertura, build; Lighthouse informativo)                                                    | ✅ Hecho (se activa al subir el repo a GitHub) |
-| F0-03         | Proyectos Supabase + Vercel                                                                                                                        | ⏳ Pendiente: cargar claves en `.env.local`    |
-| F0-04         | Catálogo: snapshot único de berypez.pe, 107 productos limpios (Anexo B), mapeo a 6 cartas y 106 fotos WebP en `public/catalog`                     | 🚧 Falta la carga en Supabase (`catalog:load`) |
-| F0-05         | Contrato de datos v1 (`src/types/catalog.ts`) y `docs/api.md`                                                                                      | ✅ Hecho (revisión de Rafael)                  |
-| F0-06         | Esquema SQL (catálogo, sedes, zonas, pedidos, pagos, reservas, reclamos, personal) con RLS en todas las tablas, probado con PGlite                 | 🚧 Falta `db push` y `gen types` en Supabase   |
-| F0-07 a F0-14 | Resto de la fase                                                                                                                                   | ⏳ Pendiente                                   |
+| ID            | Tarea                                                                                                                                                        | Estado                                         |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
+| F0-01         | Proyecto base (Next.js 15.5, TS estricto, Tailwind 4, ESLint, Prettier, Husky, Vitest, `.env.example`, validación de variables de entorno con Zod)           | ✅ Hecho                                       |
+| F0-02         | CI en GitHub Actions (lint, tipos, formato, tests con cobertura, build; Lighthouse informativo)                                                              | ✅ Hecho (se activa al subir el repo a GitHub) |
+| F0-03         | Supabase `berypez-dev` conectado (clientes, claves publishable/secret, scripts `db:*`). Vercel pendiente                                                     | 🚧 Supabase ✅ · Vercel ⏳                     |
+| F0-04         | Catálogo: snapshot único de berypez.pe, 107 productos limpios (Anexo B), mapeo a 6 cartas y 106 fotos WebP, cargados en Supabase y Storage                   | ✅ Hecho (F0-Q4 de Rafael)                     |
+| F0-05         | Contrato de datos v1 (`src/types/catalog.ts`) y `docs/api.md`                                                                                                | ✅ Hecho (revisión de Rafael)                  |
+| F0-06         | Esquema SQL (catálogo, sedes, zonas, pedidos, pagos, reservas, reclamos, personal) con RLS en todas las tablas, aplicado en Supabase, sin avisos del advisor | ✅ Hecho                                       |
+| F0-07 a F0-14 | Resto de la fase                                                                                                                                             | ⏳ Pendiente                                   |
 
 > **Nota de dependencias:** `npm audit` reporta una vulnerabilidad de PostCSS **incluida dentro de Next 15**. Solo afecta al procesamiento de nuestro propio CSS en el build (no a datos de usuarios) y únicamente se corrige migrando a Next 16. Queda registrada para evaluarla en la Fase 5 (F5-04).
