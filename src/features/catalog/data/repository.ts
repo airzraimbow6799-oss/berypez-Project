@@ -101,7 +101,22 @@ export function createCatalogRepository(client: CatalogClient, supabaseUrl: stri
     return slugs.flatMap((slug) => bySlug.get(slug) ?? []);
   }
 
-  return { getMenus, getMenu, getProduct, getProductsBySlugs };
+  /** Platos publicados por id (cotizador del carrito). */
+  async function getProductsByIds(ids: readonly number[]): Promise<Map<number, Product>> {
+    const unique = [...new Set(ids)];
+    if (unique.length === 0) {
+      return new Map();
+    }
+    const result = await client
+      .from("products")
+      .select(PRODUCT_COLUMNS)
+      .in("id", unique)
+      .eq("is_published", true);
+    const rows = unwrap(result as QueryResult<ProductRowWithRelations[]>, "leer los platos");
+    return new Map(rows.map((row) => [row.id, toProduct(row, supabaseUrl)]));
+  }
+
+  return { getMenus, getMenu, getProduct, getProductsBySlugs, getProductsByIds };
 }
 
 export type CatalogRepository = ReturnType<typeof createCatalogRepository>;

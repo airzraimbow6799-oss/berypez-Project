@@ -34,9 +34,7 @@ const SEED = `
   insert into products (id, slug, name, price_cents, category_id) values (1, 'ceviche', 'Ceviche', 4500, 73);
   insert into products (id, slug, name, price_cents, category_id, is_published)
     values (2, 'oculto', 'Oculto', 1000, 73, false);
-  insert into branches (slug, name, address, district, phone, whatsapp)
-    values ('lince', 'Lince', 'Av. 1', 'Lince', '999999999', '51999999999'),
-           ('jesus-maria', 'Jesús María', 'Av. 2', 'Jesús María', '988888888', '51988888888');
+  -- Las sedes (1 = Lince, 2 = Jesús María) las crea la migración de datos 0800.
   insert into auth.users (id) values ('${STAFF_LINCE}'), ('${STAFF_JM}');
   insert into staff_roles (user_id, role, branch_id) values ('${STAFF_LINCE}', 'cocina', 1), ('${STAFF_JM}', 'cocina', 2);
   insert into orders (branch_id, modality, customer_name, customer_phone, subtotal_cents, total_cents, payment_method)
@@ -158,6 +156,84 @@ describe("RLS", () => {
       "select status from orders where customer_name = 'Luis'",
     );
     expect(rows[0]?.status).toBe("pending");
+  });
+});
+
+describe("checkout (F2)", () => {
+  const order = (extra: Record<string, unknown> = {}) =>
+    JSON.stringify({
+      branch_id: 1,
+      modality: "pickup",
+      customer_name: "Rosa",
+      customer_phone: "987654321",
+      subtotal_cents: 9000,
+      delivery_cents: 0,
+      total_cents: 9000,
+      payment_method: "cash",
+      ...extra,
+    });
+  const items = JSON.stringify([
+    {
+      product_id: 1,
+      product_name: "Ceviche",
+      quantity: 2,
+      unit_price_cents: 4500,
+      line_total_cents: 9000,
+    },
+  ]);
+
+  it("las sedes y los 7 distritos de reparto quedan cargados a S/ 7.50", async () => {
+    const { rows } = await db.query<{ n: number; fee: number }>(
+      "select count(*)::int as n, min(fee_cents) as fee from delivery_zones",
+    );
+    expect(rows[0]).toEqual({ n: 7, fee: 750 });
+  });
+
+  it("crea el pedido y sus líneas en una sola operación", async () => {
+    const { rows } = await db.query<{ order_id: number; tracking_token: string }>(
+      `select * from checkout_create_order('${order()}'::jsonb, '${items}'::jsonb)`,
+    );
+    const id = rows[0]?.order_id;
+    const { rows: lines } = await db.query<{ n: number }>(
+      `select count(*)::int as n from order_items where order_id = ${id}`,
+    );
+    expect(lines[0]?.n).toBe(1);
+    expect(rows[0]?.tracking_token).toMatch(/^[0-9a-f-]{36}$/);
+  });
+
+  it("no crea nada si el subtotal no coincide con las líneas", async () => {
+    const before = await db.query<{ n: number }>("select count(*)::int as n from orders");
+    await expect(
+      db.query(
+        `select * from checkout_create_order('${order({ subtotal_cents: 1, total_cents: 1 })}'::jsonb, '${items}'::jsonb)`,
+      ),
+    ).rejects.toThrow(/subtotal no coincide/);
+    const after = await db.query<{ n: number }>("select count(*)::int as n from orders");
+    expect(after.rows[0]?.n).toBe(before.rows[0]?.n);
+  });
+
+  it("anon no puede crear pedidos ni tocar el límite de peticiones", async () => {
+    await expect(
+      as(
+        "anon",
+        null,
+        `select * from checkout_create_order('${order()}'::jsonb, '${items}'::jsonb)`,
+      ),
+    ).rejects.toThrow(/permission denied/);
+    await expect(as("anon", null, "select checkout_hit_rate_limit('x', 1, 60)")).rejects.toThrow(
+      /permission denied/,
+    );
+  });
+
+  it("el límite de peticiones corta después de N intentos en la ventana", async () => {
+    const results: boolean[] = [];
+    for (let i = 0; i < 4; i += 1) {
+      const { rows } = await db.query<{ ok: boolean }>(
+        "select checkout_hit_rate_limit('ip:1.2.3.4', 3, 600) as ok",
+      );
+      results.push(rows[0]?.ok ?? false);
+    }
+    expect(results).toEqual([true, true, true, false]);
   });
 });
 

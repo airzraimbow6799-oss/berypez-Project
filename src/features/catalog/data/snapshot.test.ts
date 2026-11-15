@@ -46,6 +46,12 @@ describe("createSnapshotCatalogRepository", () => {
     const found = await repo.getProductsBySlugs([second.slug, "no-existe", first.slug]);
     expect(found.map((p) => p.id)).toEqual([second.id, first.id]);
   });
+
+  it("busca platos por id para el cotizador", async () => {
+    const first = catalog.products[0]!;
+    const byId = await repo.getProductsByIds([first.id, first.id, -1]);
+    expect([...byId.keys()]).toEqual([first.id]);
+  });
 });
 
 describe("isSnapshotSource", () => {
