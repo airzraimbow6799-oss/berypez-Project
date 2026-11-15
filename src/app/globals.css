@@ -38,6 +38,36 @@
     outline-color: var(--color-foco-oscuro);
   }
 
+  /* Loader de los peces del logo: entran nadando en secuencia y luego se mecen. */
+  .cardumen .pez {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation:
+      pez-entra 420ms var(--ease-out-suave) both,
+      pez-mece 1200ms ease-in-out 420ms infinite alternate;
+    animation-delay: calc(var(--pez, 0) * 90ms), calc(420ms + var(--pez, 0) * 120ms);
+  }
+
+  @keyframes pez-entra {
+    from {
+      opacity: 0;
+      transform: translateX(-14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes pez-mece {
+    from {
+      transform: translate(0, -1.5px) rotate(-3deg);
+    }
+    to {
+      transform: translate(2px, 1.5px) rotate(3deg);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

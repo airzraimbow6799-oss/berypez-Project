@@ -3,6 +3,7 @@
 import { Flame, Leaf, Star } from "lucide-react";
 import { type ReactNode, useState } from "react";
 
+import { FishLoader } from "@/components/brand/FishLoader";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -34,6 +35,10 @@ export function Showcase() {
     <div className="mx-auto max-w-4xl px-4 py-10">
       <h1 className="text-3xl font-semibold">Componentes</h1>
       <p className="text-tinta-suave mt-2">Vitrina para QA. No aparece en producción.</p>
+
+      <Section title="Carga (peces del logo)">
+        <FishLoader label="Ejemplo de carga" />
+      </Section>
 
       <Section title="Botones">
         <Button>Pedir ahora</Button>

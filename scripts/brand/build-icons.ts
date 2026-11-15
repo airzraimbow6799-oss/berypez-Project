@@ -26,9 +26,39 @@ function extractPaths(svg: string): string[] {
   return [...svg.matchAll(/<path\b[^>]*\bd="([^"]+)"[^>]*>/g)].map((m) => m[1] ?? "");
 }
 
+/** Menor y mayor x absoluta de un trazo (aproximado: comandos absolutos M/L/C/S/Q/T/H). */
+function xRange(d: string): [number, number] {
+  const xs: number[] = [];
+  for (const [, command = "", args = ""] of d.matchAll(/([MLCSQTH])([^A-Za-z]*)/g)) {
+    const values = (args.match(/-?\d*\.?\d+/g) ?? []).map(Number);
+    if (command === "H") {
+      xs.push(...values);
+    } else {
+      for (let i = 0; i < values.length; i += 2) xs.push(values[i] ?? 0);
+    }
+  }
+  return [Math.min(...xs), Math.max(...xs)];
+}
+
+/** Trazos de los peces (x ≤ 82), ordenados de izquierda a derecha para animarlos en secuencia. */
+function fishPaths(paths: string[]): string[] {
+  return paths
+    .map((d) => ({ d, range: xRange(d) }))
+    .filter(({ range }) => range[1] <= 82)
+    .sort((a, b) => a.range[0] - b.range[0])
+    .map(({ d }) => d);
+}
+
 function logoComponent(paths: string[]): string {
   const jsx = paths.map((d) => `    <path d="${d}" />`).join("\n");
+  const fish = fishPaths(paths)
+    .map(
+      (d, i) => `    <path className="pez" style={{ "--pez": ${i} } as CSSProperties} d="${d}" />`,
+    )
+    .join("\n");
   return `// Generado por scripts/brand/build-icons.ts desde assets-src/logo-berypez.svg. No editar a mano.
+import type { CSSProperties } from "react";
+
 export const LOGO_VIEWBOX = "0 0 291 64";
 export const FISH_VIEWBOX = "${FISH_VIEWBOX}";
 
@@ -36,6 +66,15 @@ export function LogoPaths() {
   return (
     <>
 ${jsx}
+    </>
+  );
+}
+
+/** Solo los peces, de izquierda a derecha, con la variable --pez (0, 1, 2…) para animarlos en secuencia. */
+export function FishPaths() {
+  return (
+    <>
+${fish}
     </>
   );
 }
