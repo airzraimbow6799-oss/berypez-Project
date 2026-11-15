@@ -1,0 +1,199 @@
+import { ArrowRight, CalendarDays, MapPin } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import type { ReactNode } from "react";
+
+import { ProductCard } from "@/components/catalog/ProductCard";
+import { Button } from "@/components/ui/Button";
+import { BRANCHES } from "@/config/site";
+import type { Menu, Product } from "@/types/catalog";
+
+function SectionHeading({
+  id,
+  title,
+  intro,
+  link,
+}: {
+  id: string;
+  title: string;
+  intro?: string;
+  link?: ReactNode;
+}) {
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h2 id={id} className="text-3xl font-semibold">
+          {title}
+        </h2>
+        {intro ? <p className="text-tinta-suave mt-2 max-w-xl">{intro}</p> : null}
+      </div>
+      {link}
+    </div>
+  );
+}
+
+const GRID_SIZES = "(min-width: 1024px) 270px, (min-width: 640px) 33vw, 50vw";
+
+/** F1-07 · Accesos a las 6 cartas con foto. */
+export function MenuAccess({ menus, covers }: { menus: Menu[]; covers: Map<string, Product> }) {
+  return (
+    <section aria-labelledby="cartas" className="mx-auto max-w-6xl px-4 py-12">
+      <SectionHeading
+        id="cartas"
+        title="Nuestras cartas"
+        intro="Seis cartas, una sola cocina de barrio."
+      />
+      <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:gap-4">
+        {menus.map((menu) => {
+          const cover = covers.get(menu.slug);
+          return (
+            <li key={menu.slug}>
+              <Link
+                href={`/carta/${menu.slug}`}
+                className="group relative block aspect-[4/3] overflow-hidden rounded-md shadow-sm"
+              >
+                {cover?.image ? (
+                  <Image
+                    src={cover.image.url}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 370px, (min-width: 640px) 33vw, 50vw"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:group-hover:scale-100"
+                  />
+                ) : (
+                  <span className="bg-crema-200 absolute inset-0" />
+                )}
+                <span className="from-marino/85 via-marino/30 absolute inset-0 bg-gradient-to-t to-transparent" />
+                <span className="text-crema absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 p-3 sm:p-4">
+                  <span className="font-display text-lg leading-tight font-semibold sm:text-xl">
+                    {menu.name}
+                  </span>
+                  <ArrowRight
+                    aria-hidden="true"
+                    className="size-5 shrink-0 transition-transform group-hover:translate-x-1"
+                  />
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+/** Fila de platos con enlace a la carta (recomendados, dúos y tríos). */
+export function ProductShelf({
+  id,
+  title,
+  intro,
+  products,
+  menuSlug,
+}: {
+  id: string;
+  title: string;
+  intro: string;
+  products: Product[];
+  menuSlug: string;
+}) {
+  if (products.length === 0) {
+    return null;
+  }
+  return (
+    <section aria-labelledby={id} className="mx-auto max-w-6xl px-4 py-12">
+      <SectionHeading
+        id={id}
+        title={title}
+        intro={intro}
+        link={
+          <Link
+            href={`/carta/${menuSlug}`}
+            className="text-marino-600 min-h-tactil inline-flex items-center gap-1 font-semibold hover:underline"
+          >
+            Ver la carta <ArrowRight aria-hidden="true" className="size-4" />
+          </Link>
+        }
+      />
+      <ul className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        {products.map((product) => (
+          <li key={product.id}>
+            <ProductCard
+              product={product}
+              sizes={GRID_SIZES}
+              action={
+                <Link
+                  href={`/carta/${product.menus[0] ?? menuSlug}#${product.slug}`}
+                  className="text-marino-600 min-h-tactil inline-flex items-center text-sm font-semibold hover:underline"
+                  aria-label={`Ver ${product.name} en la carta`}
+                >
+                  Ver
+                </Link>
+              }
+            />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/** Historia en tres líneas (propuesta §8). */
+export function Story() {
+  return (
+    <section aria-labelledby="historia" className="bg-crema-200">
+      <div className="mx-auto grid max-w-6xl gap-6 px-4 py-14 md:grid-cols-[auto_1fr] md:items-center md:gap-12">
+        <p
+          className="font-display text-marino text-7xl leading-none font-semibold md:text-8xl"
+          aria-hidden="true"
+        >
+          14
+        </p>
+        <div>
+          <h2 id="historia" className="text-3xl font-semibold">
+            Una cevichería de barrio, desde 2010
+          </h2>
+          <p className="text-tinta-suave mt-3 max-w-2xl text-lg">
+            Berla y Julio abrieron Berypez con una idea simple: pescado fresco, sazón de casa y
+            trato de familia. Catorce años después seguimos igual, ahora en Lince y en Jesús María.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Sedes con acciones. Dirección, horario y mapa aparecen cuando la dueña los confirme. */
+export function Branches() {
+  return (
+    <section aria-labelledby="sedes" className="mx-auto max-w-6xl px-4 py-12">
+      <SectionHeading id="sedes" title="Nuestras sedes" />
+      <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+        {BRANCHES.map((branch) => (
+          <li
+            key={branch.slug}
+            className="border-borde bg-superficie rounded-md border p-5 shadow-sm"
+          >
+            <h3 className="flex items-center gap-2 text-2xl font-semibold">
+              <MapPin aria-hidden="true" className="text-rocoto-texto size-6" />
+              {branch.name}
+            </h3>
+            {branch.address ? <p className="text-tinta-suave mt-2">{branch.address}</p> : null}
+            {branch.hours ? <p className="text-tinta-suave">{branch.hours}</p> : null}
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Button href="/carta/marina">Pedir aquí</Button>
+              <Button href={`/reservas?sede=${branch.slug}`} variant="secundario">
+                <CalendarDays aria-hidden="true" className="size-5" />
+                Reservar aquí
+              </Button>
+              {branch.mapsUrl ? (
+                <Button href={branch.mapsUrl} variant="fantasma">
+                  Cómo llegar
+                </Button>
+              ) : null}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}

@@ -1,51 +1,51 @@
-﻿import Link from "next/link";
+﻿import { Hero } from "@/components/home/Hero";
+import { Branches, MenuAccess, ProductShelf, Story } from "@/components/home/HomeSections";
+import { COMBO_SLUGS, FEATURED_PRODUCT_SLUG, HOUSE_PICKS, MENU_COVERS } from "@/config/home";
+import { getMenusCached, getProductsBySlugsCached } from "@/features/catalog/data/cached";
 
-import { MENU_LINKS } from "@/config/site";
+// Portada estática que se regenera cada 10 min o al editar la carta (revalidateTag "catalog").
+export const revalidate = 600;
 
-/** Portada provisional: la versión completa (HERO, plato estrella, sedes) llega en F1-06/F1-07. */
-export default function HomePage() {
+export default async function HomePage() {
+  const [menus, products] = await Promise.all([
+    getMenusCached(),
+    getProductsBySlugsCached([
+      FEATURED_PRODUCT_SLUG,
+      ...Object.values(MENU_COVERS),
+      ...HOUSE_PICKS,
+      ...COMBO_SLUGS,
+    ]),
+  ]);
+
+  const bySlug = new Map(products.map((p) => [p.slug, p]));
+  const pick = (slugs: readonly string[]) => slugs.flatMap((slug) => bySlug.get(slug) ?? []);
+  const covers = new Map(
+    Object.entries(MENU_COVERS).flatMap(([menu, slug]) => {
+      const product = bySlug.get(slug);
+      return product ? [[menu, product] as const] : [];
+    }),
+  );
+
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:py-20">
-      <p className="text-rocoto-texto text-sm font-semibold tracking-wide uppercase">
-        Lince · Jesús María · desde 2010
-      </p>
-      <h1 className="mt-3 max-w-3xl text-4xl font-semibold">Sabor marino con 14 años de cariño</h1>
-      <p className="text-tinta-suave mt-4 max-w-xl text-lg">
-        ¿Qué se te antoja hoy? Pide delivery, recoge en tu sede o reserva tu mesa.
-      </p>
-
-      <div className="mt-8 flex flex-wrap gap-3">
-        <Link
-          href="/carta/marina"
-          className="bg-aji text-marino hover:bg-aji-600 min-h-tactil rounded-pill inline-flex items-center px-6 font-semibold shadow-md transition-colors"
-        >
-          Pedir ahora
-        </Link>
-        <Link
-          href="/reservas"
-          className="border-marino text-marino hover:bg-marino hover:text-crema min-h-tactil rounded-pill inline-flex items-center border-2 px-6 font-semibold transition-colors"
-        >
-          Reservar mesa
-        </Link>
-      </div>
-
-      <section aria-labelledby="cartas" className="mt-16">
-        <h2 id="cartas" className="text-2xl font-semibold">
-          Nuestras cartas
-        </h2>
-        <ul className="mt-5 flex flex-wrap gap-2">
-          {MENU_LINKS.map((menu) => (
-            <li key={menu.slug}>
-              <Link
-                href={`/carta/${menu.slug}`}
-                className="border-borde bg-superficie hover:border-marino-600 min-h-tactil rounded-pill inline-flex items-center border px-5 font-medium transition-colors"
-              >
-                {menu.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </div>
+    <>
+      <Hero featured={bySlug.get(FEATURED_PRODUCT_SLUG) ?? null} />
+      <MenuAccess menus={menus} covers={covers} />
+      <ProductShelf
+        id="recomendados"
+        title="Recomendados de la casa"
+        intro="Los platos que la cocina prepara con más orgullo."
+        products={pick(HOUSE_PICKS)}
+        menuSlug="marina"
+      />
+      <ProductShelf
+        id="para-compartir"
+        title="Dúos y tríos para compartir"
+        intro="¿No te decides? Pide dos o tres sabores en un solo plato."
+        products={pick(COMBO_SLUGS)}
+        menuSlug="marina"
+      />
+      <Story />
+      <Branches />
+    </>
   );
 }

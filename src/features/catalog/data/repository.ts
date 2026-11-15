@@ -86,7 +86,22 @@ export function createCatalogRepository(client: CatalogClient, supabaseUrl: stri
     return row ? toProduct(row, supabaseUrl) : null;
   }
 
-  return { getMenus, getMenu, getProduct };
+  /** Varios platos en una consulta, en el orden pedido (portada: recomendados, combos…). */
+  async function getProductsBySlugs(slugs: readonly string[]): Promise<Product[]> {
+    if (slugs.length === 0) {
+      return [];
+    }
+    const result = await client
+      .from("products")
+      .select(PRODUCT_COLUMNS)
+      .in("slug", [...slugs])
+      .eq("is_published", true);
+    const rows = unwrap(result as QueryResult<ProductRowWithRelations[]>, "leer los platos");
+    const bySlug = new Map(rows.map((row) => [row.slug, toProduct(row, supabaseUrl)]));
+    return slugs.flatMap((slug) => bySlug.get(slug) ?? []);
+  }
+
+  return { getMenus, getMenu, getProduct, getProductsBySlugs };
 }
 
 export type CatalogRepository = ReturnType<typeof createCatalogRepository>;

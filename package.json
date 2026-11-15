@@ -20,7 +20,8 @@
     "catalog:images": "tsx scripts/catalog/fetch-images.ts",
     "db:push": "tsx --env-file=.env.local scripts/db/push.ts",
     "catalog:load": "tsx --env-file=.env.local scripts/catalog/load.ts",
-    "db:types": "tsx --env-file=.env.local scripts/db/types.ts"
+    "db:types": "tsx --env-file=.env.local scripts/db/types.ts",
+    "brand:icons": "tsx scripts/brand/build-icons.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

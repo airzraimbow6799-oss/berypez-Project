@@ -2,11 +2,9 @@ import "server-only";
 
 import { unstable_cache } from "next/cache";
 
-import { readPublicEnv } from "@/lib/env";
-import { createPublicClient } from "@/lib/supabase/public";
 import type { MenuSlug } from "@/types/catalog";
 
-import { createCatalogRepository } from "./repository";
+import { createCatalogSource } from "./source";
 
 /** Etiqueta de caché del catálogo: /api/revalidate la invalida al editar en Supabase. */
 export const CATALOG_TAG = "catalog";
@@ -14,7 +12,7 @@ export const CATALOG_TAG = "catalog";
 export const CATALOG_REVALIDATE_SECONDS = 600;
 
 function repository() {
-  return createCatalogRepository(createPublicClient(), readPublicEnv().NEXT_PUBLIC_SUPABASE_URL);
+  return createCatalogSource();
 }
 
 const options = { tags: [CATALOG_TAG], revalidate: CATALOG_REVALIDATE_SECONDS };
@@ -24,6 +22,12 @@ export const getMenusCached = unstable_cache(() => repository().getMenus(), ["me
 export const getMenuCached = unstable_cache(
   (slug: MenuSlug) => repository().getMenu(slug),
   ["menu"],
+  options,
+);
+
+export const getProductsBySlugsCached = unstable_cache(
+  (slugs: readonly string[]) => repository().getProductsBySlugs(slugs),
+  ["products-by-slug"],
   options,
 );
 
