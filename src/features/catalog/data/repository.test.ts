@@ -34,6 +34,10 @@ function fakeClient(responses: Record<string, Result>) {
           call.filters.push([column, value]);
           return builder;
         },
+        in(column: string, value: unknown) {
+          call.filters.push([`${column}:in`, value]);
+          return builder;
+        },
         order() {
           return builder;
         },
@@ -121,6 +125,30 @@ describe("getMenu", () => {
     });
     const page = await createCatalogRepository(client, STORAGE).getMenu("vegetariana");
     expect(page?.sections.map((s) => s.category.slug)).toEqual(["entradas"]);
+  });
+});
+
+describe("getProductsBySlugs", () => {
+  it("devuelve los platos en el orden pedido e ignora los que no existen", async () => {
+    const { client, calls } = fakeClient({
+      products: { data: [MILANESA_ROW, PARIHUELA_ROW], error: null },
+    });
+    const products = await createCatalogRepository(client, STORAGE).getProductsBySlugs([
+      "parihuelas",
+      "no-existe",
+      "milanesa-de-pollo",
+    ]);
+    expect(products.map((p) => p.slug)).toEqual(["parihuelas", "milanesa-de-pollo"]);
+    expect(calls[0]?.filters).toContainEqual([
+      "slug:in",
+      ["parihuelas", "no-existe", "milanesa-de-pollo"],
+    ]);
+  });
+
+  it("no consulta la base con una lista vacía", async () => {
+    const { client, calls } = fakeClient({});
+    expect(await createCatalogRepository(client, STORAGE).getProductsBySlugs([])).toEqual([]);
+    expect(calls).toHaveLength(0);
   });
 });
 

@@ -27,6 +27,12 @@ export const getMenuCached = unstable_cache(
   options,
 );
 
+export const getProductsBySlugsCached = unstable_cache(
+  (slugs: readonly string[]) => repository().getProductsBySlugs(slugs),
+  ["products-by-slug"],
+  options,
+);
+
 export const getProductCached = unstable_cache(
   (slug: string) => repository().getProduct(slug),
   ["product"],

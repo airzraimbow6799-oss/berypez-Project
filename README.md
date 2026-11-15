@@ -594,12 +594,15 @@ npx vercel env pull .env.local
 
 ### Estado de la Fase 1
 
-| ID                          | Tarea                                                                                                                                              | Estado                           |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
-| F1-01                       | Capa de datos del catálogo: `getMenus`, `getMenu(slug)` y `getProduct(slug)` con joins (sin N+1), validación de JSON y errores `CatalogError`      | ✅ Hecho                         |
-| F1-02                       | `GET /api/menus`, `/api/menus/:slug` y `/api/products/:slug` con caché de 10 min y revalidación inmediata por webhook de Postgres (pg_net + Vault) | ✅ Hecho                         |
-| F1-05                       | `next/image` sobre Supabase Storage (AVIF/WebP, tamaños para la cuadrícula)                                                                        | ✅ Configurado (se usa en F1-09) |
-| F1-03, F1-04, F1-06 a F1-15 | Resto de la fase                                                                                                                                   | ⏳ Pendiente                     |
+| ID                          | Tarea                                                                                                                                                                            | Estado                           |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| F1-01                       | Capa de datos del catálogo: `getMenus`, `getMenu(slug)` y `getProduct(slug)` con joins (sin N+1), validación de JSON y errores `CatalogError`                                    | ✅ Hecho                         |
+| F1-02                       | `GET /api/menus`, `/api/menus/:slug` y `/api/products/:slug` con caché de 10 min y revalidación inmediata por webhook de Postgres (pg_net + Vault)                               | ✅ Hecho                         |
+| F1-05                       | `next/image` sobre Supabase Storage (AVIF/WebP, tamaños para la cuadrícula)                                                                                                      | ✅ Configurado (se usa en F1-09) |
+| F1-06                       | Portada: titular, acciones, chips, plato estrella y video de presentación (MP4 de 1.5–1.7 MB, póster LCP, no se carga con movimiento reducido o ahorro de datos, botón de pausa) | ✅ Hecho                         |
+| F1-07                       | Secciones: 6 cartas con foto, recomendados de la casa, dúos y tríos, historia y sedes. Sin reseñas hasta tener reseñas reales                                                    | ✅ Hecho                         |
+| Marca                       | Logo vectorial (`currentColor`) e ícono rehecho en vectorial: favicon.ico, icon.svg, apple-icon y manifest (`npm run brand:icons`)                                               | ✅ Hecho                         |
+| F1-03, F1-04, F1-08 a F1-15 | Resto de la fase                                                                                                                                                                 | ⏳ Pendiente                     |
 
 ### Estado de la Fase 0
 

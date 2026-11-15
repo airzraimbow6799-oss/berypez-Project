@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Originales pesados (el sitio usa las versiones optimizadas de public/media)
+assets-src/*.mp4
