@@ -51,7 +51,7 @@ describe("createSnapshotCatalogRepository", () => {
 describe("isSnapshotSource", () => {
   it("solo se activa con CATALOG_SOURCE=snapshot", () => {
     expect(isSnapshotSource("snapshot")).toBe(true);
-    expect(isSnapshotSource(undefined)).toBe(false);
+    expect(isSnapshotSource("")).toBe(false);
     expect(isSnapshotSource("supabase")).toBe(false);
   });
 });
