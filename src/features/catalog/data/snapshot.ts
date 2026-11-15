@@ -42,7 +42,12 @@ export function createSnapshotCatalogRepository(catalog: Catalog): CatalogReposi
     return slugs.flatMap((slug) => bySlug.get(slug) ?? []);
   }
 
-  return { getMenus, getMenu, getProduct, getProductsBySlugs };
+  async function getProductsByIds(ids: readonly number[]): Promise<Map<number, Product>> {
+    const wanted = new Set(ids);
+    return new Map(products.filter((p) => wanted.has(p.id)).map((p) => [p.id, p]));
+  }
+
+  return { getMenus, getMenu, getProduct, getProductsBySlugs, getProductsByIds };
 }
 
 /** `CATALOG_SOURCE=snapshot` activa el snapshot; cualquier otro valor usa Supabase. */
