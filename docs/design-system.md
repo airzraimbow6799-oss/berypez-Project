@@ -1,4 +1,4 @@
-# Sistema de diseño · Berypez
+﻿# Sistema de diseño · Berypez
 
 Concepto: **cevichería de barrio con 14 años de cariño**. La foto del plato es la protagonista. La interfaz es sobria y cálida, y el mar aparece en un solo gesto: el borde en ola del pie de página.
 
@@ -45,8 +45,24 @@ Contraste medido sobre crema: marino 13.0:1, tinta suave 7.3:1, rocoto-texto 5.2
 
 Los datos de las sedes viven en `src/config/site.ts`. Los que aún no confirma la dueña valen `null` y la interfaz no los muestra.
 
+## Componentes base (F0-09)
+
+En `src/components/ui/`. Vitrina para QA en `/componentes` (local y previews; 404 en producción).
+
+| Componente          | Uso y reglas                                                                                                                          |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `Button`            | `primario` (ají), `secundario`, `fantasma`, `peligro`. Con `href` se vuelve enlace. `isLoading` lo deshabilita y marca `aria-busy`.   |
+| `IconButton`        | Solo ícono: `label` obligatorio (nombre accesible).                                                                                   |
+| `Chip`              | Filtro activable con `aria-pressed` y check visible.                                                                                  |
+| `Badge`             | Etiquetas (picante, vegetariano, favorito, promo, agotado): siempre con texto.                                                        |
+| `Card`              | Superficie; `article` por defecto.                                                                                                    |
+| `Input` / `Select`  | Etiqueta, ayuda y error enlazados con `aria-describedby`; error con `role=alert`. Select nativo.                                      |
+| `Stepper`           | Cantidad con botones de 48 px y número en `aria-live`.                                                                                |
+| `Dialog`            | `<dialog>` nativo: `sheet` (vista rápida), `modal`, `drawer` (carrito). Foco atrapado, Escape y retorno del foco los da el navegador. |
+| `Skeleton`          | Decorativo (`aria-hidden`); el contenedor lleva `aria-busy`.                                                                          |
+| `Toaster` / `toast` | Sonner con estilo de marca, anunciado a lectores de pantalla.                                                                         |
+
 ## Pendiente
 
-- F0-09: componentes base (`Button`, `Chip`, `Badge`, `Card`, `Sheet`/`Modal`, `Drawer`, `Input`, `Select`, `Stepper`, `Skeleton`, `Toast`).
 - Control A+ / A− de tamaño de letra (propuesta §14).
 - Logotipo vectorial de la marca (hoy es un logotipo en texto).

@@ -2,6 +2,7 @@ import { MobileNav } from "@/components/layout/MobileNav";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SkipLink } from "@/components/layout/SkipLink";
+import { Toaster } from "@/components/ui/Toaster";
 
 /** Layout del sitio público. El panel (/panel) tiene su propio layout, sin esto. */
 export default function SiteLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -14,6 +15,7 @@ export default function SiteLayout({ children }: Readonly<{ children: React.Reac
       </main>
       <SiteFooter />
       <MobileNav />
+      <Toaster />
     </>
   );
 }
