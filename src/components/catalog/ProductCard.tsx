@@ -1,4 +1,4 @@
-import { Flame, Leaf, Star, Users } from "lucide-react";
+﻿import { Flame, Leaf, Star, Users } from "lucide-react";
 import Image from "next/image";
 import type { ReactNode } from "react";
 
@@ -43,6 +43,8 @@ type ProductCardProps = {
   /** Acción principal (botón “+”, enlace…). La tarjeta no decide qué hace. */
   action?: ReactNode;
   priority?: boolean;
+  /** Si se pasa, toda la tarjeta abre la vista rápida (el nombre es el botón). */
+  onOpen?: () => void;
   className?: string;
 };
 
@@ -52,6 +54,7 @@ export function ProductCard({
   sizes,
   action,
   priority = false,
+  onOpen,
   className,
 }: ProductCardProps) {
   const price = formatPriceFrom(
@@ -92,7 +95,17 @@ export function ProductCard({
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-3 sm:p-4">
         <h3 className="font-sans text-base leading-snug font-semibold sm:text-lg">
-          {product.name}
+          {onOpen ? (
+            <button
+              type="button"
+              onClick={onOpen}
+              className="text-left after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:rounded-md focus-visible:after:outline-3 focus-visible:after:outline-[var(--color-foco)]"
+            >
+              {product.name}
+            </button>
+          ) : (
+            product.name
+          )}
         </h3>
         {product.description ? (
           <p className="text-tinta-suave line-clamp-2 text-sm">{product.description}</p>
@@ -108,7 +121,7 @@ export function ProductCard({
             ))}
           </ul>
         ) : null}
-        <div className="mt-auto flex items-end justify-between gap-2 pt-2">
+        <div className="mt-auto flex items-end justify-between gap-2 pt-2 [&>*:last-child]:relative [&>*:last-child]:z-10">
           <p className="font-semibold tabular-nums">{price}</p>
           {action}
         </div>

@@ -22,7 +22,7 @@ function TopBar() {
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-30">
+    <header className="z-30 md:sticky md:top-0">
       <TopBar />
       <div className="bg-fondo/95 border-borde border-b backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">

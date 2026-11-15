@@ -1,11 +1,22 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 @import "../styles/tokens.css";
 
 @layer base {
+  :root {
+    /* Alto del header fijo (solo en escritorio): la barra de secciones se pega debajo. */
+    --altura-header: 0px;
+  }
+
+  @media (min-width: 48rem) {
+    :root {
+      --altura-header: 6.85rem;
+    }
+  }
+
   html {
     font-size: 100%;
     -webkit-text-size-adjust: 100%;
-    scroll-padding-top: 6rem;
+    scroll-padding-top: calc(var(--altura-header) + 4.5rem);
   }
 
   body {
@@ -36,6 +47,23 @@
   /* Superficies marino (header superior, footer): el foco cambia a ají. */
   .sobre-marino :focus-visible {
     outline-color: var(--color-foco-oscuro);
+  }
+
+  /* F2-09 · El contador del carrito rebota al cambiar (la clave del span fuerza la animación). */
+  .contador-rebote {
+    animation: rebote 400ms var(--ease-out-suave);
+  }
+
+  @keyframes rebote {
+    0% {
+      transform: scale(0.6);
+    }
+    60% {
+      transform: scale(1.25);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
 
   /* Loader de los peces del logo: entran nadando en secuencia y luego se mecen. */
