@@ -117,14 +117,14 @@ Una fase se cierra cuando se cumple todo lo siguiente:
 
 Estado al **2026-11-15**, sobre la rama `demo` (Axel). "E2E" son los de Playwright en `tests/e2e/`.
 
-| Fase                  | Casos manuales      | E2E                                                      | Estado QA                                      |
-| --------------------- | ------------------- | -------------------------------------------------------- | ---------------------------------------------- |
-| 0 Preparación         | F0-Q3, F0-Q4, F0-Q5 | Humo: portada y rutas públicas (hecho, F0-Q2)            | Plan y Playwright listos; catálogo por revisar |
-| 1 Carta + portada     | `docs/qa/fase-1.md` | F1-14: carta → filtrar → buscar «seviche» → vista rápida | Pendiente                                      |
-| 2 Carrito + checkout  | `docs/qa/fase-2.md` | F2-13: compra en efectivo con recojo                     | Pendiente (la app ya existe en `demo`)         |
-| 3 Pagos + seguimiento | `docs/qa/fase-3.md` | F3-13: pago aprobado, rechazado y webhook                | Bloqueada: pagos y correos aún no construidos  |
-| 4 Reservas + legal    | `docs/qa/fase-4.md` | F4-09: reservar → cancelar; reclamo → constancia         | Pendiente (la app ya existe en `demo`)         |
-| 5 Calidad + demo      | Regresión y OWASP   | Suite completa en Chrome, Safari y Firefox               | Pendiente                                      |
+| Fase                  | Casos manuales      | E2E                                                          | Estado QA                                                                                                 |
+| --------------------- | ------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| 0 Preparación         | F0-Q3, F0-Q4, F0-Q5 | Humo: portada y rutas públicas (hecho, F0-Q2)                | Plan y Playwright listos; catálogo revisado ([informe](f0-q4-catalogo.md)), falta contrastar con Supabase |
+| 1 Carta + portada     | `docs/qa/fase-1.md` | F1-14 hecho (`carta.spec.ts`, 9 pruebas); bug QA-001 abierto | E2E listo; falta QA manual y accesibilidad                                                                |
+| 2 Carrito + checkout  | `docs/qa/fase-2.md` | F2-13: compra en efectivo con recojo                         | Pendiente (la app ya existe en `demo`)                                                                    |
+| 3 Pagos + seguimiento | `docs/qa/fase-3.md` | F3-13: pago aprobado, rechazado y webhook                    | Bloqueada: pagos y correos aún no construidos                                                             |
+| 4 Reservas + legal    | `docs/qa/fase-4.md` | F4-09: reservar → cancelar; reclamo → constancia             | Pendiente (la app ya existe en `demo`)                                                                    |
+| 5 Calidad + demo      | Regresión y OWASP   | Suite completa en Chrome, Safari y Firefox                   | Pendiente                                                                                                 |
 
 ### Orden de trabajo acordado
 
