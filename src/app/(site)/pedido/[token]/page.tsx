@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 
+import { TrackingRefresher } from "@/components/orders/TrackingRefresher";
 import { Button } from "@/components/ui/Button";
 import { getOrderByToken } from "@/features/checkout/server";
 import { formatPrice } from "@/lib/format";
@@ -48,6 +49,7 @@ export default async function OrderPage({ params }: { params: Promise<{ token: s
 
   return (
     <div className="mx-auto max-w-2xl px-4 pt-10 pb-16">
+      <TrackingRefresher isFinal={order.status === "delivered" || order.status === "cancelled"} />
       <div className="flex flex-col items-center text-center">
         <CheckCircle2 aria-hidden="true" className="text-limon-texto size-16" />
         <h1 className="mt-3 text-4xl font-semibold">¡Pedido recibido!</h1>
