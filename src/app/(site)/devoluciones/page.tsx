@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { LegalPage } from "@/components/legal/LegalPage";
 
-export const metadata = { title: "Cambios y devoluciones" };
+export const metadata = { title: "Devoluciones" };
 
 /** Política adaptada a alimentos (la anterior era de una tienda de productos). */
 export default function ReturnsPage() {

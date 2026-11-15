@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { getReservationByToken } from "@/features/reservations/server";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Tu reserva", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Mi reserva", robots: { index: false, follow: false } };
 
 const AREA = { interior: "Interior", terraza: "Terraza" } as const;
 

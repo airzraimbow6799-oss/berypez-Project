@@ -5,7 +5,7 @@ import { getMenuCached } from "@/features/catalog/data/cached";
 import { MENU_SLUGS, type Product } from "@/types/catalog";
 
 export const revalidate = 600;
-export const metadata: Metadata = { title: "Buscar en la carta" };
+export const metadata: Metadata = { title: "Buscar" };
 
 /** F1-03 · Búsqueda en las 6 cartas (tolerante a errores y tildes). */
 export default async function SearchPage() {

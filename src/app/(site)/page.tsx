@@ -1,10 +1,13 @@
-﻿import { Hero } from "@/components/home/Hero";
+﻿import type { Metadata } from "next";
+
+import { Hero } from "@/components/home/Hero";
 import { Branches, MenuAccess, ProductShelf, Story } from "@/components/home/HomeSections";
 import { COMBO_SLUGS, FEATURED_PRODUCT_SLUG, HOUSE_PICKS, MENU_COVERS } from "@/config/home";
 import { getMenusCached, getProductsBySlugsCached } from "@/features/catalog/data/cached";
 
 // Portada estática que se regenera cada 10 min o al editar la carta (revalidateTag "catalog").
 export const revalidate = 600;
+export const metadata: Metadata = { title: "Inicio" };
 
 export default async function HomePage() {
   const [menus, products] = await Promise.all([

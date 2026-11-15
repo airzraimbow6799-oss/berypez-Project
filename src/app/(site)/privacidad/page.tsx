@@ -1,7 +1,7 @@
 import { LegalPage } from "@/components/legal/LegalPage";
 import { COMPANY } from "@/config/legal";
 
-export const metadata = { title: "Política de privacidad" };
+export const metadata = { title: "Privacidad" };
 
 export default function PrivacyPage() {
   return (

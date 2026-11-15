@@ -64,6 +64,12 @@ export function ReservationWizard() {
   const shouldFocusRef = useRef(false);
   const onToken = useCallback((value: string) => setToken(value), []);
 
+  // La pestaña del navegador dice en qué paso está la persona.
+  useEffect(() => {
+    const label = WIZARD_STEPS[step]?.label;
+    if (label) document.title = `Reservar · ${label} | Berypez`;
+  }, [step]);
+
   useEffect(() => {
     if (!shouldFocusRef.current) return;
     shouldFocusRef.current = false;

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LegalPage } from "@/components/legal/LegalPage";
 import { COMPANY } from "@/config/legal";
 
-export const metadata = { title: "Términos y condiciones" };
+export const metadata = { title: "Términos" };
 
 export default function TermsPage() {
   return (
