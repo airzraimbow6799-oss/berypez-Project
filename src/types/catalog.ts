@@ -106,6 +106,19 @@ export interface Product {
   choiceGroups: ChoiceGroup[];
 }
 
+/** Sección de una carta con sus productos, en orden. */
+export interface MenuSection {
+  category: Category;
+  products: Product[];
+}
+
+/** Lo que necesita la página de una carta: la carta, las 6 pestañas y las secciones. */
+export interface MenuPage {
+  menu: Menu;
+  menus: Menu[];
+  sections: MenuSection[];
+}
+
 export interface Catalog {
   menus: Menu[];
   categories: Category[];

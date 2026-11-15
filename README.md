@@ -592,6 +592,15 @@ npx vercel link
 npx vercel env pull .env.local
 ```
 
+### Estado de la Fase 1
+
+| ID                          | Tarea                                                                                                                                              | Estado                           |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| F1-01                       | Capa de datos del catálogo: `getMenus`, `getMenu(slug)` y `getProduct(slug)` con joins (sin N+1), validación de JSON y errores `CatalogError`      | ✅ Hecho                         |
+| F1-02                       | `GET /api/menus`, `/api/menus/:slug` y `/api/products/:slug` con caché de 10 min y revalidación inmediata por webhook de Postgres (pg_net + Vault) | ✅ Hecho                         |
+| F1-05                       | `next/image` sobre Supabase Storage (AVIF/WebP, tamaños para la cuadrícula)                                                                        | ✅ Configurado (se usa en F1-09) |
+| F1-03, F1-04, F1-06 a F1-15 | Resto de la fase                                                                                                                                   | ⏳ Pendiente                     |
+
 ### Estado de la Fase 0
 
 | ID                         | Tarea                                                                                                                                                                                                                         | Estado                                           |
