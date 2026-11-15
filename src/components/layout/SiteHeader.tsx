@@ -9,7 +9,7 @@ import { ModeSelector } from "./ModeSelector";
 /** Barra superior marino: sedes y medios de pago. El estado “abierto / cierra” llega en F2-03. */
 function TopBar() {
   return (
-    <div className="sobre-marino bg-marino text-crema">
+    <div className="sobre-marino bg-marino text-crema hidden sm:block">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-2 text-sm">
         <p>
           Cevichería en <strong>{BRANCHES.map((b) => b.name).join(" y ")}</strong>
@@ -27,7 +27,7 @@ export function SiteHeader() {
       <div className="bg-fondo/95 border-borde border-b backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
           <Logo />
-          <nav aria-label="Principal" className="hidden md:block">
+          <nav aria-label="Principal" className="hidden lg:block">
             <ul className="flex items-center gap-1">
               {MAIN_NAV.map((item) => (
                 <li key={item.href}>

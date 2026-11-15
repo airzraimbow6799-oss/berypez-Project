@@ -65,7 +65,7 @@ export function Hero({ featured }: { featured: Product | null }) {
         <div className="relative">
           <HeroVideo />
           {featured ? (
-            <div className="-mt-8 flex justify-center sm:absolute sm:-bottom-8 sm:-left-6 sm:mt-0 sm:justify-start">
+            <div className="-mt-8 flex justify-center lg:absolute lg:-bottom-8 lg:-left-6 lg:mt-0 lg:justify-start">
               <FeaturedDish product={featured} />
             </div>
           ) : null}

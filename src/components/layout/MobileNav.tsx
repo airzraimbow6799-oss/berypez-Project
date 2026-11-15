@@ -40,7 +40,7 @@ export function MobileNav({ whatsapp = primaryWhatsapp() }: { whatsapp?: string 
   return (
     <nav
       aria-label="Accesos rápidos"
-      className="border-borde bg-superficie/95 fixed inset-x-0 bottom-0 z-30 border-t pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      className="border-borde bg-superficie/95 fixed inset-x-0 bottom-0 z-30 border-t pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
     >
       <ul className="mx-auto flex max-w-md">
         {items.map(({ href, label, Icon, external }) => {

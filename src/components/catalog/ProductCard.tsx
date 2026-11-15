@@ -1,5 +1,6 @@
 ﻿import { Flame, Leaf, Star, Users } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { Badge } from "@/components/ui/Badge";
@@ -36,6 +37,10 @@ const TAG_BADGES: Partial<
   ninos: { label: "Para niños", icon: null, tone: "neutro" },
 };
 
+/** El nombre se "estira" sobre toda la tarjeta: se toca en cualquier parte. */
+const STRETCHED =
+  "text-left after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:rounded-md focus-visible:after:outline-3 focus-visible:after:outline-[var(--color-foco)]";
+
 type ProductCardProps = {
   product: Product;
   /** Tamaños de la foto según la cuadrícula donde se usa (next/image `sizes`). */
@@ -45,6 +50,8 @@ type ProductCardProps = {
   priority?: boolean;
   /** Si se pasa, toda la tarjeta abre la vista rápida (el nombre es el botón). */
   onOpen?: () => void;
+  /** Si se pasa, toda la tarjeta es un enlace (el nombre es el enlace). */
+  href?: string;
   className?: string;
 };
 
@@ -55,6 +62,7 @@ export function ProductCard({
   action,
   priority = false,
   onOpen,
+  href,
   className,
 }: ProductCardProps) {
   const price = formatPriceFrom(
@@ -96,13 +104,13 @@ export function ProductCard({
       <div className="flex flex-1 flex-col gap-1.5 p-3 sm:p-4">
         <h3 className="font-sans text-base leading-snug font-semibold sm:text-lg">
           {onOpen ? (
-            <button
-              type="button"
-              onClick={onOpen}
-              className="text-left after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:after:rounded-md focus-visible:after:outline-3 focus-visible:after:outline-[var(--color-foco)]"
-            >
+            <button type="button" onClick={onOpen} className={STRETCHED}>
               {product.name}
             </button>
+          ) : href ? (
+            <Link href={href} className={STRETCHED}>
+              {product.name}
+            </Link>
           ) : (
             product.name
           )}
@@ -122,7 +130,16 @@ export function ProductCard({
           </ul>
         ) : null}
         <div className="mt-auto flex items-end justify-between gap-2 pt-2 [&>*:last-child]:relative [&>*:last-child]:z-10">
-          <p className="font-semibold tabular-nums">{price}</p>
+          <p className="font-semibold tabular-nums">
+            {price.startsWith("Desde ") ? (
+              <>
+                <span className="text-tinta-suave block text-xs font-medium">Desde</span>
+                <span className="whitespace-nowrap">{price.slice("Desde ".length)}</span>
+              </>
+            ) : (
+              <span className="whitespace-nowrap">{price}</span>
+            )}
+          </p>
           {action}
         </div>
       </div>

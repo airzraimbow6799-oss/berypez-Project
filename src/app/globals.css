@@ -107,3 +107,11 @@
     }
   }
 }
+
+@layer components {
+  /* Borde inferior troquelado del ticket de reserva (como una comanda). */
+  .ticket {
+    -webkit-mask: radial-gradient(circle 6px at 8px 100%, #0000 98%, #000) 0 0 / 16px 100% repeat-x;
+    mask: radial-gradient(circle 6px at 8px 100%, #0000 98%, #000) 0 0 / 16px 100% repeat-x;
+  }
+}
