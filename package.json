@@ -14,7 +14,10 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "check": "npm run lint && npm run typecheck && npm run format:check && npm run test:coverage",
-    "prepare": "husky"
+    "prepare": "husky",
+    "catalog:fetch": "tsx scripts/catalog/fetch.ts",
+    "catalog:build": "tsx scripts/catalog/build.ts",
+    "catalog:images": "tsx scripts/catalog/fetch-images.ts"
   },
   "dependencies": {
     "next": "15.5.29",
@@ -40,7 +43,9 @@
     "lint-staged": "16.4.0",
     "prettier": "3.10.1",
     "prettier-plugin-tailwindcss": "0.8.1",
+    "sharp": "^0.34.4",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5",
     "vitest": "5.1.0"
   },
