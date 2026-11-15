@@ -9,6 +9,7 @@ export interface BranchInfo {
   slug: "lince" | "jesus-maria";
   name: string;
   address: string | null;
+  /** Celular de 9 dígitos sin espacios (se muestra como 999 334 505). */
   phone: string | null;
   /** Solo dígitos con código de país: 51987654321. */
   whatsapp: string | null;
@@ -23,8 +24,8 @@ export const BRANCHES: readonly BranchInfo[] = [
   {
     slug: "lince",
     name: "Lince",
-    address: null,
-    phone: null,
+    address: "Calle Los Mirtos 315",
+    phone: "999334505",
     whatsapp: null,
     mapsUrl: "https://maps.google.com/?cid=6654021222927840273",
     mapsEmbedUrl:
@@ -34,8 +35,8 @@ export const BRANCHES: readonly BranchInfo[] = [
   {
     slug: "jesus-maria",
     name: "Jesús María",
-    address: null,
-    phone: null,
+    address: "Av. Máximo Abril 592",
+    phone: "964155698",
     whatsapp: null,
     mapsUrl: "https://maps.google.com/?cid=8218705316940728127",
     mapsEmbedUrl:
@@ -43,6 +44,12 @@ export const BRANCHES: readonly BranchInfo[] = [
     hours: null,
   },
 ];
+
+export const SOCIAL_LINKS = [
+  { network: "instagram", label: "Instagram", href: "https://www.instagram.com/berypez/" },
+  { network: "tiktok", label: "TikTok", href: "https://www.tiktok.com/@berypez" },
+  { network: "facebook", label: "Facebook", href: "https://www.facebook.com/Berypez" },
+] as const;
 
 export interface NavLink {
   href: string;
@@ -94,4 +101,14 @@ const MAPS_EMBED_PREFIX = "https://www.google.com/maps/embed?";
 /** Solo acepta el iframe oficial de Google Maps (el CSP solo permite ese origen). */
 export function isGoogleMapsEmbed(url: string | null): url is string {
   return url !== null && url.startsWith(MAPS_EMBED_PREFIX);
+}
+
+/** 999334505 → "999 334 505" (más fácil de leer y dictar). */
+export function formatPhone(phone: string): string {
+  return phone.replace(/^(\d{3})(\d{3})(\d{3})$/, "$1 $2 $3");
+}
+
+/** Enlace para llamar desde el celular (código de Perú). */
+export function phoneHref(phone: string): string {
+  return `tel:+51${phone}`;
 }

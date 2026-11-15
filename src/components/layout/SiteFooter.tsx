@@ -1,6 +1,17 @@
+import { Phone } from "lucide-react";
 import Link from "next/link";
 
-import { BRANCHES, LEGAL_LINKS, MENU_LINKS, PAYMENT_METHODS } from "@/config/site";
+import { SocialIcon } from "@/components/brand/SocialIcon";
+
+import {
+  BRANCHES,
+  formatPhone,
+  LEGAL_LINKS,
+  MENU_LINKS,
+  PAYMENT_METHODS,
+  phoneHref,
+  SOCIAL_LINKS,
+} from "@/config/site";
 
 import { Logo } from "./Logo";
 import { Wave } from "./Wave";
@@ -18,6 +29,21 @@ export function SiteFooter() {
               Cocina marina y criolla desde 2010. Berla y Julio, y todo el equipo, en Lince y Jesús
               María.
             </p>
+            <ul aria-label="Síguenos en redes sociales" className="mt-5 flex gap-3">
+              {SOCIAL_LINKS.map((social) => (
+                <li key={social.network}>
+                  <a
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${social.label} de Berypez (abre en otra pestaña)`}
+                    className="border-crema/30 hover:bg-aji hover:text-marino hover:border-aji flex size-12 items-center justify-center rounded-full border transition-colors"
+                  >
+                    <SocialIcon network={social.network} className="size-5" />
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <section aria-labelledby="footer-sedes">
@@ -31,8 +57,13 @@ export function SiteFooter() {
                   {branch.address ? <p className="text-crema/85">{branch.address}</p> : null}
                   {branch.hours ? <p className="text-crema/85">{branch.hours}</p> : null}
                   {branch.phone ? (
-                    <a href={`tel:${branch.phone}`} className="underline underline-offset-4">
-                      {branch.phone}
+                    <a
+                      href={phoneHref(branch.phone)}
+                      className="hover:text-aji inline-flex min-h-10 items-center gap-2 font-semibold tabular-nums underline-offset-4 hover:underline"
+                    >
+                      <Phone aria-hidden="true" className="size-4" />
+                      <span className="sr-only">Llamar a {branch.name}: </span>
+                      {formatPhone(branch.phone)}
                     </a>
                   ) : null}
                 </li>
