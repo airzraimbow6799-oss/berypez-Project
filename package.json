@@ -22,7 +22,10 @@
     "catalog:load": "tsx --env-file=.env.local scripts/catalog/load.ts",
     "db:types": "tsx --env-file=.env.local scripts/db/types.ts",
     "brand:icons": "tsx scripts/brand/build-icons.ts",
-    "staff:create": "tsx --env-file=.env.local scripts/db/create-staff.ts"
+    "staff:create": "tsx --env-file=.env.local scripts/db/create-staff.ts",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:report": "playwright show-report"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -39,6 +42,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.3.11",
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.3",
