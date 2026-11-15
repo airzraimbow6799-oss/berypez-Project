@@ -1,3 +1,4 @@
+﻿/* eslint-disable @next/next/no-html-link-for-pages -- el test simula clics en enlaces <a> reales del navegador */
 import { act, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 

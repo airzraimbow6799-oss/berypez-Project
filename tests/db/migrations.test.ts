@@ -266,6 +266,48 @@ describe("flujo de estados (F3-04)", () => {
   });
 });
 
+describe("reservas (F4-01/F4-02)", () => {
+  const reserve = (party: number, startsAt = "2026-11-20T13:00:00-05:00") =>
+    db.query<{ reservation_id: number; manage_token: string }>(
+      `select * from reservations_create('${JSON.stringify({
+        branch_id: 1,
+        starts_at: startsAt,
+        party_size: party,
+        customer_name: "Rosa",
+        customer_phone: "987654321",
+      })}'::jsonb)`,
+    );
+
+  it("acepta reservas hasta llenar el aforo de la franja y rechaza la que lo supera", async () => {
+    await db.exec("update branches set seats_per_slot = 10 where id = 1");
+    await reserve(6);
+    await reserve(4);
+    await expect(reserve(1)).rejects.toThrow(/Sin cupo/);
+    const other = await reserve(2, "2026-11-20T13:30:00-05:00");
+    expect(other.rows[0]?.manage_token).toMatch(/^[0-9a-f-]{36}$/);
+  });
+
+  it("muestra el cupo usado por franja sin datos personales", async () => {
+    const { rows } = await db.query<{ seats: number }>(
+      "select seats from reservations_reserved_seats(1, '2026-11-20T00:00:00-05:00', '2026-11-21T00:00:00-05:00') order by starts_at",
+    );
+    expect(rows.map((r) => r.seats)).toEqual([10, 2]);
+  });
+
+  it("rechaza fechas bloqueadas", async () => {
+    await db.exec(
+      "insert into blocked_dates (branch_id, day, reason) values (1, '2026-11-21', 'Evento')",
+    );
+    await expect(reserve(2, "2026-11-21T13:00:00-05:00")).rejects.toThrow(/no disponible/);
+  });
+
+  it("anon no puede crear reservas ni ver el cupo directamente", async () => {
+    await expect(
+      as("anon", null, "select * from reservations_create('{}'::jsonb)"),
+    ).rejects.toThrow(/permission denied/);
+  });
+});
+
 describe("reglas de datos", () => {
   it("el recojo no admite dirección", async () => {
     await expect(

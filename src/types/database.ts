@@ -728,6 +728,20 @@ export type Database = {
         Args: { p_key: string; p_limit: number; p_window_seconds: number }
         Returns: boolean
       }
+      reservations_create: {
+        Args: { p: Json }
+        Returns: {
+          manage_token: string
+          reservation_id: number
+        }[]
+      }
+      reservations_reserved_seats: {
+        Args: { p_branch: number; p_from: string; p_to: string }
+        Returns: {
+          seats: number
+          starts_at: string
+        }[]
+      }
     }
     Enums: {
       menu_slug:

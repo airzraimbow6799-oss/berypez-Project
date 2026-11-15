@@ -592,6 +592,18 @@ npx vercel link
 npx vercel env pull .env.local
 ```
 
+### Estado de la Fase 4
+
+| ID            | Tarea                                                                                                                                                                       | Estado                                                        |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| F4-01 / F4-02 | Disponibilidad en franjas de 30 min (horario, aforo, fechas bloqueadas, 1 h de anticipación) y reserva sin sobreventa (bloqueo por franja en Postgres); cancelar con enlace | ✅ Hecho                                                      |
+| F4-03         | Confirmación en pantalla con enlace para cancelar                                                                                                                           | 🚧 Correo y recordatorio esperan Resend                       |
+| F4-04         | Libro de Reclamaciones virtual con número correlativo y constancia imprimible                                                                                               | ✅ Hecho (constancia por correo espera Resend; RUC pendiente) |
+| F4-05         | Formulario `/reservas` en una pantalla con Turnstile                                                                                                                        | ✅ Hecho                                                      |
+| F4-06         | Reservas en el panel: llegó / no vino / cancelar                                                                                                                            | ✅ Hecho                                                      |
+| F4-07         | Términos, privacidad (Ley 29733), cambios y devoluciones para alimentos                                                                                                     | ✅ Hecho (datos de la empresa pendientes)                     |
+| F4-08         | Aviso de cookies; GA4 solo con consentimiento y `NEXT_PUBLIC_GA_ID`                                                                                                         | ✅ Hecho                                                      |
+
 ### Estado de la Fase 3
 
 | ID                           | Tarea                                                                                                  | Estado                                         |
