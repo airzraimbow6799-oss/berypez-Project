@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Undo2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -83,12 +83,34 @@ export function ReservationWizard() {
     setFurthest((f) => Math.max(f, index));
   };
 
+  /**
+   * Modo edición: se entra desde el resumen («Cambiar», el progreso o un error del
+   * servidor). Al continuar se vuelve directo al resumen, sin repetir los pasos ya hechos.
+   * Se guarda una copia para poder deshacer.
+   */
+  const [editSnapshot, setEditSnapshot] = useState<ReservationDraft | null>(null);
+  const isEditing = editSnapshot !== null;
+
+  const editStep = (index: number) => {
+    setEditSnapshot((snapshot) => snapshot ?? draft);
+    changeStep(index);
+  };
+
+  const undoEdit = () => {
+    if (editSnapshot) setDraft(editSnapshot);
+    setEditSnapshot(null);
+    setErrors({});
+    changeStep(SUMMARY_STEP);
+  };
+
   const { submit, isSubmitting, formError, setFormError } = useSubmitReservation({
     onErrors: (found, index) => {
       setErrors(found);
-      changeStep(index);
+      if (index === SUMMARY_STEP) changeStep(index);
+      else editStep(index);
     },
     onSlotTaken: () => {
+      setEditSnapshot((snapshot) => snapshot ?? draft);
       setDraft((d) => ({ ...d, time: "" }));
       setErrors({ time: "Esa hora se acaba de llenar. Elige otra, por favor." });
       changeStep(1);
@@ -118,11 +140,27 @@ export function ReservationWizard() {
     return {};
   };
 
+  const hasErrors = (found: FieldErrors) => Object.values(found).some(Boolean);
+
+  /** En edición: el primer paso que quedó incompleto (p. ej. cambiar la sede borra la hora). */
+  const pendingStep = WIZARD_STEPS.slice(0, SUMMARY_STEP).findIndex(
+    (_, index) => index !== step && hasErrors(validateStep(index)),
+  );
+
   const next = () => {
     const found = validateStep(step);
     setErrors(found);
-    if (Object.values(found).some(Boolean)) return;
-    changeStep(step + 1);
+    if (hasErrors(found)) return;
+    if (!isEditing) {
+      changeStep(step + 1);
+      return;
+    }
+    if (pendingStep !== -1) {
+      changeStep(pendingStep);
+      return;
+    }
+    setEditSnapshot(null);
+    changeStep(SUMMARY_STEP);
   };
 
   const blurField = (field: keyof ReservationDraft) => {
@@ -131,7 +169,8 @@ export function ReservationWizard() {
   };
 
   const current = WIZARD_STEPS[step];
-  const nextLabel = WIZARD_STEPS[step + 1]?.label;
+  const nextLabel = WIZARD_STEPS[isEditing && pendingStep !== -1 ? pendingStep : step + 1]?.label;
+  const returnsToSummary = isEditing && pendingStep === -1;
   const branch = BRANCHES.find((b) => b.slug === draft.branchSlug);
   const compact = [
     branch?.name,
@@ -148,7 +187,21 @@ export function ReservationWizard() {
         aria-labelledby="paso-titulo"
         className="border-borde bg-superficie rounded-md border p-4 shadow-sm sm:p-6"
       >
-        <WizardProgress current={step} furthest={furthest} onGoTo={changeStep} />
+        <WizardProgress
+          current={step}
+          furthest={furthest}
+          onGoTo={(index) =>
+            step === SUMMARY_STEP || isEditing ? editStep(index) : changeStep(index)
+          }
+        />
+        {isEditing && step !== SUMMARY_STEP ? (
+          <p
+            role="status"
+            className="border-marino-600 bg-crema-200 mt-4 rounded-md border-l-4 px-4 py-3 font-semibold"
+          >
+            Estás cambiando tu reserva. Al terminar, vuelves al resumen.
+          </p>
+        ) : null}
         {step > 0 ? (
           <p className="bg-aji-100 mt-4 rounded-md px-3 py-2 text-sm font-semibold lg:hidden">
             {compact}
@@ -181,7 +234,7 @@ export function ReservationWizard() {
           {step === 3 ? (
             <StepSummary
               draft={draft}
-              onEdit={changeStep}
+              onEdit={editStep}
               onToken={onToken}
               resetKey={resetKey}
               tokenError={errors.turnstileToken}
@@ -196,7 +249,16 @@ export function ReservationWizard() {
         ) : null}
 
         <div className="border-borde mt-8 flex flex-col-reverse gap-3 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
-          {step > 0 ? (
+          {isEditing && step !== SUMMARY_STEP ? (
+            <button
+              type="button"
+              onClick={undoEdit}
+              className="text-marino min-h-tactil inline-flex items-center justify-center gap-2 px-3 text-lg font-semibold underline-offset-4 hover:underline"
+            >
+              <Undo2 aria-hidden="true" className="size-5" />
+              Deshacer cambios
+            </button>
+          ) : step > 0 ? (
             <button
               type="button"
               onClick={() => changeStep(step - 1)}
@@ -208,11 +270,20 @@ export function ReservationWizard() {
           ) : (
             <span />
           )}
-          {step < WIZARD_STEPS.length - 1 ? (
+          {step < SUMMARY_STEP ? (
             <Button type="button" size="lg" onClick={next}>
-              <span className="sm:hidden">Siguiente</span>
-              <span className="hidden sm:inline">Siguiente: {nextLabel}</span>
-              <ArrowRight aria-hidden="true" className="size-5" />
+              {returnsToSummary ? (
+                <>
+                  <Check aria-hidden="true" className="size-5" />
+                  Volver al resumen
+                </>
+              ) : (
+                <>
+                  <span className="sm:hidden">Siguiente</span>
+                  <span className="hidden sm:inline">Siguiente: {nextLabel}</span>
+                  <ArrowRight aria-hidden="true" className="size-5" />
+                </>
+              )}
             </Button>
           ) : (
             <Button
