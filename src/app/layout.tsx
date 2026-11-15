@@ -19,7 +19,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Cevichería en Lince y Jesús María | Berypez",
+    default: "Berypez",
     template: "%s | Berypez",
   },
   description:

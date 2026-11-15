@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const page = isMenuSlug(slug) ? await getMenuCached(slug) : null;
   if (!page) return {};
   return {
-    title: `${page.menu.name} · Delivery en Lince y Jesús María`,
+    title: page.menu.name,
     description: `${page.menu.description} Pide delivery o recojo en Berypez, Lince y Jesús María.`,
     alternates: { canonical: `/carta/${slug}` },
   };

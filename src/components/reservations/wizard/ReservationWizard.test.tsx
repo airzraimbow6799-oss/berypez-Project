@@ -73,6 +73,7 @@ describe("ReservationWizard", () => {
     render(<ReservationWizard />);
 
     expect(screen.getByRole("heading", { name: "¿En qué sede te esperamos?" })).toBeInTheDocument();
+    expect(document.title).toBe("Reservar · Sede | Berypez");
     expect(screen.getByRole("radio", { name: /Jesús María/ })).toBeChecked();
     await user.click(screen.getByRole("button", { name: "Una persona más" }));
     expect(screen.getByRole("group", { name: "¿Cuántas personas vienen?" })).toHaveTextContent(
@@ -80,6 +81,7 @@ describe("ReservationWizard", () => {
     );
 
     await goToDetails(user);
+    expect(document.title).toBe("Reservar · Tus datos | Berypez");
 
     await user.type(screen.getByLabelText(/Nombre y apellido/), "Rosa Quispe");
     await user.type(screen.getByLabelText(/^Celular/), "987 654 321");

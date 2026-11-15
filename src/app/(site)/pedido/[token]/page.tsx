@@ -9,7 +9,7 @@ import { getOrderByToken } from "@/features/checkout/server";
 import { formatPrice } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Tu pedido", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Mi pedido", robots: { index: false, follow: false } };
 
 const STEPS = [
   { status: "received", label: "Recibido" },

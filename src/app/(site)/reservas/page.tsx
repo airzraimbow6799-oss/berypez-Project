@@ -5,7 +5,7 @@ import { FishLoader } from "@/components/brand/FishLoader";
 import { ReservationWizard } from "@/components/reservations/wizard/ReservationWizard";
 
 export const metadata: Metadata = {
-  title: "Reservar mesa",
+  title: "Reservar",
   description: "Reserva tu mesa en Berypez Lince o Jesús María en 4 pasos sencillos.",
 };
 
