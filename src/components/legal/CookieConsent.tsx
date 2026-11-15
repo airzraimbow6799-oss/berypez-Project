@@ -57,7 +57,7 @@ export function CookieConsent() {
       {isReady && consent === null ? (
         <section
           aria-labelledby="cookies-titulo"
-          className="border-borde bg-superficie fixed inset-x-3 bottom-20 z-40 mx-auto max-w-xl rounded-md border p-4 shadow-lg md:bottom-4"
+          className="border-borde bg-superficie fixed inset-x-3 bottom-20 z-40 mx-auto max-w-xl rounded-md border p-4 shadow-lg lg:bottom-4"
         >
           <h2 id="cookies-titulo" className="font-sans text-base font-semibold">
             Cookies

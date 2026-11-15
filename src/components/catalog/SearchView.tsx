@@ -1,7 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
-import Link from "next/link";
+import { ArrowRight, Search } from "lucide-react";
 import { useDeferredValue, useMemo, useState } from "react";
 
 import { matchesQuery, scoreProduct } from "@/features/catalog/search";
@@ -78,14 +77,14 @@ export function SearchView({ products }: { products: Product[] }) {
                 <ProductCard
                   product={product}
                   sizes="(min-width: 1024px) 280px, (min-width: 640px) 33vw, 50vw"
+                  href={`/carta/${product.menus[0] ?? "marina"}#${product.slug}`}
                   action={
-                    <Link
-                      href={`/carta/${product.menus[0] ?? "marina"}#${product.slug}`}
-                      className="text-marino-600 min-h-tactil inline-flex items-center text-sm font-semibold hover:underline"
-                      aria-label={`Pedir ${product.name}`}
+                    <span
+                      aria-hidden="true"
+                      className="bg-aji text-marino group-hover:bg-aji-600 pointer-events-none flex size-11 shrink-0 items-center justify-center rounded-full transition-colors"
                     >
-                      Pedir
-                    </Link>
+                      <ArrowRight className="size-5" />
+                    </span>
                   }
                 />
               </li>

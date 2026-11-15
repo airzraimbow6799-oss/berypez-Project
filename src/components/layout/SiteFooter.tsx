@@ -110,7 +110,7 @@ export function SiteFooter() {
 
         <div className="border-crema/15 border-t">
           {/* pb extra en móvil: deja ver el pie sobre la barra inferior fija. */}
-          <div className="text-crema/85 mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 pt-5 pb-24 text-sm md:pb-5">
+          <div className="text-crema/85 mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 pt-5 pb-24 text-sm lg:pb-5">
             <p>© {year} Berypez</p>
             <p>
               <span className="sr-only">Medios de pago: </span>

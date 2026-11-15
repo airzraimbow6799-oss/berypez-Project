@@ -25,7 +25,7 @@ export function CartButton({ count }: CartButtonProps) {
     <Link
       href="/carrito"
       aria-label={label}
-      className="bg-aji text-marino hover:bg-aji-600 size-tactil rounded-pill relative inline-flex items-center justify-center shadow-sm transition-colors"
+      className="bg-aji text-marino hover:bg-aji-600 size-tactil rounded-pill relative inline-flex shrink-0 items-center justify-center shadow-sm transition-colors"
     >
       <ShoppingBag aria-hidden="true" className="size-6" />
       {total > 0 ? (

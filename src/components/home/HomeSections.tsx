@@ -66,7 +66,7 @@ export function MenuAccess({ menus, covers }: { menus: Menu[]; covers: Map<strin
                 )}
                 <span className="from-marino/85 via-marino/30 absolute inset-0 bg-gradient-to-t to-transparent" />
                 <span className="text-crema absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 p-3 sm:p-4">
-                  <span className="font-display text-lg leading-tight font-semibold sm:text-xl">
+                  <span className="font-display min-w-0 text-base leading-tight font-semibold hyphens-auto sm:text-xl">
                     {menu.name}
                   </span>
                   <ArrowRight
@@ -121,14 +121,14 @@ export function ProductShelf({
             <ProductCard
               product={product}
               sizes={GRID_SIZES}
+              href={`/carta/${product.menus[0] ?? menuSlug}#${product.slug}`}
               action={
-                <Link
-                  href={`/carta/${product.menus[0] ?? menuSlug}#${product.slug}`}
-                  className="text-marino-600 min-h-tactil inline-flex items-center text-sm font-semibold hover:underline"
-                  aria-label={`Ver ${product.name} en la carta`}
+                <span
+                  aria-hidden="true"
+                  className="bg-aji text-marino group-hover:bg-aji-600 pointer-events-none flex size-11 shrink-0 items-center justify-center rounded-full transition-colors"
                 >
-                  Ver
-                </Link>
+                  <ArrowRight className="size-5" />
+                </span>
               }
             />
           </li>
