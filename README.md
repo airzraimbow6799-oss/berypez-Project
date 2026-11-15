@@ -594,15 +594,19 @@ npx vercel env pull .env.local
 
 ### Estado de la Fase 1
 
-| ID                          | Tarea                                                                                                                                                                            | Estado                           |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
-| F1-01                       | Capa de datos del catálogo: `getMenus`, `getMenu(slug)` y `getProduct(slug)` con joins (sin N+1), validación de JSON y errores `CatalogError`                                    | ✅ Hecho                         |
-| F1-02                       | `GET /api/menus`, `/api/menus/:slug` y `/api/products/:slug` con caché de 10 min y revalidación inmediata por webhook de Postgres (pg_net + Vault)                               | ✅ Hecho                         |
-| F1-05                       | `next/image` sobre Supabase Storage (AVIF/WebP, tamaños para la cuadrícula)                                                                                                      | ✅ Configurado (se usa en F1-09) |
-| F1-06                       | Portada: titular, acciones, chips, plato estrella y video de presentación (MP4 de 1.5–1.7 MB, póster LCP, no se carga con movimiento reducido o ahorro de datos, botón de pausa) | ✅ Hecho                         |
-| F1-07                       | Secciones: 6 cartas con foto, recomendados de la casa, dúos y tríos, historia y sedes. Sin reseñas hasta tener reseñas reales                                                    | ✅ Hecho                         |
-| Marca                       | Logo vectorial (`currentColor`) e ícono rehecho en vectorial: favicon.ico, icon.svg, apple-icon y manifest (`npm run brand:icons`)                                               | ✅ Hecho                         |
-| F1-03, F1-04, F1-08 a F1-15 | Resto de la fase                                                                                                                                                                 | ⏳ Pendiente                     |
+| ID                         | Tarea                                                                                                                                                                            | Estado                                                 |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| F1-01                      | Capa de datos del catálogo: `getMenus`, `getMenu(slug)` y `getProduct(slug)` con joins (sin N+1), validación de JSON y errores `CatalogError`                                    | ✅ Hecho                                               |
+| F1-02                      | `GET /api/menus`, `/api/menus/:slug` y `/api/products/:slug` con caché de 10 min y revalidación inmediata por webhook de Postgres (pg_net + Vault)                               | ✅ Hecho                                               |
+| F1-05                      | `next/image` sobre Supabase Storage (AVIF/WebP, tamaños para la cuadrícula)                                                                                                      | ✅ Configurado (se usa en F1-09)                       |
+| F1-06                      | Portada: titular, acciones, chips, plato estrella y video de presentación (MP4 de 1.5–1.7 MB, póster LCP, no se carga con movimiento reducido o ahorro de datos, botón de pausa) | ✅ Hecho                                               |
+| F1-07                      | Secciones: 6 cartas con foto, recomendados de la casa, dúos y tríos, historia y sedes. Sin reseñas hasta tener reseñas reales                                                    | ✅ Hecho                                               |
+| Marca                      | Logo vectorial (`currentColor`) e ícono rehecho en vectorial: favicon.ico, icon.svg, apple-icon y manifest (`npm run brand:icons`)                                               | ✅ Hecho                                               |
+| F1-03 / F1-11              | Búsqueda tolerante (sin tildes, sinónimos como “seviche”, una letra de error) y filtros: sin picante, vegetariano, niños, compartir, hasta S/ 40                                 | ✅ Hecho (en la carta; `/api/search` global pendiente) |
+| F1-08 / F1-09 / F1-10      | Página `/carta/[slug]` estática (ISR), pestañas, barra de secciones fija con scroll-spy, tarjetas y vista rápida con variantes, elecciones, nota y cantidad                      | ✅ Hecho                                               |
+| F1-13                      | Metadatos por carta y JSON-LD `Menu`                                                                                                                                             | 🚧 Falta `sitemap.xml` y `Restaurant` por sede         |
+| Loader                     | Velo de transición entre páginas con los peces del logo animados (vectorial) y `loading.tsx`                                                                                     | ✅ Hecho                                               |
+| F1-04, F1-12, F1-14, F1-15 | Resto de la fase                                                                                                                                                                 | ⏳ Pendiente                                           |
 
 ### Estado de la Fase 0
 

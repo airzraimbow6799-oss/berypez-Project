@@ -1,4 +1,7 @@
+import { Suspense } from "react";
+
 import { MobileNav } from "@/components/layout/MobileNav";
+import { NavigationLoader } from "@/components/layout/NavigationLoader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SkipLink } from "@/components/layout/SkipLink";
@@ -16,6 +19,10 @@ export default function SiteLayout({ children }: Readonly<{ children: React.Reac
       <SiteFooter />
       <MobileNav />
       <Toaster />
+      {/* useSearchParams exige Suspense para no volver dinámicas las páginas estáticas. */}
+      <Suspense fallback={null}>
+        <NavigationLoader />
+      </Suspense>
     </>
   );
 }
