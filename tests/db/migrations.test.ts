@@ -237,6 +237,35 @@ describe("checkout (F2)", () => {
   });
 });
 
+describe("flujo de estados (F3-04)", () => {
+  const setStatus = (name: string, status: string) =>
+    as(
+      "authenticated",
+      STAFF_LINCE,
+      `update orders set status = '${status}' where customer_name = '${name}'`,
+    );
+
+  it("el personal no puede saltar pasos", async () => {
+    await db.exec(
+      `insert into orders (branch_id, modality, customer_name, customer_phone, subtotal_cents, total_cents, payment_method)
+       values (1, 'pickup', 'Flujo', '987654323', 100, 100, 'cash')`,
+    );
+    await expect(setStatus("Flujo", "delivered")).rejects.toThrow(/no permitido/);
+  });
+
+  it("avanza paso a paso y no usa estados de la otra modalidad", async () => {
+    await setStatus("Flujo", "in_kitchen");
+    await expect(setStatus("Flujo", "on_the_way")).rejects.toThrow(/no permitido/);
+    await setStatus("Flujo", "ready_for_pickup");
+    await expect(setStatus("Flujo", "cancelled")).rejects.toThrow(/no permitido/);
+    await setStatus("Flujo", "delivered");
+    const { rows } = await db.query<{ status: string }>(
+      "select status from orders where customer_name = 'Flujo'",
+    );
+    expect(rows[0]?.status).toBe("delivered");
+  });
+});
+
 describe("reglas de datos", () => {
   it("el recojo no admite dirección", async () => {
     await expect(

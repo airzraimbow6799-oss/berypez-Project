@@ -592,6 +592,17 @@ npx vercel link
 npx vercel env pull .env.local
 ```
 
+### Estado de la Fase 3
+
+| ID                           | Tarea                                                                                                  | Estado                                         |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------- |
+| F3-04                        | Estados del pedido con transiciones validadas en la API y en la base (trigger)                         | ✅ Hecho                                       |
+| F3-06                        | Login del personal con Supabase Auth; roles `admin`/`cocina` por sede; alta con `npm run staff:create` | ✅ Hecho                                       |
+| F3-11                        | Seguimiento: la página del pedido se actualiza cada 15 s (sin abrir RLS a anon)                        | ✅ Hecho                                       |
+| F3-12 / F3-14                | Panel `/panel` en vivo (Supabase Realtime), sonido y botones de estado                                 | ✅ Hecho                                       |
+| F3-01 a F3-03, F3-07 a F3-10 | Pagos Yape/Plin/tarjeta                                                                                | ⏸️ Esperan la cuenta de prueba de Mercado Pago |
+| F3-05 / F3-15                | Correos con Resend                                                                                     | ⏸️ Esperan cuenta y dominio de Resend          |
+
 ### Estado de la Fase 2
 
 | ID                    | Tarea                                                                                               | Estado                                                           |
