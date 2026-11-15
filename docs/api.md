@@ -1,4 +1,4 @@
-# Contrato de la API interna · v1
+﻿# Contrato de la API interna · v1
 
 Mantiene: Axel. Usa: Rafael (casos de prueba y E2E). Todo cambio aquí va acompañado del cambio en `src/types`.
 
@@ -41,7 +41,8 @@ Reglas:
 - Un producto puede estar en varias cartas (`menus`).
 - Si `variants` tiene 2 o más elementos, el cliente debe elegir una (`variantLabel` es el rótulo del selector).
 - Para cada `ChoiceGroup`, el cliente elige una opción, salvo que la variante elegida ya fije ese valor en `selections`.
-- `image` es `null` cuando el plato no tiene foto (hoy: Dúo vegetariano).
+- `image` es `null` cuando el plato no tiene foto (hoy: Dúo vegetariano). Con foto, `url` apunta a Supabase Storage (`…/storage/v1/object/public/catalog/products/<slug>.webp`) y se sirve con `next/image`.
+- `MenuSection` = `{ category, products }`; `MenuPage` = `{ menu, menus, sections }`.
 
 ## Endpoints
 
@@ -49,9 +50,9 @@ Estado: 📝 definido · 🚧 en desarrollo · ✅ disponible.
 
 | Método | Ruta                             | Fase  | Estado | Descripción                                       |
 | ------ | -------------------------------- | ----- | ------ | ------------------------------------------------- |
-| GET    | `/api/menus`                     | F1-02 | 📝     | Las 6 cartas.                                     |
-| GET    | `/api/menus/:slug`               | F1-02 | 📝     | Carta con secciones y productos.                  |
-| GET    | `/api/products/:slug`            | F1-02 | 📝     | Producto con variantes y grupos de elección.      |
+| GET    | `/api/menus`                     | F1-02 | ✅     | Las 6 cartas.                                     |
+| GET    | `/api/menus/:slug`               | F1-02 | ✅     | Carta con secciones y productos.                  |
+| GET    | `/api/products/:slug`            | F1-02 | ✅     | Producto con variantes y grupos de elección.      |
 | GET    | `/api/search?q=`                 | F1-03 | 📝     | Búsqueda tolerante a errores y tildes.            |
 | GET    | `/api/branches`                  | F2-02 | 📝     | Sedes con horario.                                |
 | GET    | `/api/branches/:id/status`       | F2-03 | 📝     | Abierto/cerrado y hora de cierre.                 |
@@ -68,6 +69,31 @@ Estado: 📝 definido · 🚧 en desarrollo · ✅ disponible.
 | POST   | `/api/complaints`                | F4-04 | 📝     | Libro de Reclamaciones. Requiere Turnstile.       |
 
 El detalle de cada endpoint (cuerpo, respuesta y errores) se agrega aquí cuando pasa a 🚧.
+
+### Catálogo (F1-02) ✅
+
+Lecturas públicas con caché: `unstable_cache`, etiqueta `catalog` y revalidación cada 10 min. Además, `POST /api/revalidate` se dispara al editar en Supabase.
+
+| Endpoint                  | Respuesta `data`                                                                                                    | Errores                                                                     |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `GET /api/menus`          | `Menu[]` ordenadas por `sortOrder`                                                                                  | 500 `catalog_unavailable`                                                   |
+| `GET /api/menus/:slug`    | `MenuPage`: `{ menu, menus, sections: [{ category, products }] }`; solo productos publicados y sin secciones vacías | 404 `menu_not_found` (también si `slug` no es una de las 6 cartas) · 500    |
+| `GET /api/products/:slug` | `Product` con `variants` y `choiceGroups`                                                                           | 400 `invalid_slug` (solo `a-z`, `0-9`, `-`) · 404 `product_not_found` · 500 |
+
+```http
+GET /api/menus/marina
+200 { "success": true, "data": { "menu": { "slug": "marina", … }, "menus": [ … ], "sections": [ { "category": { "slug": "ceviches", … }, "products": [ … ] } ] } }
+```
+
+### Revalidación (interno)
+
+`POST /api/revalidate` con la cabecera `x-revalidate-secret`. Lo llama un trigger de Postgres (`pg_net`) después de cada `insert`, `update` o `delete` en `products`, `variants`, `product_menus`, `categories` o `menus`: una sola llamada por sentencia. La URL y el secreto están en Supabase Vault (`catalog_revalidate_url`, `catalog_revalidate_secret`) y el secreto también en `REVALIDATE_SECRET` de Vercel.
+
+| Respuesta                        | Cuándo                                                              |
+| -------------------------------- | ------------------------------------------------------------------- |
+| 200 `{ revalidated: "catalog" }` | Secreto correcto.                                                   |
+| 401 `unauthorized`               | Falta el secreto o es incorrecto (comparación en tiempo constante). |
+| 503 `not_configured`             | El servidor no tiene `REVALIDATE_SECRET`.                           |
 
 ## Origen de los datos del catálogo
 
