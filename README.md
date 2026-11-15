@@ -1,4 +1,4 @@
-# Berypez Web – MVP funcional
+﻿# Berypez Web – MVP funcional
 
 MVP de la nueva web de **Berypez** (cocina marina y criolla, sedes Lince y Jesús María), basado en la auditoría y en la propuesta
 [`docs/propuesta/Propuesta_Mejora_Web_Berypez.pdf`](docs/propuesta/Propuesta_Mejora_Web_Berypez.pdf) (v2.0).
@@ -115,13 +115,13 @@ Todo esto sin tocar la web en producción.
 
 **Quién usa qué clave**
 
-| Clave                            | Dónde                      | Para qué                                                                                                                              |
-| -------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `anon` (pública)                 | Navegador                  | Leer la carta, las sedes y las zonas, y escuchar el estado de **su** pedido por Realtime. Las políticas RLS limitan lo que puede ver. |
-| `service_role` (secreta)         | Solo en `/api/*` en Vercel | Crear pedidos con el precio recalculado, registrar pagos y reclamos. **Nunca** va al navegador.                                       |
-| Sesión del personal              | Panel `/panel`             | Supabase Auth con rol `admin` o `cocina`; RLS solo les deja ver y cambiar pedidos y reservas.                                         |
-| `RESEND_API_KEY` (secreta)       | Solo en `/api/*` en Vercel | Enviar correos. Con permiso solo de envío (_sending access_) y limitada al dominio del proyecto.                                      |
-| `TURNSTILE_SECRET_KEY` (secreta) | Solo en `/api/*` en Vercel | Validar en el servidor el token antibots de cada formulario. La _site key_ sí es pública.                                             |
+| Clave                                      | Dónde                      | Para qué                                                                                                                              |
+| ------------------------------------------ | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Publishable `sb_publishable_…` (pública)   | Navegador                  | Leer la carta, las sedes y las zonas, y escuchar el estado de **su** pedido por Realtime. Las políticas RLS limitan lo que puede ver. |
+| Secreta `sb_secret_…` (rol `service_role`) | Solo en `/api/*` en Vercel | Crear pedidos con el precio recalculado, registrar pagos y reclamos. **Nunca** va al navegador.                                       |
+| Sesión del personal                        | Panel `/panel`             | Supabase Auth con rol `admin` o `cocina`; RLS solo les deja ver y cambiar pedidos y reservas.                                         |
+| `RESEND_API_KEY` (secreta)                 | Solo en `/api/*` en Vercel | Enviar correos. Con permiso solo de envío (_sending access_) y limitada al dominio del proyecto.                                      |
+| `TURNSTILE_SECRET_KEY` (secreta)           | Solo en `/api/*` en Vercel | Validar en el servidor el token antibots de cada formulario. La _site key_ sí es pública.                                             |
 
 ### 2.1 Capas de seguridad
 
@@ -225,7 +225,7 @@ Cada fase tiene una tabla de **desarrollo** (Axel) y una de **QA** (Rafael). La 
 | F0-02 | CI en GitHub Actions           | **A**          | lint → typecheck → tests → build. Lighthouse CI en modo informativo.                                                                                                                                                                                                                                                                                                         |
 | F0-13 | Turnstile                      | **A**          | Crear la cuenta gratuita de Cloudflare y el widget de **Turnstile** (modo _managed_) con los dominios `localhost`, `*.vercel.app` del proyecto y el de la demo. Guardar `NEXT_PUBLIC_TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY` en Vercel. Documentar en `docs/seguridad.md` (ver 2.2).                                                                                    |
 | F0-14 | Resend                         | **A**          | Crear la cuenta, verificar el dominio de envío (por ejemplo `pedidos@<dominio>`) con SPF, DKIM y DMARC cargados en el DNS del dominio (proveedor o Vercel DNS), y crear la API key solo de envío. Enviar un correo de prueba.                                                                                                                                                |
-| F0-03 | Proyectos Supabase + Vercel    | **A**          | Crear `berypez-dev` y `berypez-demo` en Supabase. Conectar el repo a Vercel. Variables `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY` (esta última solo en el servidor). Integración Supabase ↔ Vercel.                                                                                                                           |
+| F0-03 | Proyectos Supabase + Vercel    | **A**          | Crear `berypez-dev` y `berypez-demo` en Supabase. Conectar el repo a Vercel. Variables `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` y `SUPABASE_SECRET_KEY` (esta última solo en el servidor). Integración Supabase ↔ Vercel.                                                                                                                          |
 | F0-04 | Importar y limpiar el catálogo | **A**          | `scripts/import-catalog.ts` **lee** la API pública de berypez.pe y carga `products`, `variants`, `categories` y `menus` en Supabase. Sube las fotos a Storage convertidas a WebP. En la misma carga: quitar “(Copiar)” y “Nov 24”, categorizar Gaseosas/Cervezas/Bebidas calientes y mapear categorías → 6 cartas (Anexo B de la propuesta).                                 |
 | F0-05 | Contrato de datos v1           | **A**          | `src/types` + `docs/api.md`: `Product`, `Variant`, `Menu`, `Category`, `CartItem`, `Cart`, `Branch`, `DeliveryZone`. Rafael lo revisa para preparar los casos de prueba.                                                                                                                                                                                                     |
 | F0-06 | Esquema y seguridad            | **A**          | Migraciones SQL en `supabase/migrations`: `branches`, `delivery_zones`, `orders`, `order_items`, `reservations`, `complaints`, `payment_events`, `staff_roles`. **RLS activado en todas las tablas**: lectura pública solo para la carta, las sedes y las zonas, y escritura solo por el servidor o el personal autenticado. `supabase gen types` → `src/types/database.ts`. |
@@ -547,7 +547,7 @@ npm install
 
 # 2. Variables de entorno
 cp .env.example .env.local
-#    Pedir a Axel las claves de berypez-dev. La service_role nunca se sube al repo.
+#    Pedir a Axel las claves de berypez-dev. La clave secreta (sb_secret_…) nunca se sube al repo.
 #    Las claves de Turnstile del ejemplo son las de prueba de Cloudflare.
 
 # 3. Desarrollo
