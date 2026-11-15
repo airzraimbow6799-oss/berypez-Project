@@ -592,6 +592,15 @@ npx vercel link
 npx vercel env pull .env.local
 ```
 
+### Estado de la Fase 5
+
+| ID                          | Tarea                                                                                                                                                                            | Estado                                                                                                         |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| F5-04                       | Cabeceras de seguridad (CSP con orígenes exactos, HSTS, nosniff, DENY, Referrer y Permissions-Policy), sin `X-Powered-By`; límite de peticiones en checkout, reservas y reclamos | ✅ Hecho (verificado en navegador: 0 violaciones de CSP)                                                       |
+| F1-03 / F1-13               | Búsqueda global `/buscar` (seviche → 20 ceviches), `/nosotros`, `sitemap.xml` y `robots.txt`                                                                                     | ✅ Hecho                                                                                                       |
+| F5-04 · dependencias        | `npm audit` (producción): PostCSS dentro de Next 15 y libvips dentro de sharp 0.34. Ambas se corrigen con versiones mayores (Next 16, sharp 0.35)                                | ⚠️ Riesgo bajo: el CSS es nuestro y `next/image` solo acepta fotos del bucket propio. Migrar en F5 con pruebas |
+| F5-02, F5-03, F5-05 a F5-08 | Rendimiento medido, analítica GA4 (necesita ID), datos de demo, guion y documentación final                                                                                      | ⏳ Pendiente                                                                                                   |
+
 ### Estado de la Fase 4
 
 | ID            | Tarea                                                                                                                                                                       | Estado                                                        |
