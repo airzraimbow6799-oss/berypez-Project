@@ -39,20 +39,36 @@
     /* ---------- Revelado al hacer scroll (sin JavaScript) ----------
        Si el navegador no soporta animation-timeline (Firefox), no hay animación y todo se ve. */
     @supports (animation-timeline: view()) {
+      /*
+       * Dos animaciones con la misma línea de tiempo: la opacidad REEMPLAZA (aparece de 0 a 1) y
+       * el desplazamiento SE SUMA al del elemento. Así una tarjeta que se revela y además se eleva
+       * al pasar el mouse (.elevar en el mismo elemento, QA-006) conserva la elevación: con una
+       * sola animación de fill `both`, su `translate` anulaba el del hover.
+       */
       [data-reveal] {
-        animation: marea-revela linear both;
-        animation-timeline: view();
+        animation:
+          marea-revela-aparece linear both,
+          marea-revela-sube linear both;
+        animation-composition: replace, add;
+        animation-timeline: view(), view();
         /* Termina cuando el elemento ya entró un poco más de la mitad; --i lo retrasa en cascada. */
         animation-range: entry calc(var(--i, 0) * 5%) entry calc(60% + var(--i, 0) * 5%);
       }
 
-      @keyframes marea-revela {
+      @keyframes marea-revela-aparece {
         from {
           opacity: 0;
-          translate: 0 24px;
         }
         to {
           opacity: 1;
+        }
+      }
+
+      @keyframes marea-revela-sube {
+        from {
+          translate: 0 24px;
+        }
+        to {
           translate: 0 0;
         }
       }
