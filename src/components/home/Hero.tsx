@@ -42,7 +42,7 @@ export function Hero({ featured }: { featured: Product | null }) {
       className="mx-auto max-w-6xl px-4 pt-8 pb-12 sm:pt-14 lg:pb-20"
     >
       <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-12">
-        <div>
+        <div className="parallax-texto">
           <p
             className="entra text-rocoto-texto text-sm font-semibold tracking-wide uppercase"
             style={{ "--i": 0 } as CSSProperties}
@@ -73,7 +73,7 @@ export function Hero({ featured }: { featured: Product | null }) {
           <HeroModeChips />
         </div>
 
-        <div className="relative">
+        <div className="parallax-media relative">
           <HeroVideo />
           {featured ? (
             <div className="-mt-8 flex justify-center lg:absolute lg:-bottom-8 lg:-left-6 lg:mt-0 lg:justify-start">
