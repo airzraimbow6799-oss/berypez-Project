@@ -10,6 +10,7 @@ import { Select } from "@/components/ui/Select";
 import { useCart } from "@/features/cart/store";
 import { useQuote } from "@/features/cart/use-quote";
 import { checkoutSchema, fieldErrors } from "@/features/checkout/schema";
+import { clearFieldError, type ErrorMap, fieldError } from "@/features/forms/field-errors";
 import { MODE_OPTIONS, modeId, readStoredMode, writeStoredMode } from "@/features/order-mode/mode";
 import { formatPrice } from "@/lib/format";
 
@@ -101,7 +102,7 @@ export function CheckoutForm() {
   const branches = useBranches();
   const [form, setForm] = useState(INITIAL);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
+  const [serverErrors, setServerErrors] = useState<ErrorMap>({});
   const [formError, setFormError] = useState("");
   const [token, setToken] = useState("");
   const [resetKey, setResetKey] = useState(0);
@@ -152,12 +153,11 @@ export function CheckoutForm() {
   };
   const validation = checkoutSchema.safeParse(payload);
   const clientErrors = validation.success ? {} : fieldErrors(validation.error);
-  const errorFor = (field: string) =>
-    serverErrors[field] ?? (touched[field] ? clientErrors[field] : undefined);
+  const errorFor = (field: string) => fieldError(serverErrors, clientErrors, touched, field);
 
   const set = (field: keyof typeof INITIAL) => (value: string | boolean) => {
     setForm((f) => ({ ...f, [field]: value }));
-    setServerErrors((e) => ({ ...e, [field]: "" }));
+    setServerErrors((e) => clearFieldError(e, field));
   };
   const blur = (field: string) => () => setTouched((t) => ({ ...t, [field]: true }));
 

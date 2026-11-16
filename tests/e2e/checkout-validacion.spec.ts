@@ -100,14 +100,11 @@ test.describe("Checkout · validación", () => {
   });
 });
 
-// BUG QA-005: en cuanto la persona escribe algo en un campo, el aviso de error de ESE campo ya no
-// aparece (set() deja serverErrors[campo] = "" y errorFor usa `??`, que no trata "" como vacío).
-// Solo se ve el aviso general «Revisa los datos marcados.», sin decir qué campo está mal.
-// Estas pruebas describen lo correcto y fallan A PROPÓSITO hasta que se corrija: cuando pasen,
-// Playwright lo avisa y se quita la anotación `test.fail`.
+// QA-005 (corregido): antes, en cuanto la persona escribía en un campo, el aviso de ESE campo ya no
+// aparecía (serverErrors[campo] = "" con `??`). Ahora la lógica vive en
+// src/features/forms/field-errors.ts y estas pruebas protegen que no vuelva a pasar.
 test.describe("Checkout · validación de campos ya escritos (QA-005)", () => {
   test.beforeEach(async ({ page }) => {
-    test.fail(true, "QA-005: el error de un campo escrito no se muestra");
     await irAlCheckout(page);
   });
 
