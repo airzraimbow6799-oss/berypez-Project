@@ -23,6 +23,7 @@ import {
   FALLBACK_SECTION_CATEGORIES,
   MENUS,
   NON_SECTION_CATEGORIES,
+  PRODUCT_NAME_OVERRIDES,
   UNCATEGORIZED_PRODUCT_CATEGORY,
 } from "./config";
 import { cleanName, cleanText, isDuplicateCopy } from "./text";
@@ -146,7 +147,7 @@ function normalizeProduct(
   categoriesBySlug: ReadonlyMap<string, RawCategory>,
   variationsById: ReadonlyMap<number, RawVariation>,
 ): Product {
-  const name = cleanName(product.name);
+  const name = PRODUCT_NAME_OVERRIDES[product.slug] ?? cleanName(product.name);
   const slugs = productCategorySlugs(product);
   const sectionSlug = pickSectionSlug(slugs);
   const section = sectionSlug ? categoriesBySlug.get(sectionSlug) : undefined;

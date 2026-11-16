@@ -70,7 +70,8 @@ const visibleText = (p: Product) =>
 
 // Excepciones ya conocidas y avisadas: si cambian, la prueba falla y hay que revisarlas.
 const SIN_FOTO_CONOCIDOS = ["Dúo vegetariano"];
-const NOMBRES_REPETIDOS_CONOCIDOS = ["arroz con mariscos"]; // plato individual y fuente
+// QA-002 (corregido): la fuente se llama «Fuente de arroz con mariscos». Ya no hay repetidos.
+const NOMBRES_REPETIDOS_CONOCIDOS: string[] = [];
 
 describe("Catálogo importado · cantidad y estructura", () => {
   it("tiene 107 productos y las 6 cartas", () => {
