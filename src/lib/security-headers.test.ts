@@ -44,4 +44,12 @@ describe("securityHeaders", () => {
       "Permissions-Policy",
     ]);
   });
+
+  it("QA-007: Permissions-Policy no incluye funciones que Chrome ya no reconoce", () => {
+    const policy = securityHeaders({ supabaseUrl: SUPABASE, isDev: false }).find(
+      (h) => h.key === "Permissions-Policy",
+    )?.value;
+    expect(policy).not.toContain("browsing-topics");
+    expect(policy).toContain("camera=()");
+  });
 });
