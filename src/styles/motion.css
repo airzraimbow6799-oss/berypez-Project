@@ -1,0 +1,147 @@
+/*
+ * Movimiento "marea": los elementos suben y se asientan, como la espuma al llegar a la orilla.
+ *
+ * Reglas del sistema
+ * - Solo CSS: sin librerías ni listeners de scroll. Solo `opacity` y `translate`/`scale`
+ *   (se animan en el compositor), así que no mueven el layout (CLS 0) ni bloquean el hilo.
+ * - Todo vive dentro de `prefers-reduced-motion: no-preference`: con «reducir movimiento» no hay
+ *   animación y cada elemento queda en su estado final (visible). Nada se oculta si falla el CSS.
+ * - Cada movimiento tiene un motivo: entrada = jerarquía, revelado = orden de lectura,
+ *   elevación = "esto se puede tocar", diálogo = de dónde vino.
+ * - No se anima el elemento LCP (la foto de la portada ni el video).
+ *
+ * Utilidades
+ *   .entra            Entrada escalonada al cargar (portada). Usa --i para el orden.
+ *   [data-reveal]     Revelado al entrar en pantalla (scroll-driven). Usa --i para escalonar.
+ *   .elevar           Tarjeta que se eleva al pasar el mouse (con sombra teñida de marino).
+ *   dialog[data-variant]  Entrada de la vista rápida, el carrito lateral y los modales.
+ */
+
+@layer components {
+  @media (prefers-reduced-motion: no-preference) {
+    /* ---------- Entrada de la portada: eyebrow, titular, texto y botones, en orden ---------- */
+    .entra {
+      animation: marea-sube 700ms var(--ease-out-suave) both;
+      animation-delay: calc(var(--i, 0) * 90ms);
+    }
+
+    @keyframes marea-sube {
+      from {
+        opacity: 0;
+        translate: 0 18px;
+      }
+      to {
+        opacity: 1;
+        translate: 0 0;
+      }
+    }
+
+    /* ---------- Revelado al hacer scroll (sin JavaScript) ----------
+       Si el navegador no soporta animation-timeline (Firefox), no hay animación y todo se ve. */
+    @supports (animation-timeline: view()) {
+      [data-reveal] {
+        animation: marea-revela linear both;
+        animation-timeline: view();
+        /* Termina cuando el elemento ya entró un poco más de la mitad; --i lo retrasa en cascada. */
+        animation-range: entry calc(var(--i, 0) * 5%) entry calc(60% + var(--i, 0) * 5%);
+      }
+
+      @keyframes marea-revela {
+        from {
+          opacity: 0;
+          translate: 0 24px;
+        }
+        to {
+          opacity: 1;
+          translate: 0 0;
+        }
+      }
+    }
+
+    /* ---------- Elevación de tarjetas (solo con mouse; el toque ya tiene su propio feedback) ---------- */
+    @media (hover: hover) {
+      .elevar {
+        transition:
+          translate var(--duration-normal) var(--ease-out-suave),
+          box-shadow var(--duration-normal) var(--ease-out-suave);
+      }
+
+      .elevar:hover {
+        translate: 0 -4px;
+        /* Sombra teñida del azul marino de la marca, no negra. */
+        box-shadow: 0 16px 28px -14px rgb(8 47 73 / 0.35);
+      }
+
+      .elevar:active {
+        translate: 0 -1px;
+      }
+    }
+
+    /* ---------- Diálogos: la hoja sube desde abajo, el modal se asienta, el panel entra por la derecha ---------- */
+    dialog[data-variant][open] {
+      animation: dialogo-sube 320ms var(--ease-out-suave) both;
+    }
+
+    dialog[data-variant][open]::backdrop {
+      animation: fondo-aparece 280ms ease-out both;
+    }
+
+    dialog[data-variant="drawer"][open] {
+      animation-name: dialogo-lateral;
+    }
+
+    @media (min-width: 40rem) {
+      dialog[data-variant="sheet"][open] {
+        animation-name: dialogo-asienta;
+      }
+    }
+
+    dialog[data-variant="modal"][open] {
+      animation-name: dialogo-asienta;
+    }
+
+    @keyframes dialogo-sube {
+      from {
+        opacity: 0.6;
+        translate: 0 100%;
+      }
+      to {
+        opacity: 1;
+        translate: 0 0;
+      }
+    }
+
+    @keyframes dialogo-asienta {
+      from {
+        opacity: 0;
+        translate: 0 16px;
+        scale: 0.97;
+      }
+      to {
+        opacity: 1;
+        translate: 0 0;
+        scale: 1;
+      }
+    }
+
+    @keyframes dialogo-lateral {
+      from {
+        opacity: 0.6;
+        translate: 100% 0;
+      }
+      to {
+        opacity: 1;
+        translate: 0 0;
+      }
+    }
+
+    @keyframes fondo-aparece {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  }
+}
