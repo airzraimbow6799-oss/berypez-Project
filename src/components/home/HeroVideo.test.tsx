@@ -46,6 +46,32 @@ describe("HeroVideo", () => {
     expect(screen.getByRole("button", { name: "Reproducir video" })).toBeInTheDocument();
   });
 
+  it("QA-008: el navegador no pinta botones encima del video (imagen en imagen ni enviar)", () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("matchMedia", () => ({ matches: false }));
+    const { container } = render(<HeroVideo />);
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+    const video = container.querySelector("video");
+    expect(video).toHaveAttribute("disablepictureinpicture");
+    expect(video).toHaveAttribute("disableremoteplayback");
+  });
+
+  it("QA-008: el botón de pausa es discreto con mouse pero se alcanza con teclado", () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("matchMedia", () => ({ matches: false }));
+    render(<HeroVideo />);
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+    const boton = screen.getByRole("button", { name: /video/ });
+    // Oculto solo en dispositivos con mouse; aparece al pasar sobre el video o con el foco.
+    expect(boton.className).toContain("[@media(hover:hover)]:opacity-0");
+    expect(boton.className).toContain("[@media(hover:hover)]:group-hover:opacity-100");
+    expect(boton.className).toContain("[@media(hover:hover)]:focus-visible:opacity-100");
+  });
+
   it("con movimiento reducido deja solo el póster y no muestra controles", () => {
     vi.useFakeTimers();
     vi.stubGlobal("matchMedia", () => ({ matches: true }));
