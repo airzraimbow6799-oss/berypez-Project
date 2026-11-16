@@ -43,3 +43,8 @@ next-env.d.ts
 
 # Originales pesados (el sitio usa las versiones optimizadas de public/media)
 assets-src/*.mp4
+
+# playwright
+/playwright-report/
+/test-results/
+/blob-report/

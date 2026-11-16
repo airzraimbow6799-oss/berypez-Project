@@ -6,3 +6,5 @@ next-env.d.ts
 docs/propuesta
 src/types/database.ts
 data/catalog
+playwright-report
+test-results
