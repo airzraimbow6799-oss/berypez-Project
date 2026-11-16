@@ -21,7 +21,11 @@ for (const ruta of RUTAS) {
     test.fail(ruta === "/carta/marina", "QA-006: la carta Marina supera los 1 000 nodos");
 
     await page.goto(ruta);
-    await page.waitForLoadState("networkidle");
+    // Sin `networkidle`: en la CI nunca se alcanza (video y recursos externos). Se espera a que la
+    // página cargue, a que aparezca el título y un margen corto para la hidratación.
+    await page.waitForLoadState("load");
+    await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+    await page.waitForTimeout(1000);
 
     const nodos = await page.evaluate(() => document.querySelectorAll("*").length);
     info.annotations.push({ type: "nodos del DOM", description: String(nodos) });

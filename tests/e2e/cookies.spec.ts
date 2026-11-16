@@ -17,6 +17,16 @@ async function vigilarAnalitica(page: Page) {
   return llamadas;
 }
 
+/**
+ * Espera a que la página termine de cargar y da un margen para que, si hubiera un script de
+ * analítica, alcance a pedirse. No se usa `networkidle`: en la CI nunca se alcanza porque la
+ * portada tiene video y otros recursos (la prueba se quedaba colgada 30 s).
+ */
+async function dejarCargarScripts(page: Page) {
+  await page.waitForLoadState("load");
+  await page.waitForTimeout(1500);
+}
+
 const aviso = (page: Page) => page.getByRole("region", { name: "Cookies" });
 
 test.describe("Cookies y analítica", () => {
@@ -28,9 +38,9 @@ test.describe("Cookies y analítica", () => {
     await expect(aviso(page).getByRole("button", { name: "Aceptar" })).toBeVisible();
     await expect(aviso(page).getByRole("button", { name: "Solo necesarias" })).toBeVisible();
 
-    await page.waitForLoadState("networkidle");
+    await dejarCargarScripts(page);
     await page.goto("/carta/marina");
-    await page.waitForLoadState("networkidle");
+    await dejarCargarScripts(page);
     expect(llamadas, "Se cargó analítica antes de aceptar").toEqual([]);
   });
 
@@ -57,7 +67,7 @@ test.describe("Cookies y analítica", () => {
     expect(await page.evaluate((k) => localStorage.getItem(k), CLAVE)).toBe("rejected");
 
     await page.reload();
-    await page.waitForLoadState("networkidle");
+    await dejarCargarScripts(page);
     await expect(aviso(page)).toBeHidden();
     expect(llamadas, "Se cargó analítica tras rechazar").toEqual([]);
   });
