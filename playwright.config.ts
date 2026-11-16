@@ -20,8 +20,9 @@ export default defineConfig({
   forbidOnly: isCI,
   retries: isCI ? 1 : 0,
   workers: isCI ? 2 : undefined,
-  // En local `next dev` compila cada página la primera vez: se da más margen que en CI (build).
-  timeout: isCI ? 30_000 : 90_000,
+  // En local `next dev` compila cada página la primera vez. En CI el runner tiene poca CPU y las fotos se
+  // optimizan en el momento: 60 s evita falsos rojos sin esconder una página realmente rota.
+  timeout: isCI ? 60_000 : 90_000,
   expect: { timeout: 7_000 },
   reporter: [["list"], ["html", { open: "never", outputFolder: "playwright-report" }]],
   use: {
@@ -63,6 +64,8 @@ export default defineConfig({
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
             process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "sb_publishable_ci",
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: "1x00000000000000000000AA",
+          // ID falso: permite probar que GA4 solo carga con consentimiento (las llamadas se interceptan).
+          NEXT_PUBLIC_GA_ID: "G-QATEST0001",
         },
       },
 });

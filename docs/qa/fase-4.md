@@ -10,6 +10,15 @@ Resultado: ☐ sin ejecutar · ✅ pasa · ❌ falla (issue) · ⚠️ observaci
 (más: «escríbenos por WhatsApp»); fechas bloqueadas; reserva sin sobreventa (bloqueo por franja en Postgres); cancelar con el enlace (`manage_token`).
 Aforo y horario definitivos: pendientes de la dueña.
 
+## Cobertura automática (actualizada 2026-11-15)
+
+| Casos                                                                    | Archivo                            | Estado                                                          |
+| ------------------------------------------------------------------------ | ---------------------------------- | --------------------------------------------------------------- |
+| CK-01, CK-02, CK-03, CK-05, aviso → privacidad, `localStorage` bloqueado | `tests/e2e/cookies.spec.ts`        | ✅ pasan. GA4 **no** se carga antes de aceptar ni tras rechazar |
+| LG-02 (pie → 4 páginas legales)                                          | `tests/e2e/cookies.spec.ts`        | ✅ pasan                                                        |
+| LG-01, RE-01, LR-01 (la página carga)                                    | `tests/e2e/rutas-publicas.spec.ts` | ✅ pasan                                                        |
+| Resto (🔑 y 🔒)                                                          | —                                  | Esperan el `.env.local` y a Resend                              |
+
 ## 1. Reservas (🟢)
 
 | ID    | Caso                                   | Pasos                                                                                        | Resultado esperado                                                                | Sev.    | Auto | Env | Resultado |
