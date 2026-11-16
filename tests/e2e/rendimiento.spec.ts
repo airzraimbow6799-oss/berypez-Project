@@ -20,12 +20,11 @@ for (const ruta of RUTAS) {
     // reduzca el DOM (por ejemplo, cargando de forma diferida las secciones fuera de pantalla).
     test.fail(ruta === "/carta/marina", "QA-006: la carta Marina supera los 1 000 nodos");
 
-    await page.goto(ruta);
-    // Sin `networkidle`: en la CI nunca se alcanza (video y recursos externos). Se espera a que la
-    // página cargue, a que aparezca el título y un margen corto para la hidratación.
-    await page.waitForLoadState("load");
+    await page.goto(ruta, { waitUntil: "domcontentloaded" });
+    // Sin `networkidle`: en la CI nunca se alcanza (video y recursos externos). Se espera al HTML, a que
+    // aparezca el título y un margen para la hidratación (sin esperar a las fotos).
     await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(1500);
 
     const nodos = await page.evaluate(() => document.querySelectorAll("*").length);
     info.annotations.push({ type: "nodos del DOM", description: String(nodos) });
