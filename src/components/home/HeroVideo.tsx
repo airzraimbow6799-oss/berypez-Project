@@ -57,7 +57,7 @@ export function HeroVideo() {
   };
 
   return (
-    <div className="bg-marino-800 relative aspect-video overflow-hidden rounded-lg shadow-lg">
+    <div className="group bg-marino-800 relative aspect-video overflow-hidden rounded-lg shadow-lg">
       <Image
         src={HERO_POSTER}
         alt="Ilustración de Berypez: ceviche, chicharrón de calamar y arroz con mariscos frente al mar"
@@ -74,6 +74,10 @@ export function HeroVideo() {
           muted
           loop
           playsInline
+          // QA-008: sin los botones que el navegador pinta encima (imagen en imagen y enviar a
+          // otro dispositivo). El video es decorativo y no tiene controles propios del navegador.
+          disablePictureInPicture
+          disableRemotePlayback
           preload="auto"
           poster={HERO_POSTER}
           onPlaying={() => setIsPlaying(true)}
@@ -103,7 +107,14 @@ export function HeroVideo() {
             )
           }
           onClick={toggle}
-          className="bg-marino/70 text-crema hover:bg-marino absolute right-3 bottom-3 backdrop-blur"
+          // QA-008: discreto pero siempre alcanzable (WCAG 2.2.2, el video va en bucle).
+          // Con mouse aparece al pasar sobre el video o con el teclado (foco); sin mouse (celular)
+          // queda visible y tenue, porque ahí no hay "pasar por encima". Pausado, siempre visible.
+          className={`bg-marino/50 text-crema hover:bg-marino focus-visible:bg-marino absolute right-3 bottom-3 backdrop-blur transition-opacity duration-200 focus-visible:opacity-100 ${
+            isPausedByUser
+              ? "opacity-100"
+              : "[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:focus-visible:opacity-100"
+          }`}
         />
       ) : null}
     </div>
