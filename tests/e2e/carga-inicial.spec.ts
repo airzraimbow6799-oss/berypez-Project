@@ -20,3 +20,28 @@ for (const ruta of RUTAS) {
     expect(html).not.toContain('<div hidden id="S:0"');
   });
 }
+
+// El efecto que se veía: el pie de página saltaba al reemplazar el loader por la página. Se mide el
+// CLS desde el primer instante en dos páginas representativas (límite recomendado: 0.1).
+for (const ruta of ["/", "/carta/marina"]) {
+  test(`QA-009 · ${ruta} no se desplaza al cargar (CLS < 0.1)`, async ({ page }) => {
+    await page.addInitScript(() => {
+      const w = window as unknown as { __cls: number };
+      w.__cls = 0;
+      new PerformanceObserver((lista) => {
+        for (const e of lista.getEntries() as unknown as {
+          value: number;
+          hadRecentInput: boolean;
+        }[]) {
+          if (!e.hadRecentInput) w.__cls += e.value;
+        }
+      }).observe({ type: "layout-shift", buffered: true });
+    });
+    await page.goto(ruta, { waitUntil: "load" });
+    await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+    await page.waitForTimeout(2000);
+
+    const cls = await page.evaluate(() => (window as unknown as { __cls: number }).__cls);
+    expect(cls, `CLS de ${ruta} = ${cls}`).toBeLessThan(0.1);
+  });
+}

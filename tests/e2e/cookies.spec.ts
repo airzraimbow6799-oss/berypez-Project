@@ -160,3 +160,35 @@ test.describe("Enlaces legales", () => {
     });
   }
 });
+
+// QA-007 (#30) · detalles del aviso de cookies, verificados tras la corrección de Axel.
+test.describe("Aviso de cookies · detalles (QA-007)", () => {
+  test("el enlace del aviso dice a dónde lleva", async ({ page }) => {
+    await page.goto("/");
+    await expect(
+      aviso(page).getByRole("link", { name: "Más información sobre cookies" }),
+    ).toBeVisible();
+  });
+
+  test("la cabecera Permissions-Policy no usa funciones que Chrome ya no reconoce", async ({
+    request,
+  }) => {
+    const respuesta = await request.get("/");
+    const politica = respuesta.headers()["permissions-policy"] ?? "";
+    expect(politica).not.toContain("browsing-topics");
+  });
+
+  test("sin decidir las cookies, los enlaces legales del pie se pueden tocar (también en celular)", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await expect(aviso(page)).toBeVisible();
+
+    const enlace = page
+      .getByRole("contentinfo")
+      .getByRole("link", { name: "Política de privacidad" });
+    await enlace.scrollIntoViewIfNeeded();
+    await enlace.click({ timeout: 8000 });
+    await expect(page).toHaveURL(/\/privacidad$/);
+  });
+});
