@@ -75,7 +75,8 @@ export function securityHeaders(options: HeaderOptions): Array<{ key: string; va
     { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
     {
       key: "Permissions-Policy",
-      value: "camera=(), microphone=(), geolocation=(), payment=(self), usb=(), browsing-topics=()",
+      // Sin browsing-topics: Chrome ya no lo reconoce y avisa en la consola (QA-007).
+      value: "camera=(), microphone=(), geolocation=(), payment=(self), usb=()",
     },
   ];
 }
