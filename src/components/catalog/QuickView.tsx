@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { type MouseEvent, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { Stepper } from "@/components/ui/Stepper";
 import { toast } from "@/components/ui/Toaster";
+import { flyToCart } from "@/features/cart/fly-to-cart";
 import { useCart } from "@/features/cart/store";
 import {
   canAddToCart,
@@ -67,8 +68,9 @@ function QuickViewBody({ product, onAdded }: { product: Product; onAdded: () => 
   const isAddable = canAddToCart(product, selection);
   const hasVariants = product.variants.length > 1;
 
-  const handleAdd = () => {
+  const handleAdd = (event: MouseEvent<HTMLButtonElement>) => {
     add(toCartInput(product, selection, note), quantity);
+    flyToCart(event.currentTarget, product.image?.url);
     toast.success(`Agregaste ${quantity} × ${product.name}`, {
       action: { label: "Ver carrito", onClick: () => window.location.assign("/carrito") },
     });

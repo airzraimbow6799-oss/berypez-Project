@@ -5,6 +5,7 @@ import type { CSSProperties, ReactNode } from "react";
 
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { BranchMap } from "@/components/home/BranchMap";
+import { CountUp } from "@/components/home/CountUp";
 import { Button } from "@/components/ui/Button";
 import { BRANCHES, isGoogleMapsEmbed } from "@/config/site";
 import type { Menu, Product } from "@/types/catalog";
@@ -23,7 +24,7 @@ function SectionHeading({
   return (
     <div data-reveal className="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h2 id={id} className="text-3xl font-semibold">
+        <h2 id={id} className="titulo-ola text-3xl font-semibold">
           {title}
         </h2>
         {intro ? <p className="text-tinta-suave mt-2 max-w-xl">{intro}</p> : null}
@@ -51,6 +52,7 @@ export function MenuAccess({ menus, covers }: { menus: Menu[]; covers: Map<strin
             <li key={menu.slug} data-reveal style={{ "--i": index % 3 } as CSSProperties}>
               <Link
                 href={`/carta/${menu.slug}`}
+                data-clip
                 className="group elevar relative block aspect-[4/3] overflow-hidden rounded-md shadow-sm"
               >
                 {cover?.image ? (
@@ -148,10 +150,10 @@ export function Story() {
           className="font-display text-marino text-7xl leading-none font-semibold md:text-8xl"
           aria-hidden="true"
         >
-          14
+          <CountUp to={14} />
         </p>
         <div data-reveal style={{ "--i": 1 } as CSSProperties}>
-          <h2 id="historia" className="text-3xl font-semibold">
+          <h2 id="historia" className="titulo-ola text-3xl font-semibold">
             Una cevichería de barrio, desde 2010
           </h2>
           <p className="text-tinta-suave mt-3 max-w-2xl text-lg">
