@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { formatPrice } from "@/lib/format";
@@ -42,16 +43,26 @@ export function Hero({ featured }: { featured: Product | null }) {
     >
       <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-12">
         <div>
-          <p className="text-rocoto-texto text-sm font-semibold tracking-wide uppercase">
+          <p
+            className="entra text-rocoto-texto text-sm font-semibold tracking-wide uppercase"
+            style={{ "--i": 0 } as CSSProperties}
+          >
             Lince · Jesús María · desde 2010
           </p>
-          <h1 id="hero-titulo" className="mt-3 text-4xl font-semibold">
+          <h1
+            id="hero-titulo"
+            className="entra mt-3 text-4xl font-semibold"
+            style={{ "--i": 1 } as CSSProperties}
+          >
             Sabor marino con 14 años de cariño
           </h1>
-          <p className="text-tinta-suave mt-4 max-w-lg text-lg">
+          <p
+            className="entra text-tinta-suave mt-4 max-w-lg text-lg"
+            style={{ "--i": 2 } as CSSProperties}
+          >
             ¿Qué se te antoja hoy? Pide delivery, recoge en tu sede o reserva tu mesa.
           </p>
-          <div className="mt-7 flex flex-wrap gap-3">
+          <div className="entra mt-7 flex flex-wrap gap-3" style={{ "--i": 3 } as CSSProperties}>
             <Button href="/carta/marina" size="lg">
               Pedir ahora
             </Button>

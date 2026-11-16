@@ -66,3 +66,19 @@ En `src/components/ui/`. Vitrina para QA en `/componentes` (local y previews; 40
 
 - Control A+ / A− de tamaño de letra (propuesta §14).
 - Logotipo vectorial de la marca (hoy es un logotipo en texto).
+
+## Movimiento «marea»
+
+Archivo: `src/styles/motion.css`. Todo en CSS, sin librerías ni listeners de scroll, solo `opacity` y `translate`/`scale`.
+Vive dentro de `prefers-reduced-motion: no-preference`: con «reducir movimiento» no hay animación y todo queda visible.
+No se anima el elemento LCP (foto ni video de la portada).
+
+| Utilidad               | Para qué                                                              | Cómo se usa                                                                                    |
+| ---------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `.entra`               | Entrada escalonada al cargar (portada)                                | `className="entra"` y `style={{ "--i": 0 }}` para el orden                                     |
+| `[data-reveal]`        | Revelado al entrar en pantalla (`animation-timeline: view()`)         | `data-reveal` y `--i` para escalonar por columna. Firefox no lo soporta: se ve todo sin animar |
+| `.elevar`              | La tarjeta se eleva 4 px con sombra teñida de marino (solo con mouse) | `className="elevar"` en tarjetas clicables                                                     |
+| `dialog[data-variant]` | Entrada de la vista rápida, modales y panel lateral                   | Automático en `Dialog` (la hoja sube, el modal se asienta, el panel entra por la derecha)      |
+
+Reglas: cada animación debe poder explicarse en una frase (jerarquía, orden de lectura, "esto se toca" o de dónde viene un diálogo);
+no animar nada que mueva el layout; las pruebas están en `tests/e2e/movimiento.spec.ts`.

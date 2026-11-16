@@ -75,7 +75,7 @@ export function ProductCard({
     <article
       id={product.slug}
       className={cx(
-        "group border-borde bg-superficie relative flex h-full flex-col overflow-hidden rounded-md border shadow-sm transition-shadow duration-200 hover:shadow-md",
+        "group elevar border-borde bg-superficie relative flex h-full flex-col overflow-hidden rounded-md border shadow-sm",
         !product.isAvailable && "opacity-70",
         className,
       )}

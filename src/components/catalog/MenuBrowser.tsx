@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { Plus, Search, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { type CSSProperties, useMemo, useState } from "react";
 
 import { Chip } from "@/components/ui/Chip";
 import { IconButton } from "@/components/ui/IconButton";
@@ -149,12 +149,12 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
           tabIndex={-1}
           className="scroll-mt-40 pt-8 focus:outline-none"
         >
-          <h2 id={`titulo-${section.category.slug}`} className="text-2xl font-semibold">
+          <h2 id={`titulo-${section.category.slug}`} data-reveal className="text-2xl font-semibold">
             {section.category.name}
           </h2>
           <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
             {section.products.map((product, index) => (
-              <li key={product.id}>
+              <li key={product.id} data-reveal style={{ "--i": index % 4 } as CSSProperties}>
                 <ProductCard
                   product={product}
                   sizes={GRID_SIZES}
