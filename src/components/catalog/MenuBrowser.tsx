@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Plus, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { type CSSProperties, useMemo, useState } from "react";
 
 import { Chip } from "@/components/ui/Chip";
@@ -177,27 +177,31 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
           </h2>
           <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
             {section.products.map((product, index) => (
-              <li key={product.id} data-reveal style={{ "--i": index % 4 } as CSSProperties}>
-                <ProductCard
-                  product={product}
-                  sizes={GRID_SIZES}
-                  priority={sectionIndex === 0 && index < 2}
-                  onOpen={() => setSelected(product)}
-                  action={
-                    <IconButton
-                      tone="aji"
-                      label={
-                        needsQuickView(product)
-                          ? `Elegir opciones de ${product.name}`
-                          : `Agregar ${product.name}`
-                      }
-                      icon={<Plus aria-hidden="true" className="size-6" />}
-                      disabled={!product.isAvailable}
-                      onClick={() => quickAdd(product)}
-                    />
-                  }
-                />
-              </li>
+              // QA-006: la tarjeta ES el <li> y el «+» es CSS (icono-mas): ~4 nodos menos por plato.
+              <ProductCard
+                key={product.id}
+                as="li"
+                reveal
+                style={{ "--i": index % 4 } as CSSProperties}
+                product={product}
+                sizes={GRID_SIZES}
+                priority={sectionIndex === 0 && index < 2}
+                onOpen={() => setSelected(product)}
+                action={
+                  <IconButton
+                    tone="aji"
+                    label={
+                      needsQuickView(product)
+                        ? `Elegir opciones de ${product.name}`
+                        : `Agregar ${product.name}`
+                    }
+                    icon={null}
+                    className="icono-mas"
+                    disabled={!product.isAvailable}
+                    onClick={() => quickAdd(product)}
+                  />
+                }
+              />
             ))}
           </ul>
         </section>

@@ -115,4 +115,30 @@
     -webkit-mask: radial-gradient(circle 6px at 8px 100%, #0000 98%, #000) 0 0 / 16px 100% repeat-x;
     mask: radial-gradient(circle 6px at 8px 100%, #0000 98%, #000) 0 0 / 16px 100% repeat-x;
   }
+
+  /*
+   * «+» dibujado solo con CSS (QA-006): el botón de agregar se repite en cada plato y el ícono
+   * SVG sumaba 3 nodos por tarjeta. Mismo tamaño que el ícono (14 px de largo y 2 px de trazo,
+   * como lucide Plus a 24 px) y hereda el color del botón.
+   */
+  .icono-mas {
+    position: relative;
+  }
+
+  .icono-mas::before,
+  .icono-mas::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    translate: -50% -50%;
+  }
+
+  .icono-mas::after {
+    rotate: 90deg;
+  }
 }
