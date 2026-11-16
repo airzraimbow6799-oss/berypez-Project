@@ -26,3 +26,14 @@ export function botonCarrito(page: Page, platos: number) {
     name: platos === 1 ? "Carrito, 1 plato" : `Carrito, ${platos} platos`,
   });
 }
+
+/**
+ * Espera a que React termine de hidratar un elemento de la página. Escribir o tocar antes de eso
+ * se pierde (React vuelve a pintar el valor del servidor) y la prueba queda intermitente.
+ */
+export async function esperarHidratacion(page: Page, selector: string) {
+  await page.waitForFunction((s) => {
+    const el = document.querySelector(s);
+    return !!el && Object.keys(el).some((k) => k.startsWith("__reactProps"));
+  }, selector);
+}
