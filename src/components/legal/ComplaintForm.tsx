@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { COMPLAINT_RESPONSE_DAYS } from "@/config/legal";
 import { fieldErrors } from "@/features/checkout/schema";
+import { clearFieldError, type ErrorMap, fieldError } from "@/features/forms/field-errors";
 import { complaintSchema } from "@/features/complaints/place-complaint";
 
 const INITIAL = {
@@ -34,7 +35,7 @@ export function ComplaintForm() {
   const [token, setToken] = useState("");
   const [resetKey, setResetKey] = useState(0);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
+  const [serverErrors, setServerErrors] = useState<ErrorMap>({});
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [receipt, setReceipt] = useState<{ number: number; createdAt: string } | null>(null);
@@ -47,10 +48,10 @@ export function ComplaintForm() {
   };
   const validation = complaintSchema.safeParse(payload);
   const errors = validation.success ? {} : fieldErrors(validation.error);
-  const errorFor = (f: string) => serverErrors[f] ?? (touched[f] ? errors[f] : undefined);
+  const errorFor = (f: string) => fieldError(serverErrors, errors, touched, f);
   const set = (field: keyof typeof INITIAL) => (value: string | boolean) => {
     setForm((s) => ({ ...s, [field]: value }));
-    setServerErrors((e) => ({ ...e, [field]: "" }));
+    setServerErrors((e) => clearFieldError(e, field));
   };
   const blur = (f: string) => () => setTouched((t) => ({ ...t, [f]: true }));
 
