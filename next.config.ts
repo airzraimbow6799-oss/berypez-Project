@@ -10,6 +10,10 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
+    // E2E=1 (solo el servidor de pruebas de Playwright): sirve las fotos tal cual. Ya son WebP de
+    // ~48 KB; convertirlas a AVIF en el momento saturaba el runner de 2 núcleos y colgaba las páginas.
+    // En Vercel no se define, así que producción sigue optimizando con AVIF/WebP.
+    unoptimized: process.env.E2E === "1",
     formats: ["image/avif", "image/webp"],
     // Tamaños de la cuadrícula: 2 columnas en celular, 3–4 en escritorio.
     deviceSizes: [360, 414, 640, 768, 1024, 1280],
