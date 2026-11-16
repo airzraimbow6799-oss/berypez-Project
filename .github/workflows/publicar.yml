@@ -68,8 +68,12 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          if [ "$RAMA" = "main" ]; then ENTORNO=production; else ENTORNO=preview; fi
-          npx --yes "$VERCEL_CLI" pull --yes --environment="$ENTORNO" --git-branch="$RAMA" --token="$VERCEL_TOKEN"
+          # --git-branch solo vale para preview (Vercel lo rechaza con production).
+          if [ "$RAMA" = "main" ]; then
+            npx --yes "$VERCEL_CLI" pull --yes --environment=production --token="$VERCEL_TOKEN"
+          else
+            npx --yes "$VERCEL_CLI" pull --yes --environment=preview --git-branch="$RAMA" --token="$VERCEL_TOKEN"
+          fi
 
       - name: Construir
         env:
