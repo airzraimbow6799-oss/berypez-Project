@@ -16,9 +16,8 @@ const LIMITE_NODOS = 1000;
 
 for (const ruta of RUTAS) {
   test(`M-03 · ${ruta} tiene menos de ${LIMITE_NODOS} nodos en el DOM`, async ({ page }, info) => {
-    // BUG QA-006: la carta Marina (52 platos) supera el límite. Falla A PROPÓSITO hasta que se
-    // reduzca el DOM (por ejemplo, cargando de forma diferida las secciones fuera de pantalla).
-    test.fail(ruta === "/carta/marina", "QA-006: la carta Marina supera los 1 000 nodos");
+    // QA-006 (corregido): la carta Marina (52 platos) tenía ~1 215 nodos. Ahora la tarjeta es el
+    // propio <li> y el «+» es CSS (≈ 949 nodos). Esta prueba evita que vuelva a pasar del límite.
 
     await page.goto(ruta, { waitUntil: "domcontentloaded" });
     // Sin `networkidle`: en la CI nunca se alcanza (video y recursos externos). Se espera al HTML, a que

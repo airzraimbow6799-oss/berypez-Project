@@ -94,7 +94,7 @@ test.describe("Movimiento · con animaciones", () => {
   }, info) => {
     test.skip(info.project.name !== "escritorio", "El toque no tiene hover.");
     await page.goto("/carta/marina");
-    const tarjeta = page.locator("article").first();
+    const tarjeta = page.locator("[data-producto]").first();
     await tarjeta.scrollIntoViewIfNeeded();
     await tarjeta.hover();
     await expect
