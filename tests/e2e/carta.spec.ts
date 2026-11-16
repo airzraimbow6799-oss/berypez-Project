@@ -74,19 +74,18 @@ test.describe("Carta Marina", () => {
     await expect(tarjetas(page)).toHaveCount(total);
   });
 
-  test("el filtro «Sin picante» oculta los platos picantes", async ({ page }) => {
-    // BUG conocido (QA-001): ningún producto del catálogo tiene la etiqueta «picante» (F1-04
-    // pendiente), así que el filtro no oculta nada. Esta prueba falla A PROPÓSITO hasta que se
-    // etiqueten los platos; cuando pase, Playwright avisa y se quita la anotación `test.fail`.
-    test.fail(true, "QA-001: el catálogo no tiene platos etiquetados como picantes (F1-04)");
+  test("QA-001 · solo se ofrecen filtros que cambian algo en esta carta", async ({ page }) => {
+    // Corregido: un filtro aparece solo si separa platos. Hoy ningún plato está etiquetado como
+    // picante (F1-04, lo confirma la dueña) ni para niños en Marina, así que esos no se ofrecen.
+    // Cuando se etiqueten los picantes, «Sin picante» aparecerá solo: entonces esta prueba debe
+    // pasar a comprobar que al tocarlo desaparecen los platos picantes.
+    const filtros = page.getByRole("group", { name: "Filtros" });
+    await expect(filtros.getByRole("button", { name: "Sin picante" })).toHaveCount(0);
+    await expect(filtros.getByRole("button", { name: "Para niños" })).toHaveCount(0);
 
-    const total = await tarjetas(page).count();
-    await page.getByRole("button", { name: "Sin picante" }).click();
-    await expect(page.getByRole("button", { name: "Sin picante" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    await expect(tarjetas(page)).not.toHaveCount(total);
+    for (const nombre of ["Vegetariano", "Para compartir", "Hasta S/ 40"]) {
+      await expect(filtros.getByRole("button", { name: nombre })).toBeVisible();
+    }
   });
 
   test("vista rápida: elegir variante cambia el precio y habilita «Agregar»", async ({ page }) => {

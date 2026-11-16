@@ -7,7 +7,12 @@ import { Chip } from "@/components/ui/Chip";
 import { IconButton } from "@/components/ui/IconButton";
 import { toast } from "@/components/ui/Toaster";
 import { useCart } from "@/features/cart/store";
-import { applyFilters, type MenuFilters, NO_FILTERS } from "@/features/catalog/search";
+import {
+  applyFilters,
+  availableFilters,
+  type MenuFilters,
+  NO_FILTERS,
+} from "@/features/catalog/search";
 import { canAddToCart, defaultSelection, toCartInput } from "@/features/catalog/selection";
 import type { MenuPage, Product, ProductTag } from "@/types/catalog";
 
@@ -41,6 +46,18 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
         .filter((section) => section.products.length > 0),
     [page.sections, filters],
   );
+  // QA-001: solo se ofrecen los filtros que cambian algo en ESTA carta.
+  const offered = useMemo(
+    () =>
+      availableFilters(
+        page.sections.flatMap((section) => section.products),
+        TAG_FILTERS.map((f) => f.tag),
+        PRICE_LIMIT_CENTS,
+      ),
+    [page.sections],
+  );
+  const tagFilters = TAG_FILTERS.filter((f) => offered.tags.includes(f.tag));
+  const hasFilters = offered.sinPicante || tagFilters.length > 0 || offered.maxPrice;
   const total = sections.reduce((sum, s) => sum + s.products.length, 0);
   const isFiltering = filters !== NO_FILTERS;
 
@@ -89,35 +106,41 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
             />
           ) : null}
         </div>
-        <div
-          className="-mx-4 flex [scrollbar-width:none] gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [&>*]:shrink-0"
-          role="group"
-          aria-label="Filtros"
-        >
-          <Chip
-            pressed={filters.sinPicante}
-            onPressedChange={(on) => setFilters((f) => ({ ...f, sinPicante: on }))}
+        {hasFilters ? (
+          <div
+            className="-mx-4 flex [scrollbar-width:none] gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [&>*]:shrink-0"
+            role="group"
+            aria-label="Filtros"
           >
-            Sin picante
-          </Chip>
-          {TAG_FILTERS.map(({ tag, label }) => (
-            <Chip
-              key={tag}
-              pressed={filters.tags.includes(tag)}
-              onPressedChange={(on) => toggleTag(tag, on)}
-            >
-              {label}
-            </Chip>
-          ))}
-          <Chip
-            pressed={filters.maxPriceCents !== null}
-            onPressedChange={(on) =>
-              setFilters((f) => ({ ...f, maxPriceCents: on ? PRICE_LIMIT_CENTS : null }))
-            }
-          >
-            Hasta S/ 40
-          </Chip>
-        </div>
+            {offered.sinPicante ? (
+              <Chip
+                pressed={filters.sinPicante}
+                onPressedChange={(on) => setFilters((f) => ({ ...f, sinPicante: on }))}
+              >
+                Sin picante
+              </Chip>
+            ) : null}
+            {tagFilters.map(({ tag, label }) => (
+              <Chip
+                key={tag}
+                pressed={filters.tags.includes(tag)}
+                onPressedChange={(on) => toggleTag(tag, on)}
+              >
+                {label}
+              </Chip>
+            ))}
+            {offered.maxPrice ? (
+              <Chip
+                pressed={filters.maxPriceCents !== null}
+                onPressedChange={(on) =>
+                  setFilters((f) => ({ ...f, maxPriceCents: on ? PRICE_LIMIT_CENTS : null }))
+                }
+              >
+                Hasta S/ 40
+              </Chip>
+            ) : null}
+          </div>
+        ) : null}
         <p aria-live="polite" className="text-tinta-suave text-sm">
           {isFiltering ? (total === 1 ? "1 plato encontrado" : `${total} platos encontrados`) : ""}
         </p>

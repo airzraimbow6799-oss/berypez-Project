@@ -125,3 +125,30 @@ export function applyFilters(products: readonly Product[], filters: MenuFilters)
       matchesQuery(p, filters.query),
   );
 }
+
+export type FilterAvailability = {
+  sinPicante: boolean;
+  tags: ProductTag[];
+  maxPrice: boolean;
+};
+
+/**
+ * QA-001 · Qué filtros sirven en esta carta. Un filtro solo se ofrece si cambia el resultado:
+ * algunos platos lo cumplen y otros no. Así «Sin picante» no aparece mientras ningún plato esté
+ * etiquetado como picante (F1-04, lo confirma la dueña) y aparece solo en cuanto se etiqueten.
+ */
+export function availableFilters(
+  products: readonly Product[],
+  tags: readonly ProductTag[],
+  maxPriceCents: number,
+): FilterAvailability {
+  const splits = (matches: (p: Product) => boolean) => {
+    const count = products.filter(matches).length;
+    return count > 0 && count < products.length;
+  };
+  return {
+    sinPicante: splits((p) => p.tags.includes("picante")),
+    tags: tags.filter((tag) => splits((p) => p.tags.includes(tag))),
+    maxPrice: splits((p) => p.priceCents <= maxPriceCents),
+  };
+}

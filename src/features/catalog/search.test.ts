@@ -1,8 +1,16 @@
 import { describe, expect, it } from "vitest";
 
-import type { Product } from "@/types/catalog";
+import catalogSnapshot from "../../../data/catalog/catalog.json";
+import type { Catalog, Product } from "@/types/catalog";
 
-import { applyFilters, matchesQuery, normalize, NO_FILTERS, scoreProduct } from "./search";
+import {
+  applyFilters,
+  availableFilters,
+  matchesQuery,
+  normalize,
+  NO_FILTERS,
+  scoreProduct,
+} from "./search";
 
 function product(overrides: Partial<Product>): Product {
   return {
@@ -111,5 +119,44 @@ describe("applyFilters", () => {
       (p) => p.id,
     );
     expect(ids).toEqual([1, 3, 5]);
+  });
+});
+
+describe("availableFilters (QA-001)", () => {
+  const catalog = catalogSnapshot as Catalog;
+  const inMenu = (slug: string) => catalog.products.filter((p) => p.menus.includes(slug as never));
+  const TAGS = ["vegetariano", "ninos", "compartir"] as const;
+
+  it("no ofrece «Sin picante» mientras ningún plato esté etiquetado como picante", () => {
+    expect(availableFilters(inMenu("marina"), TAGS, 4000).sinPicante).toBe(false);
+  });
+
+  it("ofrece «Sin picante» en cuanto hay platos picantes y no picantes", () => {
+    const [first, ...rest] = inMenu("marina");
+    const tagged = [{ ...first!, tags: ["picante" as const] }, ...rest];
+    expect(availableFilters(tagged, TAGS, 4000).sinPicante).toBe(true);
+  });
+
+  it("solo ofrece las etiquetas que separan platos en esa carta", () => {
+    expect(availableFilters(inMenu("marina"), TAGS, 4000).tags).toEqual([
+      "vegetariano",
+      "compartir",
+    ]);
+    // En la carta vegetariana todos son vegetarianos: el filtro no cambiaría nada.
+    expect(availableFilters(inMenu("vegetariana"), TAGS, 4000).tags).toEqual([]);
+  });
+
+  it("solo ofrece «Hasta S/ 40» si hay platos de ambos lados del precio", () => {
+    expect(availableFilters(inMenu("marina"), TAGS, 4000).maxPrice).toBe(true);
+    // En Berycafé todo cuesta S/ 40 o menos.
+    expect(availableFilters(inMenu("berycafe"), TAGS, 4000).maxPrice).toBe(false);
+  });
+
+  it("sin platos no ofrece nada", () => {
+    expect(availableFilters([], TAGS, 4000)).toEqual({
+      sinPicante: false,
+      tags: [],
+      maxPrice: false,
+    });
   });
 });
