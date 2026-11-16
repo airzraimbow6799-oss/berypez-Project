@@ -8,6 +8,12 @@ _Resultado_: ☐ sin ejecutar · ✅ pasa · ❌ falla (con el número del issue
 
 **Dónde ejecutar:** preview de Vercel (o `localhost:3100`). Dispositivos: Android gama media, iPhone, tablet y escritorio.
 
+## Cobertura automática y mediciones (actualizada 2026-11-15)
+
+- **E2E de la carta:** `tests/e2e/carta.spec.ts` (C-04 a C-08, C-10, C-11, C-12, C-15, C-16).
+- **M-03 (nodos del DOM):** `tests/e2e/rendimiento.spec.ts`. **Resultado:** 5 de 6 cartas cumplen; la **carta Marina tiene 1 219 nodos** (QA-006).
+- **M-01 y M-02 (Lighthouse y LCP):** medidos en local, orientativos: ver [medicion-local.md](medicion-local.md). Accesibilidad 100; rendimiento y LCP por debajo del criterio (repetir en preview).
+
 ## 1. Portada
 
 | ID   | Caso                       | Pasos                                                                                    | Resultado esperado                                                                                | Sev.  | Auto                      | Resultado |

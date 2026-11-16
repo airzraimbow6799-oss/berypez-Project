@@ -63,6 +63,8 @@ export default defineConfig({
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
             process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "sb_publishable_ci",
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: "1x00000000000000000000AA",
+          // ID falso: permite probar que GA4 solo carga con consentimiento (las llamadas se interceptan).
+          NEXT_PUBLIC_GA_ID: "G-QATEST0001",
         },
       },
 });
