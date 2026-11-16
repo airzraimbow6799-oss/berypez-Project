@@ -4,7 +4,8 @@ import { expect, type Page, test } from "@playwright/test";
 // Corre con el catálogo del snapshot (sin Supabase). La carta Marina tiene 52 platos.
 
 const buscador = (page: Page) => page.getByLabel("Buscar en la carta");
-const tarjetas = (page: Page) => page.locator("article");
+// Tarjetas de plato: el marcador no depende de si la tarjeta es <article> o <li> (QA-006).
+const tarjetas = (page: Page) => page.locator("[data-producto]");
 
 test.describe("Carta Marina", () => {
   test.beforeEach(async ({ page }) => {

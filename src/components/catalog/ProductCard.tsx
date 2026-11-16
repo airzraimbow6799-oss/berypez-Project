@@ -1,7 +1,7 @@
 ﻿import { Flame, Leaf, Star, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import { Badge } from "@/components/ui/Badge";
 import { cx } from "@/components/ui/cx";
@@ -53,6 +53,14 @@ type ProductCardProps = {
   /** Si se pasa, toda la tarjeta es un enlace (el nombre es el enlace). */
   href?: string;
   className?: string;
+  /**
+   * Elemento raíz. En una cuadrícula <ul> se usa "li" para que la tarjeta sea el propio elemento
+   * de la lista (QA-006: un nodo menos por plato en cartas de 50+ platos).
+   */
+  as?: "article" | "li";
+  /** Revelado al hacer scroll (motion.css) y orden de la cascada (--i). */
+  reveal?: boolean;
+  style?: CSSProperties;
 };
 
 /** Tarjeta de plato (F1-09): foto 4:3, nombre, descripción en 2 líneas, precio y etiquetas. */
@@ -64,6 +72,9 @@ export function ProductCard({
   onOpen,
   href,
   className,
+  as: Root = "article",
+  reveal = false,
+  style,
 }: ProductCardProps) {
   const price = formatPriceFrom(
     product.priceCents,
@@ -72,8 +83,11 @@ export function ProductCard({
   const badges = product.tags.flatMap((tag) => TAG_BADGES[tag] ?? []);
 
   return (
-    <article
+    <Root
       id={product.slug}
+      data-producto={product.slug}
+      data-reveal={reveal || undefined}
+      style={style}
       className={cx(
         "group elevar border-borde bg-superficie relative flex h-full flex-col overflow-hidden rounded-md border shadow-sm",
         !product.isAvailable && "opacity-70",
@@ -130,19 +144,19 @@ export function ProductCard({
           </ul>
         ) : null}
         <div className="mt-auto flex items-end justify-between gap-2 pt-2 [&>*:last-child]:relative [&>*:last-child]:z-10">
-          <p className="font-semibold tabular-nums">
+          <p className="font-semibold whitespace-nowrap tabular-nums">
             {price.startsWith("Desde ") ? (
               <>
                 <span className="text-tinta-suave block text-xs font-medium">Desde</span>
-                <span className="whitespace-nowrap">{price.slice("Desde ".length)}</span>
+                {price.slice("Desde ".length)}
               </>
             ) : (
-              <span className="whitespace-nowrap">{price}</span>
+              price
             )}
           </p>
           {action}
         </div>
       </div>
-    </article>
+    </Root>
   );
 }
