@@ -10,6 +10,17 @@ celular de 9 dígitos que empieza con 9 (acepta `+51` y espacios); correo opcion
 recojo no pide dirección; términos aceptados; Turnstile; 1 a 30 líneas y cantidad de 1 a 50; en esta fase solo `paymentMethod: "cash"`.
 Horario provisional 11:00–17:00 (hora de Lima) y tarifa fija S/ 7.50: **confirmar con la dueña** antes de dar por buenos los casos de horario.
 
+## Cobertura automática (actualizada 2026-11-15)
+
+| Casos                                           | Archivo                                 | Estado                                                                        |
+| ----------------------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------- |
+| CA-01, CA-02, CA-03, CA-05, CA-06               | `tests/e2e/carrito.spec.ts`             | ✅ pasan en móvil y escritorio                                                |
+| CH-01, CH-05 a CH-09, CH-12                     | `tests/e2e/checkout-validacion.spec.ts` | ✅ pasan                                                                      |
+| CH-02, CH-03, CH-04, CH-06 (campos ya escritos) | `tests/e2e/checkout-validacion.spec.ts` | ❌ **QA-005**: el error del campo no se muestra (fallo esperado, `test.fail`) |
+| Resto (🔑)                                      | —                                       | Esperan el `.env.local` de Axel                                               |
+
+Detalle y hallazgos: [medicion-local.md](medicion-local.md).
+
 ## 1. Carrito
 
 | ID    | Caso                           | Pasos                                                                      | Resultado esperado                                                                          | Sev.    | Auto       | Env | Resultado |

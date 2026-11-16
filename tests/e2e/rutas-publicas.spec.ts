@@ -23,7 +23,8 @@ const RUTAS = [
 
 for (const { ruta, titulo } of RUTAS) {
   test(`${ruta} responde y tiene título`, async ({ page }) => {
-    const respuesta = await page.goto(ruta);
+    // `domcontentloaded`: no se espera a las fotos, que en la CI se optimizan en el momento y a veces tardan.
+    const respuesta = await page.goto(ruta, { waitUntil: "domcontentloaded" });
     expect(respuesta?.status()).toBe(200);
     await expect(page).toHaveTitle(titulo);
     await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
