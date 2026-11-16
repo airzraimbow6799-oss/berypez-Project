@@ -57,6 +57,8 @@ export default defineConfig({
         reuseExistingServer: !isCI,
         timeout: 240_000,
         env: {
+          // Fotos sin optimizar en el servidor de pruebas (ver next.config.ts).
+          E2E: "1",
           CATALOG_SOURCE: "snapshot",
           NEXT_PUBLIC_SITE_URL: baseURL,
           NEXT_PUBLIC_SUPABASE_URL:

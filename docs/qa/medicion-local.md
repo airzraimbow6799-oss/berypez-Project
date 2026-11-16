@@ -53,13 +53,37 @@ Criterio del README: **menos de 1 000 nodos** en la carta.
 - **Sugerencia:** cargar de forma diferida las secciones fuera de pantalla o simplificar la estructura de cada tarjeta (52 platos × ~23 nodos).
 - **Prueba:** `tests/e2e/rendimiento.spec.ts` › `/carta/marina` (`test.fail`).
 
+### QA-009 · Todas las páginas se pintan primero con el loader y luego saltan: CLS de hasta 0.5 — severidad **alta**
+
+- **Real:** `src/app/(site)/loading.tsx` hace que **cada página pública** se sirva con el loader de los peces como contenido inicial
+  (`<template id="B:0">`) y la página real dentro de un `<div hidden id="S:0">` que un script de React muestra después. Se pinta primero el
+  loader (60 vh), luego el contenido lo reemplaza y el pie de página salta de ~714 px a ~3 647 px.
+- **Medido** (build de producción, `next start`): CLS 0.54 en escritorio (1440 × 900) con «reducir movimiento»; **0.16 en celular (412 × 823)
+  con la CPU 4× más lenta, en todas las corridas** (límite recomendado: 0.1). Verificado en `/`, `/carta/marina`, `/carta/criolla`, `/nosotros` y `/terminos`.
+- **Efectos:** CLS fuera de criterio, un destello del loader en cada visita y contenido oculto (`hidden`) hasta que se ejecuta el script.
+  También puede inflar el LCP, porque la foto de la portada aparece solo cuando se hace el reemplazo.
+- **Sugerencia:** que las páginas estáticas no usen `loading.tsx` como fallback inicial (por ejemplo, mover el loader al `NavigationLoader`, que
+  ya cubre las navegaciones lentas) o que el fallback reserve el alto real de la página.
+- **Prueba:** `tests/e2e/carga-inicial.spec.ts` (5 rutas, `test.fail`): revisa el HTML crudo y falla mientras exista el `<template id="B:0">`.
+
 ### QA-007 · Detalles menores — severidad **baja**
 
 - El enlace «Más información» del aviso de cookies no es descriptivo (Lighthouse `link-text`, baja el SEO de todas las páginas). Sugerencia: «Más información sobre cookies» o un `aria-label`.
 - En el celular (375 px), el aviso de cookies de la primera visita queda fijo sobre los dos últimos enlaces legales del pie («Política de privacidad» y «Cambios y devoluciones») hasta que la persona decide. Se cierra con un toque, pero tapa enlaces legales; conviene que no los cubra.
 - Chrome registra un aviso de consola por la cabecera `Permissions-Policy`: «Unrecognized feature: 'browsing-topics'». No rompe nada, pero ensucia la consola y es un punto en «Buenas prácticas» (96).
 
-## 4. Lo que sí funciona (probado)
+## 4. Movimiento nuevo (rama `feat/motion-ceviche`): costo medido
+
+Comparación en la **misma build**, 10 cargas alternadas con y sin movimiento (con «reducir movimiento» el CSS nuevo queda apagado), CPU 4× más lenta, celular:
+
+|                | Hilo bloqueado (mediana) | LCP (mediana) | CLS (media) |
+| -------------- | ------------------------ | ------------- | ----------- |
+| Sin movimiento | 918 ms                   | 1 552 ms      | 0.160       |
+| Con movimiento | 933 ms                   | 1 544 ms      | 0.160       |
+
+Sin diferencia. Lighthouse en esta máquina varía entre 44 y 66 puntos de rendimiento entre corridas de la misma versión, así que no sirve para comparar.
+
+## 5. Lo que sí funciona (probado)
 
 | Área            | Qué se verificó                                                                                                                                                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -68,7 +92,7 @@ Criterio del README: **menos de 1 000 nodos** en la carta.
 | Cookies         | El aviso aparece en la primera visita; **no se carga Google Analytics antes de aceptar ni después de rechazar**; al aceptar se carga y se recuerda; se borra la decisión y vuelve; se decide con teclado; sin `localStorage` no rompe.           |
 | Enlaces legales | El pie enlaza a las 4 páginas legales y cada una carga.                                                                                                                                                                                          |
 
-## 5. Pendiente
+## 6. Pendiente
 
 - Repetir Lighthouse en un preview de Vercel (necesita que Axel quite la protección de despliegue o dé acceso a QA).
 - Lo que requiere base de datos o claves: ver `fase-2.md` a `fase-4.md` (🔑).

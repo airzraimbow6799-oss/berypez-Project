@@ -1,7 +1,7 @@
 import { ArrowRight, CalendarDays, MapPin, Navigation } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { BranchMap } from "@/components/home/BranchMap";
@@ -21,7 +21,7 @@ function SectionHeading({
   link?: ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-3">
+    <div data-reveal className="flex flex-wrap items-end justify-between gap-3">
       <div>
         <h2 id={id} className="text-3xl font-semibold">
           {title}
@@ -45,13 +45,13 @@ export function MenuAccess({ menus, covers }: { menus: Menu[]; covers: Map<strin
         intro="Seis cartas, una sola cocina de barrio."
       />
       <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:gap-4">
-        {menus.map((menu) => {
+        {menus.map((menu, index) => {
           const cover = covers.get(menu.slug);
           return (
-            <li key={menu.slug}>
+            <li key={menu.slug} data-reveal style={{ "--i": index % 3 } as CSSProperties}>
               <Link
                 href={`/carta/${menu.slug}`}
-                className="group relative block aspect-[4/3] overflow-hidden rounded-md shadow-sm"
+                className="group elevar relative block aspect-[4/3] overflow-hidden rounded-md shadow-sm"
               >
                 {cover?.image ? (
                   <Image
@@ -116,8 +116,8 @@ export function ProductShelf({
         }
       />
       <ul className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-        {products.map((product) => (
-          <li key={product.id}>
+        {products.map((product, index) => (
+          <li key={product.id} data-reveal style={{ "--i": index % 4 } as CSSProperties}>
             <ProductCard
               product={product}
               sizes={GRID_SIZES}
@@ -144,12 +144,13 @@ export function Story() {
     <section aria-labelledby="historia" className="bg-crema-200">
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-14 md:grid-cols-[auto_1fr] md:items-center md:gap-12">
         <p
+          data-reveal
           className="font-display text-marino text-7xl leading-none font-semibold md:text-8xl"
           aria-hidden="true"
         >
           14
         </p>
-        <div>
+        <div data-reveal style={{ "--i": 1 } as CSSProperties}>
           <h2 id="historia" className="text-3xl font-semibold">
             Una cevichería de barrio, desde 2010
           </h2>
@@ -169,9 +170,11 @@ export function Branches() {
     <section aria-labelledby="sedes" className="mx-auto max-w-6xl px-4 py-12">
       <SectionHeading id="sedes" title="Nuestras sedes" />
       <ul className="mt-6 grid gap-4 sm:grid-cols-2">
-        {BRANCHES.map((branch) => (
+        {BRANCHES.map((branch, index) => (
           <li
             key={branch.slug}
+            data-reveal
+            style={{ "--i": index } as CSSProperties}
             className="border-borde bg-superficie rounded-md border p-5 shadow-sm"
           >
             <h3 className="flex items-center gap-2 text-2xl font-semibold">

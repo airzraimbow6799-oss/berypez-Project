@@ -1,0 +1,91 @@
+name: Publicar en Vercel
+
+# Publica con la CLI de Vercel después de que la CI pase en `main` (producción) o `develop`
+# (preview). Así cualquiera del equipo con acceso al repo (p. ej. QA) puede fusionar y publicar:
+# la integración de Git de Vercel bloquea los commits de quien no es miembro del equipo en el
+# plan gratuito, pero un despliegue con la CLI usa el token del dueño de la cuenta.
+#
+# Secreto necesario: VERCEL_TOKEN (token de cuenta completa del dueño de Vercel).
+# Las publicaciones automáticas de Git están apagadas en vercel.json (git.deploymentEnabled).
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      rama:
+        description: "Rama a publicar"
+        type: choice
+        options: [main, develop]
+        default: main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publicar-${{ github.event.workflow_run.head_branch || inputs.rama }}
+  cancel-in-progress: false
+
+env:
+  VERCEL_ORG_ID: team_SEWUveZr0iQnxpjC0WyOtwsl
+  VERCEL_PROJECT_ID: prj_JxqapfC8BLJNtKxFYwxqWnWtLas6
+  VERCEL_CLI: vercel@50.4.1
+
+jobs:
+  publicar:
+    name: Publicar ${{ github.event.workflow_run.head_branch || inputs.rama }}
+    # Solo código que pasó la CI tras llegar a la rama (push), nunca el de un PR sin fusionar.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RAMA: ${{ github.event.workflow_run.head_branch || inputs.rama }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || inputs.rama }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Comprobar el token
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::Falta el secreto VERCEL_TOKEN (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+
+      - name: Traer la configuración de Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ "$RAMA" = "main" ]; then ENTORNO=production; else ENTORNO=preview; fi
+          npx --yes "$VERCEL_CLI" pull --yes --environment="$ENTORNO" --git-branch="$RAMA" --token="$VERCEL_TOKEN"
+
+      - name: Construir
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ "$RAMA" = "main" ]; then PROD=--prod; else PROD=; fi
+          npx --yes "$VERCEL_CLI" build $PROD --token="$VERCEL_TOKEN"
+
+      - name: Publicar
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ "$RAMA" = "main" ]; then PROD=--prod; else PROD=; fi
+          URL=$(npx --yes "$VERCEL_CLI" deploy --prebuilt $PROD --token="$VERCEL_TOKEN")
+          echo "Publicado: $URL" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$RAMA" = "develop" ]; then
+            npx --yes "$VERCEL_CLI" alias set "$URL" berypez-avance.vercel.app --token="$VERCEL_TOKEN" --scope="$VERCEL_ORG_ID"
+            echo "Alias: https://berypez-avance.vercel.app" >> "$GITHUB_STEP_SUMMARY"
+          fi
