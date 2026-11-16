@@ -335,4 +335,27 @@ describe("normalizeCatalog", () => {
       normalizeCatalog(raw([product({ id: 5, name: "Misterio", slug: "misterio" })])),
     ).toThrow("sin categoría: Misterio");
   });
+
+  it("QA-002: aplica los nombres corregidos por slug (y el texto alternativo de la foto)", () => {
+    const { products } = normalizeCatalog(
+      raw([
+        product({
+          id: 332,
+          name: "Arroz con mariscos",
+          slug: "arroz-con-mariscos-2",
+          categories: [cat(69, "marino", ""), cat(73, "ceviches", "")],
+        }),
+        product({
+          id: 288,
+          name: "Arroz con mariscos",
+          slug: "arroz-con-mariscos",
+          categories: [cat(69, "marino", ""), cat(73, "ceviches", "")],
+        }),
+      ]),
+    );
+    const byId = new Map(products.map((p) => [p.id, p]));
+    expect(byId.get(332)?.name).toBe("Fuente de arroz con mariscos");
+    expect(byId.get(332)?.image?.alt).toBe("Fuente de arroz con mariscos");
+    expect(byId.get(288)?.name).toBe("Arroz con mariscos");
+  });
 });

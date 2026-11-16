@@ -88,6 +88,16 @@ export const CATEGORY_NAME_OVERRIDES: Readonly<Record<string, string>> = {
   sanguches: "Sánguches",
 };
 
+/**
+ * Nombres de plato corregidos (por slug del producto en berypez.pe). Solo para decisiones del
+ * negocio, documentadas: el resto del texto se toma tal cual del snapshot.
+ */
+export const PRODUCT_NAME_OVERRIDES: Readonly<Record<string, string>> = {
+  // QA-002 (#24): había dos «Arroz con mariscos». Este es el de la sección Fuentes (media fuente
+  // y fuente); el individual de Arroces conserva el nombre. Decidido por Axel el 2026-11-16.
+  "arroz-con-mariscos-2": "Fuente de arroz con mariscos",
+};
+
 /** Orden de las secciones dentro de una carta; las demás van al final por nombre. */
 export const CATEGORY_ORDER: readonly string[] = [
   "ceviches",

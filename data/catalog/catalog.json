@@ -2539,7 +2539,7 @@
     {
       "id": 332,
       "slug": "arroz-con-mariscos-2",
-      "name": "Arroz con mariscos",
+      "name": "Fuente de arroz con mariscos",
       "description": "Arroz con mariscos",
       "priceCents": 8000,
       "variantLabel": "Elige el tamaño",
@@ -2549,7 +2549,7 @@
       ],
       "image": {
         "url": "/catalog/arroz-con-mariscos-2.webp",
-        "alt": "Arroz con mariscos"
+        "alt": "Fuente de arroz con mariscos"
       },
       "tags": [
         "compartir"
