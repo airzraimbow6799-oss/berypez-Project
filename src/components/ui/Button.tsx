@@ -8,7 +8,7 @@ export type ButtonVariant = "primario" | "secundario" | "fantasma" | "peligro";
 export type ButtonSize = "md" | "lg";
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primario: "bg-aji text-marino shadow-md hover:bg-aji-600 active:translate-y-px",
+  primario: "brillo bg-aji text-marino shadow-md hover:bg-aji-600 active:translate-y-px",
   secundario:
     "border-2 border-marino text-marino hover:bg-marino hover:text-crema active:translate-y-px",
   fantasma: "text-marino hover:bg-crema-200",

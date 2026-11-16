@@ -80,5 +80,16 @@ No se anima el elemento LCP (foto ni video de la portada).
 | `.elevar`              | La tarjeta se eleva 4 px con sombra teñida de marino (solo con mouse) | `className="elevar"` en tarjetas clicables                                                     |
 | `dialog[data-variant]` | Entrada de la vista rápida, modales y panel lateral                   | Automático en `Dialog` (la hoja sube, el modal se asienta, el panel entra por la derecha)      |
 
+Segunda tanda (más notoria; mismo criterio):
+
+| Utilidad                              | Para qué                                                                                                                                 | Cómo se usa                                                                            |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `[data-clip]`                         | La foto se destapa de abajo hacia arriba al entrar en pantalla (sin fill hacia adelante, para no recortar sombra ni zoom)                | `data-clip` en el contenedor de la foto                                                |
+| `.parallax-texto` / `.parallax-media` | Portada: el texto sube un poco más que el scroll y el video se queda atrás (~40 px)                                                      | Una clase en cada columna de la portada                                                |
+| `.titulo-ola`                         | Línea ají de 3.5 rem bajo el título de la sección; se dibuja al aparecer. Sin movimiento queda estática (es parte de la marca)           | Clase en el `h2`                                                                       |
+| `.brillo`                             | Destello que cruza el botón principal al pasar el mouse (solo con mouse)                                                                 | Ya incluido en `Button` variante `primario`                                            |
+| `<CountUp to={14} />`                 | Número que cuenta hasta su valor al llegar a la pantalla (IntersectionObserver). Sin JS o con «reducir movimiento» se ve el número final | `src/components/home/CountUp.tsx`                                                      |
+| `flyToCart(origen, fotoUrl)`          | El plato «vuela» al carrito del encabezado al agregarlo (F2-09). No hace nada con «reducir movimiento» ni sin carrito visible            | `src/features/cart/fly-to-cart.ts`, llamado al agregar con «+» y desde la vista rápida |
+
 Reglas: cada animación debe poder explicarse en una frase (jerarquía, orden de lectura, "esto se toca" o de dónde viene un diálogo);
 no animar nada que mueva el layout; las pruebas están en `tests/e2e/movimiento.spec.ts`.

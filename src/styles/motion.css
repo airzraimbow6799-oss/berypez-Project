@@ -161,3 +161,119 @@
     }
   }
 }
+
+/*
+ * Movimiento "marea" · segunda tanda (más notorio, mismo criterio: solo CSS, solo cosas que el
+ * compositor anima, todo detrás de prefers-reduced-motion: no-preference).
+ *
+ *   [data-clip]       La foto se destapa de abajo hacia arriba al entrar en pantalla.
+ *   .parallax-texto   En la portada, el texto sube un poco más rápido que el scroll...
+ *   .parallax-media   ...y el video/foto se queda un poco atrás: profundidad sin tocar el layout.
+ *   .titulo-ola       Línea ají bajo el título de cada sección; se dibuja al aparecer.
+ *   .brillo           Destello que cruza el botón principal al pasar el mouse.
+ */
+
+@layer components {
+  /* La línea ají existe siempre (estática si no hay movimiento): es parte de la marca. */
+  .titulo-ola::after {
+    content: "";
+    display: block;
+    width: 3.5rem;
+    height: 4px;
+    margin-top: 0.7rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-aji);
+    transform-origin: left center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      /* Foto que se destapa. Sin fill hacia adelante: terminado el rango el clip desaparece y no
+         recorta la sombra de la elevación (.elevar) ni el zoom de la foto. */
+      [data-clip] {
+        animation: marea-destapa linear backwards;
+        animation-timeline: view();
+        animation-range: entry 0% entry 75%;
+      }
+
+      @keyframes marea-destapa {
+        from {
+          clip-path: inset(0 0 100% 0 round var(--radius-md));
+        }
+        to {
+          clip-path: inset(0 0 0 0 round var(--radius-md));
+        }
+      }
+
+      /* Parallax de la portada: empieza a moverse cuando la portada empieza a salir. */
+      .parallax-texto {
+        animation: marea-texto-sube linear both;
+        animation-timeline: view();
+        animation-range: exit 0% exit 100%;
+      }
+
+      .parallax-media {
+        animation: marea-media-queda linear both;
+        animation-timeline: view();
+        animation-range: exit 0% exit 100%;
+      }
+
+      @keyframes marea-texto-sube {
+        to {
+          translate: 0 -44px;
+        }
+      }
+
+      @keyframes marea-media-queda {
+        to {
+          translate: 0 40px;
+        }
+      }
+
+      /* Línea bajo el título: se dibuja de izquierda a derecha cuando el título aparece. */
+      .titulo-ola::after {
+        animation: marea-linea linear backwards;
+        animation-timeline: view();
+        animation-range: entry 15% entry 90%;
+      }
+
+      @keyframes marea-linea {
+        from {
+          scale: 0 1;
+        }
+        to {
+          scale: 1 1;
+        }
+      }
+    }
+
+    /* Destello del botón principal (solo con mouse). */
+    @media (hover: hover) {
+      .brillo {
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+      }
+
+      .brillo::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: linear-gradient(
+          105deg,
+          transparent 38%,
+          rgb(255 255 255 / 0.55) 50%,
+          transparent 62%
+        );
+        translate: -130% 0;
+        transition: translate 750ms var(--ease-out-suave);
+      }
+
+      .brillo:hover::after {
+        translate: 130% 0;
+      }
+    }
+  }
+}

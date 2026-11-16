@@ -6,6 +6,7 @@ import { type CSSProperties, useMemo, useState } from "react";
 import { Chip } from "@/components/ui/Chip";
 import { IconButton } from "@/components/ui/IconButton";
 import { toast } from "@/components/ui/Toaster";
+import { flyToCart } from "@/features/cart/fly-to-cart";
 import { useCart } from "@/features/cart/store";
 import {
   applyFilters,
@@ -61,7 +62,7 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
   const total = sections.reduce((sum, s) => sum + s.products.length, 0);
   const isFiltering = filters !== NO_FILTERS;
 
-  const quickAdd = (product: Product) => {
+  const quickAdd = (product: Product, origin: Element | null) => {
     const selection = defaultSelection(product);
     if (needsQuickView(product) || !canAddToCart(product, selection)) {
       setSelected(product);
@@ -69,6 +70,7 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
     }
     add(toCartInput(product, selection, ""), 1);
     navigator.vibrate?.(20);
+    flyToCart(origin, product.image?.url);
     toast.success(`Agregaste ${product.name}`, {
       action: { label: "Ver carrito", onClick: () => window.location.assign("/carrito") },
     });
@@ -198,7 +200,7 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
                     icon={null}
                     className="icono-mas"
                     disabled={!product.isAvailable}
-                    onClick={() => quickAdd(product)}
+                    onClick={(event) => quickAdd(product, event.currentTarget)}
                   />
                 }
               />
