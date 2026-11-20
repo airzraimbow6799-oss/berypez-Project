@@ -40,6 +40,8 @@ export function NavigationLoader() {
       if (!navigates) {
         return;
       }
+      // Desde aquí las páginas nuevas entran con un fundido (.pagina-entra); la primera carga no.
+      document.documentElement.dataset.navegado = "true";
       window.clearTimeout(showTimer.current);
       showTimer.current = window.setTimeout(() => {
         shownAt.current = Date.now();

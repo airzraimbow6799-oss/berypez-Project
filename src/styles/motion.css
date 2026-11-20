@@ -333,3 +333,106 @@
     }
   }
 }
+
+/*
+ * Encabezado que se asienta al bajar (inspirado en El Escondite): sombra marino suave, fondo
+ * sólido y logo 10 % más chico. Solo sombra, color y escala: el alto no cambia (CLS 0).
+ * El estado lo pone HeaderScrollState (data-scrolled). Sin movimiento, cambia sin transición.
+ */
+@layer components {
+  .encabezado[data-scrolled="true"] .barra-principal {
+    background-color: var(--color-fondo);
+    box-shadow: 0 12px 28px -20px rgb(8 47 73 / 0.5);
+  }
+
+  @media (min-width: 48rem) {
+    .encabezado[data-scrolled="true"] .logo-encoge {
+      scale: 0.9;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .barra-principal {
+      transition:
+        box-shadow 300ms var(--ease-out-suave),
+        background-color 300ms var(--ease-out-suave);
+    }
+
+    .logo-encoge {
+      transition: scale 300ms var(--ease-out-suave);
+    }
+  }
+}
+
+/*
+ * Revelado lateral (inspirado en Almacén): en bloques de foto + texto, cada lado entra desde su
+ * costado. `data-reveal="izq"` / `"der"` cambian solo el desplazamiento del revelado de siempre;
+ * la opacidad y el rango son los mismos. 40 px: se nota sin marear.
+ */
+@layer components {
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      [data-reveal="izq"] {
+        animation-name: marea-revela-aparece, marea-revela-izq;
+      }
+
+      [data-reveal="der"] {
+        animation-name: marea-revela-aparece, marea-revela-der;
+      }
+
+      @keyframes marea-revela-izq {
+        from {
+          translate: -40px 0;
+        }
+        to {
+          translate: 0 0;
+        }
+      }
+
+      @keyframes marea-revela-der {
+        from {
+          translate: 40px 0;
+        }
+        to {
+          translate: 0 0;
+        }
+      }
+    }
+  }
+}
+
+/*
+ * Transiciones (ninguna referencia las tiene):
+ *   .pagina-entra      La página nueva entra con un fundido y sube 12 px al navegar dentro del sitio.
+ *   plato-foto         La foto del plato viaja de la tarjeta a la vista rápida (View Transitions).
+ */
+@layer components {
+  @media (prefers-reduced-motion: no-preference) {
+    html[data-navegado] .pagina-entra {
+      /* backwards (no both): al terminar no deja `translate`, que volvería al contenedor el
+         ancestro de los elementos `position: fixed` de la página. */
+      animation: pagina-entra 320ms var(--ease-out-suave) backwards;
+    }
+
+    @keyframes pagina-entra {
+      from {
+        opacity: 0;
+        translate: 0 12px;
+      }
+      to {
+        opacity: 1;
+        translate: 0 0;
+      }
+    }
+
+    ::view-transition-group(plato-foto) {
+      animation-duration: 420ms;
+      animation-timing-function: var(--ease-out-suave);
+    }
+
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 220ms;
+    }
+  }
+}

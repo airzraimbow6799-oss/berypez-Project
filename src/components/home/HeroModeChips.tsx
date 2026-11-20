@@ -29,13 +29,20 @@ export function chipsFor(mode: OrderMode | null): Chip[] {
   return [delivery, { icon: Store, text: "Recojo en Lince o Jesús María" }, PAYMENT];
 }
 
-export function HeroModeChips() {
+export function HeroModeChips({ tone = "normal" }: Readonly<{ tone?: "normal" | "claro" }>) {
   const [mode] = useOrderMode();
+  const isLight = tone === "claro";
   return (
     <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2" aria-label="Lo que ofrecemos">
       {chipsFor(mode).map(({ icon: Icon, text }) => (
-        <li key={text} className="text-tinta-suave flex items-center gap-2 text-sm font-medium">
-          <Icon aria-hidden="true" className="text-marino-600 size-5" />
+        <li
+          key={text}
+          className={`flex items-center gap-2 text-sm font-medium ${isLight ? "text-crema/90" : "text-tinta-suave"}`}
+        >
+          <Icon
+            aria-hidden="true"
+            className={`size-5 ${isLight ? "text-aji" : "text-marino-600"}`}
+          />
           {text}
         </li>
       ))}

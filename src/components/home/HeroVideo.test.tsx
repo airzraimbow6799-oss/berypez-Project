@@ -72,6 +72,21 @@ describe("HeroVideo", () => {
     expect(boton.className).toContain("[@media(hover:hover)]:focus-visible:opacity-100");
   });
 
+  it("de fondo: llena su contenedor, pone la capa marino y la pausa arriba (no tapa el texto)", () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("matchMedia", () => ({ matches: false }));
+    const { container } = render(
+      <HeroVideo variant="fondo" overlayClassName="bg-gradient-to-t from-marino" />,
+    );
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+    expect(container.firstElementChild).toHaveClass("absolute", "inset-0");
+    expect(container.querySelector(".from-marino")).toHaveAttribute("aria-hidden", "true");
+    // El contenedor del fondo sobresale 2.5 rem (parallax): la pausa baja eso más su margen.
+    expect(screen.getByRole("button", { name: /video/ }).className).toContain("top-[3.25rem]");
+  });
+
   it("con movimiento reducido deja solo el póster y no muestra controles", () => {
     vi.useFakeTimers();
     vi.stubGlobal("matchMedia", () => ({ matches: true }));

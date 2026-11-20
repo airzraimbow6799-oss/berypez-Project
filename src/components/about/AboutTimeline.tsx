@@ -2,6 +2,7 @@ import { ArrowUpRight, Tv } from "lucide-react";
 import Image from "next/image";
 import type { CSSProperties } from "react";
 
+import { FloatingIngredients } from "@/components/brand/FloatingIngredients";
 import { formatMonthYear, type TimelineImage, timelineByYear } from "@/config/nosotros";
 
 import { PressVideo } from "./PressVideo";
@@ -56,7 +57,19 @@ export function AboutTimeline() {
   const years = timelineByYear();
   return (
     // overflow-x-clip (no hidden): recorta las fotos inclinadas sin romper el año «sticky».
-    <section aria-labelledby="hitos" className="bg-crema-200 overflow-x-clip">
+    <section aria-labelledby="hitos" className="bg-crema-200 relative isolate overflow-x-clip">
+      <FloatingIngredients
+        items={[
+          { tipo: "concha", className: "top-10 right-6 size-16 rotate-12 md:size-20" },
+          {
+            tipo: "aji",
+            color: "aji",
+            velocidad: "rapida",
+            className: "top-1/3 right-2 hidden size-12 md:block",
+          },
+          { tipo: "pez", className: "top-2/3 right-10 hidden size-20 -rotate-12 lg:block" },
+        ]}
+      />
       <div className="mx-auto max-w-6xl px-4 py-14">
         <h2 id="hitos" data-reveal className="titulo-ola text-3xl font-semibold">
           Nuestra historia, año por año
@@ -96,7 +109,7 @@ export function AboutTimeline() {
 
                 <div className="min-w-0 space-y-6">
                   {milestones.map((m, index) => (
-                    <div key={m.title} data-reveal style={{ "--i": index } as CSSProperties}>
+                    <div key={m.title} data-reveal="izq" style={{ "--i": index } as CSSProperties}>
                       <h3 className="text-2xl font-semibold">{m.title}</h3>
                       <p className="text-tinta-suave mt-2 max-w-xl text-lg">{m.text}</p>
                       {m.source ? (
@@ -136,7 +149,9 @@ export function AboutTimeline() {
                   ) : null}
                 </div>
 
-                <YearCollage images={images} />
+                <div data-reveal="der">
+                  <YearCollage images={images} />
+                </div>
               </li>
             );
           })}

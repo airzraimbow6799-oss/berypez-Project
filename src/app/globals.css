@@ -111,6 +111,21 @@
 
 @layer components {
   /*
+   * Acento manuscrito, como escrito con tiza en la pizarra del local: solo 1–2 palabras por
+   * pantalla (p. ej. «de cariño»). Un poco más grande que el texto que lo rodea porque Caveat
+   * es más chica a igual tamaño, y levemente inclinado. El color lo pone quien lo usa.
+   */
+  .acento-mano {
+    display: inline-block;
+    font-family: var(--font-mano);
+    font-weight: 700;
+    font-size: 1.12em;
+    line-height: 1;
+    letter-spacing: 0;
+    rotate: -2deg;
+  }
+
+  /*
    * Fondo de las páginas públicas: dibujo de mariscos en líneas azules (public/fondo/mariscos.webp,
    * líneas con transparencia, 108 KB). Va fijo detrás de todo, muy suave (12 %), para que se vea en
    * los espacios entre secciones sin quitar legibilidad. Las tarjetas y secciones con fondo propio
