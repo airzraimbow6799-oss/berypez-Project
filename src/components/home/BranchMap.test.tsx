@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { isGoogleMapsEmbed } from "@/config/site";
 
@@ -7,8 +7,39 @@ import { BranchMap } from "./BranchMap";
 
 const EMBED = "https://www.google.com/maps/embed?pb=!1m18!test";
 
+type Aviso = (entries: Array<{ isIntersecting: boolean }>) => void;
+
 describe("BranchMap", () => {
-  it("no carga Google Maps hasta que la persona toca «Ver mapa»", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("carga el mapa solo cuando la persona se acerca con el scroll", () => {
+    let avisar: Aviso = () => {};
+    const disconnect = vi.fn();
+    vi.stubGlobal(
+      "IntersectionObserver",
+      class {
+        constructor(callback: Aviso) {
+          avisar = callback;
+        }
+        observe() {}
+        disconnect = disconnect;
+      },
+    );
+    render(<BranchMap branchName="Lince" embedUrl={EMBED} />);
+    expect(screen.queryByTitle("Mapa de la sede Lince")).toBeNull();
+
+    act(() => avisar([{ isIntersecting: false }]));
+    expect(screen.queryByTitle("Mapa de la sede Lince")).toBeNull();
+
+    act(() => avisar([{ isIntersecting: true }]));
+    expect(screen.getByTitle("Mapa de la sede Lince")).toHaveAttribute("src", EMBED);
+    expect(disconnect).toHaveBeenCalled();
+  });
+
+  it("sin IntersectionObserver queda el botón para cargarlo a mano", () => {
+    vi.stubGlobal("IntersectionObserver", undefined);
     render(<BranchMap branchName="Lince" embedUrl={EMBED} />);
     expect(screen.queryByTitle("Mapa de la sede Lince")).toBeNull();
 

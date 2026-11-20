@@ -4,17 +4,11 @@ import type { CSSProperties } from "react";
 
 import { CountUp } from "@/components/home/CountUp";
 import { FOUNDED_YEAR, yearsOpen } from "@/config/site";
-import {
-  formatMonthYear,
-  MILESTONES,
-  PRESS_QUOTES,
-  PRESS_VIDEOS,
-  RECOGNITIONS,
-} from "@/config/nosotros";
+import { featuredReports, PRESS_QUOTES, RECOGNITIONS } from "@/config/nosotros";
 
-import { PressVideo } from "./PressVideo";
+import { ReportCarousel } from "./ReportCarousel";
 
-/** Portada de «Nosotros»: quién es Bery, con su foto y los años contados. */
+/** Portada de «Nosotros»: quién es Berla, con su foto y los años contados. */
 export function AboutHero() {
   return (
     <section aria-labelledby="nosotros-titulo" className="bg-marino text-crema">
@@ -123,53 +117,6 @@ export function AboutStory() {
   );
 }
 
-/** Línea de tiempo con los hitos verificados, año por año. */
-export function AboutTimeline() {
-  return (
-    <section aria-labelledby="hitos" className="bg-crema-200">
-      <div className="mx-auto max-w-6xl px-4 py-14">
-        <h2 id="hitos" data-reveal className="titulo-ola text-3xl font-semibold">
-          Nuestra historia, año por año
-        </h2>
-        <ol className="border-aji relative mt-10 space-y-9 border-l-4 pl-6 md:pl-10">
-          {MILESTONES.map((m, index) => (
-            <li
-              key={`${m.year}-${m.title}`}
-              data-reveal
-              style={{ "--i": index % 3 } as CSSProperties}
-              className="relative grid gap-1 md:grid-cols-[10rem_1fr] md:gap-6"
-            >
-              <span
-                aria-hidden="true"
-                className="bg-marino border-crema-200 absolute top-2 -left-[2.15rem] size-4 rounded-full border-4 md:-left-[3.15rem]"
-              />
-              <p className="font-display text-marino text-4xl leading-none font-semibold">
-                {m.year}
-              </p>
-              <div>
-                <h3 className="text-xl font-semibold">{m.title}</h3>
-                <p className="text-tinta-suave mt-1 max-w-2xl">{m.text}</p>
-                {m.source ? (
-                  <a
-                    href={m.source.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-marino-600 mt-1 inline-flex items-center gap-1 text-sm font-semibold hover:underline"
-                  >
-                    Fuente: {m.source.label}
-                    <ArrowUpRight aria-hidden="true" className="size-4" />
-                    <span className="sr-only"> (abre en otra pestaña)</span>
-                  </a>
-                ) : null}
-              </div>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
-  );
-}
-
 const OUTLETS = [
   "RPP Noticias",
   "Panamericana TV",
@@ -201,18 +148,12 @@ export function AboutPress() {
           </li>
         ))}
       </ul>
-      <ul className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {PRESS_VIDEOS.map((video, index) => (
-          <li key={video.id} data-reveal style={{ "--i": index % 3 } as CSSProperties}>
-            <PressVideo
-              id={video.id}
-              title={video.title}
-              outlet={video.outlet}
-              dateLabel={formatMonthYear(video.date)}
-            />
-          </li>
-        ))}
-      </ul>
+      <div data-reveal className="mt-10">
+        <h3 className="text-xl font-semibold">Lo mejor de Berypez en TV</h3>
+        <div className="mt-4">
+          <ReportCarousel videos={featuredReports()} />
+        </div>
+      </div>
       <ul className="mt-12 grid gap-4 md:grid-cols-3">
         {PRESS_QUOTES.map((q, index) => (
           <li

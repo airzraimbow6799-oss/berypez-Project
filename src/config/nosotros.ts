@@ -4,11 +4,18 @@
  * en la fuente original, no está aquí.
  */
 
+export interface TimelineImage {
+  src: string;
+  alt: string;
+}
+
 export interface Milestone {
   year: number;
   title: string;
   text: string;
   source?: { label: string; href: string };
+  /** Fotos que acompañan el año (platos de la carta actual o fotos propias de Berypez). */
+  images?: readonly TimelineImage[];
 }
 
 export const MILESTONES: readonly Milestone[] = [
@@ -17,6 +24,10 @@ export const MILESTONES: readonly Milestone[] = [
     title: "Nace Berypez",
     text: "El 19 de setiembre, Berla Carlos y Julio, su compañero de vida, abren Berypez con un deseo: servir y brindar alegría.",
     source: { label: "berypez.pe", href: "https://berypez.pe/nosotros/" },
+    images: [
+      { src: "/catalog/ceviche-berypez.webp", alt: "Ceviche Berypez, el plato de la casa." },
+      { src: "/sedes/jesus-maria.webp", alt: "Fachada de Berypez en Jesús María." },
+    ],
   },
   {
     year: 2013,
@@ -32,6 +43,12 @@ export const MILESTONES: readonly Milestone[] = [
       label: "Trome",
       href: "https://trome.com/actualidad/mistura-feria-platos-dias-entradas-fotos-65505/",
     },
+    images: [
+      {
+        src: "/catalog/chaufa-de-mariscos.webp",
+        alt: "Chaufa de mariscos de la carta de Berypez.",
+      },
+    ],
   },
   {
     year: 2019,
@@ -41,6 +58,10 @@ export const MILESTONES: readonly Milestone[] = [
       label: "Infotur",
       href: "https://archivo.infoturlatam.com/index.php/noticias/gastronomia/item/7423-disfruta-del-cebiche-norteno-con-tortita-de-choclo-y-el-berychaufa-en-berypez",
     },
+    images: [
+      { src: "/catalog/ceviche-norteno.webp", alt: "Ceviche norteño de Berypez." },
+      { src: "/catalog/berychaufa-amazonico.webp", alt: "Berychaufa amazónico." },
+    ],
   },
   {
     year: 2020,
@@ -52,10 +73,29 @@ export const MILESTONES: readonly Milestone[] = [
     },
   },
   {
+    year: 2021,
+    title: "Para mamá, desde Lince",
+    text: "Por el Día de la Madre, Trome recomienda los cebiches, la causa y el arroz con mariscos de Berypez.",
+    source: {
+      label: "Trome",
+      href: "https://trome.com/actualidad/dia-de-la-madre-restaurantes-ofrecen-ricos-potajes-delivery-gastronomia-peruana-noticia/",
+    },
+    images: [
+      { src: "/catalog/causa-acevichada.webp", alt: "Causa acevichada de Berypez." },
+      { src: "/catalog/arroz-con-mariscos-2.webp", alt: "Fuente de arroz con mariscos." },
+    ],
+  },
+  {
     year: 2023,
     title: "Festival del Cebiche",
     text: "Berypez lleva su cocina y su stand al Festival del Cebiche.",
     source: { label: "YouTube", href: "https://www.youtube.com/watch?v=nkZwGJhsk38" },
+    images: [
+      {
+        src: "/nosotros/berla.webp",
+        alt: "Berla Carlos en el stand de Berypez con el afiche del Día Nacional del Cebiche 2023.",
+      },
+    ],
   },
   {
     year: 2025,
@@ -65,6 +105,9 @@ export const MILESTONES: readonly Milestone[] = [
       label: "Visión Gourmet",
       href: "https://www.visiongourmet.com.ar/enbhiga-peru-2025-tres-dias-de-gastronomia-cultura-y-turismo/",
     },
+    images: [
+      { src: "/catalog/fuente-ceviche-mixto.webp", alt: "Fuente de ceviche mixto para compartir." },
+    ],
   },
   {
     year: 2026,
@@ -74,6 +117,10 @@ export const MILESTONES: readonly Milestone[] = [
       label: "Cámara Gastronómica",
       href: "https://www.camaragastronomicaturisticadelperu.com/socios/",
     },
+    images: [
+      { src: "/catalog/trio-con-causa.webp", alt: "Trío con causa de Berypez." },
+      { src: "/sedes/lince.webp", alt: "Fachada de Berypez en Lince." },
+    ],
   },
 ];
 
@@ -206,4 +253,48 @@ export function formatMonthYear(value: string): string {
     new Date(year, month - 1, 1),
   );
   return `${name.charAt(0).toUpperCase()}${name.slice(1)} ${year}`;
+}
+
+export interface TimelineYear {
+  year: number;
+  milestones: readonly Milestone[];
+  videos: readonly PressVideo[];
+}
+
+/** Junta hitos y reportajes de TV por año (de más antiguo a más nuevo) para la línea de tiempo. */
+export function timelineByYear(
+  milestones: readonly Milestone[] = MILESTONES,
+  videos: readonly PressVideo[] = PRESS_VIDEOS,
+): TimelineYear[] {
+  const years = new Set<number>([
+    ...milestones.map((m) => m.year),
+    ...videos.map((v) => Number(v.date.slice(0, 4))),
+  ]);
+  return [...years]
+    .sort((a, b) => a - b)
+    .map((year) => ({
+      year,
+      milestones: milestones.filter((m) => m.year === year),
+      videos: videos
+        .filter((v) => Number(v.date.slice(0, 4)) === year)
+        .toSorted((a, b) => a.date.localeCompare(b.date)),
+    }));
+}
+
+/** Los reportajes del carrusel «Lo mejor en TV», en el orden en que aparecen. */
+export const FEATURED_REPORT_IDS: readonly string[] = [
+  "XCIKhFdI380",
+  "xlrMIWREKe0",
+  "YRcDDN6ZBeM",
+  "nkZwGJhsk38",
+  "Tb2KmgYgbHg",
+  "uA0nZuFUJRc",
+  "tqBrYIlWO4s",
+];
+
+export function featuredReports(
+  ids: readonly string[] = FEATURED_REPORT_IDS,
+  videos: readonly PressVideo[] = PRESS_VIDEOS,
+): PressVideo[] {
+  return ids.flatMap((id) => videos.find((v) => v.id === id) ?? []);
 }

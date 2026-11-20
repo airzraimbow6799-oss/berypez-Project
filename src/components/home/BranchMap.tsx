@@ -1,19 +1,42 @@
 "use client";
 
 import { MapPin } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Props = {
   branchName: string;
   embedUrl: string;
 };
 
+/** Distancia antes de llegar al mapa en la que empieza a cargarse (así ya está listo al verlo). */
+const PRELOAD_MARGIN = "400px 0px";
+
 /**
- * Mapa de Google Maps que se carga al tocar (fachada): Google no descarga nada ni deja
- * cookies hasta que la persona lo pide, y la portada no paga el peso del iframe.
+ * Mapa de Google Maps que se carga solo al acercarse a él con el scroll: la portada no paga el
+ * peso del iframe al abrir, pero quien baja hasta las sedes ya lo ve sin tocar nada.
+ * Si el navegador no tiene IntersectionObserver, queda el botón para cargarlo.
  */
 export function BranchMap({ branchName, embedUrl }: Props) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const placeholderRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const element = placeholderRef.current;
+    if (isLoaded || !element || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setIsLoaded(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: PRELOAD_MARGIN },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [isLoaded]);
 
   if (isLoaded) {
     return (
@@ -30,6 +53,7 @@ export function BranchMap({ branchName, embedUrl }: Props) {
 
   return (
     <button
+      ref={placeholderRef}
       type="button"
       onClick={() => setIsLoaded(true)}
       className="border-borde bg-crema text-tinta hover:border-marino-600 focus-visible:border-marino-600 flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 rounded-md border border-dashed font-semibold sm:aspect-video"
