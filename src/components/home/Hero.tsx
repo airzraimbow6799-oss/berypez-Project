@@ -45,7 +45,7 @@ export function Hero({ featured }: { featured: Product | null }) {
   return (
     <section
       aria-labelledby="hero-titulo"
-      className="sobre-marino bg-marino-800 text-crema relative isolate overflow-hidden"
+      className="sobre-marino bg-marino-800 text-crema relative isolate overflow-clip"
     >
       <div className="parallax-media absolute inset-x-0 -inset-y-10 -z-10">
         <HeroVideo

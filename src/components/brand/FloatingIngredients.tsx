@@ -1,7 +1,8 @@
 /*
  * Ingredientes dibujados en línea (como el fondo de mariscos) que flotan alrededor de una sección
  * con parallax ([data-flota] en motion.css). Decorativos: aria-hidden y sin eventos del mouse.
- * Sin movimiento quedan quietos en su sitio.
+ * Sin movimiento quedan quietos en su sitio. El recorte es overflow-clip (no hidden): hidden crea un
+ * contenedor de scroll y el parallax (animation-timeline: view()) dejaría de avanzar.
  */
 
 const TRAZO = {
@@ -73,7 +74,7 @@ export type Ingrediente = {
 
 export function FloatingIngredients({ items }: Readonly<{ items: readonly Ingrediente[] }>) {
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-clip">
       {items.map(({ tipo, className, velocidad = "lenta", color = "marino" }, index) => {
         const Dibujo = DIBUJOS[tipo];
         return (

@@ -21,11 +21,11 @@ export function morphTo(origen: HTMLElement | null, update: () => void): void {
   }
   origen.style.viewTransitionName = PLATO_FOTO;
   try {
-    doc.startViewTransition(async () => {
+    // Sin esperar cuadros: mientras dura la actualización el navegador no pinta, y una espera de
+    // requestAnimationFrame dejaría la transición colgada. El diálogo se abre en el mismo commit.
+    doc.startViewTransition(() => {
       origen.style.viewTransitionName = "";
       flushSync(update);
-      // El <dialog> se abre en un efecto: un cuadro después ya está en pantalla para la foto final.
-      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
     });
   } catch {
     origen.style.viewTransitionName = "";

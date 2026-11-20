@@ -33,16 +33,12 @@ describe("morphTo", () => {
     expect(update).toHaveBeenCalledOnce();
   });
 
-  it("nombra la foto de origen y la libera dentro de la transición", async () => {
+  it("nombra la foto de origen y la libera dentro de la transición", () => {
     vi.stubGlobal("matchMedia", () => ({ matches: false }));
-    vi.stubGlobal("requestAnimationFrame", (cb: FrameRequestCallback) => {
-      cb(0);
-      return 0;
-    });
     const foto = document.createElement("img");
     let nombreAlEmpezar = "";
-    let callback: (() => Promise<void>) | undefined;
-    ponerTransicion((cb: () => Promise<void>) => {
+    let callback: (() => void) | undefined;
+    ponerTransicion((cb: () => void) => {
       nombreAlEmpezar = foto.style.viewTransitionName;
       callback = cb;
     });
@@ -50,7 +46,7 @@ describe("morphTo", () => {
 
     morphTo(foto, update);
     expect(nombreAlEmpezar).toBe(PLATO_FOTO);
-    await callback?.();
+    callback?.();
     expect(foto.style.viewTransitionName).toBe("");
     expect(update).toHaveBeenCalledOnce();
   });

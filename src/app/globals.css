@@ -27,9 +27,6 @@
     font-size: var(--text-base);
     line-height: var(--leading-base);
     text-rendering: optimizeLegibility;
-    /* Lo que entra desde un costado (revelado lateral, fotos inclinadas) no debe abrir scroll
-       horizontal. clip (no hidden): no crea contenedor de scroll, así el encabezado sticky sigue. */
-    overflow-x: clip;
   }
 
   h1,
