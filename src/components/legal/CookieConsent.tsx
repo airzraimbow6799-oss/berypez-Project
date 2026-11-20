@@ -80,23 +80,36 @@ export function CookieConsent() {
           <section
             ref={avisoRef}
             aria-labelledby="cookies-titulo"
-            className="border-borde bg-superficie fixed inset-x-3 bottom-20 z-40 mx-auto max-w-xl rounded-md border p-4 shadow-lg lg:bottom-4"
+            className="border-borde bg-superficie fixed inset-x-3 bottom-20 z-40 mx-auto max-w-xl rounded-md border p-3 shadow-lg sm:p-4 lg:bottom-4"
           >
-            <h2 id="cookies-titulo" className="font-sans text-base font-semibold">
+            {/* En celular el título solo lo leen los lectores de pantalla: el aviso ocupa menos y
+                no tapa los botones de la portada. */}
+            <h2
+              id="cookies-titulo"
+              className="sr-only font-sans text-base font-semibold sm:not-sr-only"
+            >
               Cookies
             </h2>
-            <p className="text-tinta-suave mt-1 text-sm">
-              Usamos cookies necesarias para que tu carrito funcione. Con tu permiso, también usamos
-              cookies de analítica para mejorar la web.{" "}
+            <p className="text-tinta-suave text-sm sm:mt-1">
+              Usamos cookies necesarias para tu carrito y, con tu permiso, de analítica para mejorar
+              la web.{" "}
               <Link href="/privacidad" className="underline underline-offset-4">
                 Más información sobre cookies
               </Link>
             </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Button variant="secundario" onClick={() => choose("rejected")}>
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+              <Button
+                variant="secundario"
+                className="whitespace-nowrap max-sm:px-3"
+                onClick={() => choose("rejected")}
+              >
                 Solo necesarias
               </Button>
-              <Button variant="secundario" onClick={() => choose("accepted")}>
+              <Button
+                variant="secundario"
+                className="whitespace-nowrap max-sm:px-3"
+                onClick={() => choose("accepted")}
+              >
                 Aceptar
               </Button>
             </div>

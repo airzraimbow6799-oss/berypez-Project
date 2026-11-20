@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 
 import { Button } from "@/components/ui/Button";
+import { FOUNDED_YEAR, yearsOpen } from "@/config/site";
 import { formatPrice } from "@/lib/format";
 import type { Product } from "@/types/catalog";
 
@@ -47,14 +48,14 @@ export function Hero({ featured }: { featured: Product | null }) {
             className="entra text-rocoto-texto text-sm font-semibold tracking-wide uppercase"
             style={{ "--i": 0 } as CSSProperties}
           >
-            Lince · Jesús María · desde 2010
+            Lince · Jesús María · desde {FOUNDED_YEAR}
           </p>
           <h1
             id="hero-titulo"
             className="entra mt-3 text-4xl font-semibold"
             style={{ "--i": 1 } as CSSProperties}
           >
-            Sabor marino con 14 años de cariño
+            Sabor marino con {yearsOpen()} años de cariño
           </h1>
           <p
             className="entra text-tinta-suave mt-4 max-w-lg text-lg"

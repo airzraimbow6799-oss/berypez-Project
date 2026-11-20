@@ -18,6 +18,8 @@ export interface BranchInfo {
   /** src del iframe de «Compartir → Insertar un mapa» (google.com/maps/embed?pb=…). */
   mapsEmbedUrl: string | null;
   hours: string | null;
+  /** Foto de la fachada (public/sedes). `position` elige qué parte se ve al recortar. */
+  photo: { src: string; alt: string; position: string } | null;
 }
 
 export const BRANCHES: readonly BranchInfo[] = [
@@ -31,6 +33,11 @@ export const BRANCHES: readonly BranchInfo[] = [
     mapsEmbedUrl:
       "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7802.9342124072955!2d-77.03855320477439!3d-12.080141711354685!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c863da844e09%3A0x5c57d50c38863411!2sBerypez!5e0!3m2!1ses!2spe!4v1794759577246!5m2!1ses!2spe",
     hours: null,
+    photo: {
+      src: "/sedes/lince.webp",
+      alt: "Fachada de Berypez en Lince: letrero «Restaurante peruano» con el número de delivery y pizarras con la carta en las ventanas.",
+      position: "50% 62%",
+    },
   },
   {
     slug: "jesus-maria",
@@ -42,8 +49,21 @@ export const BRANCHES: readonly BranchInfo[] = [
     mapsEmbedUrl:
       "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7803.183733912862!2d-77.04923450642085!3d-12.071577799999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c8ee869df4df%3A0x720eb4f0f1ddc73f!2sBerypez%20%7C%20Cevicheria!5e0!3m2!1ses!2spe!4v1794759603614!5m2!1ses!2spe",
     hours: null,
+    photo: {
+      src: "/sedes/jesus-maria.webp",
+      alt: "Fachada de Berypez en Jesús María: letrero azul con el logo y una pizarra con ceviche, arroz con mariscos y parihuela en la puerta.",
+      position: "50% 30%",
+    },
   },
 ];
+
+/** Año en que abrió Berypez. Los «años de cariño» se calculan desde aquí, no se escriben a mano. */
+export const FOUNDED_YEAR = 2010;
+
+/** Años cumplidos desde la apertura (2026 → 16). */
+export function yearsOpen(now: Date = new Date()): number {
+  return now.getFullYear() - FOUNDED_YEAR;
+}
 
 export const SOCIAL_LINKS = [
   { network: "instagram", label: "Instagram", href: "https://www.instagram.com/berypez/" },

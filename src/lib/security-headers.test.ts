@@ -9,6 +9,7 @@ describe("contentSecurityPolicy", () => {
     const csp = contentSecurityPolicy({ supabaseUrl: SUPABASE, isDev: false });
     expect(csp).toContain("connect-src 'self' https://abcd.supabase.co wss://abcd.supabase.co");
     expect(csp).toContain("frame-src https://challenges.cloudflare.com");
+    expect(csp).toContain("https://www.youtube-nocookie.com");
     expect(csp).toContain("https://www.google.com");
     expect(csp).toContain("https://www.googletagmanager.com");
     expect(csp).toContain("frame-ancestors 'none'");
