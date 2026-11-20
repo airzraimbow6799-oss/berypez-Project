@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 import { Branches, Story } from "@/components/home/HomeSections";
 import { Button } from "@/components/ui/Button";
 
+// Se regenera una vez al día: los años desde la apertura cambian solos cada año.
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: "Nosotros",
   description: "Berypez: cevichería de barrio en Lince y Jesús María desde 2010.",

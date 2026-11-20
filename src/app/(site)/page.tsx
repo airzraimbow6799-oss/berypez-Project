@@ -7,7 +7,12 @@ import { getMenusCached, getProductsBySlugsCached } from "@/features/catalog/dat
 
 // Portada estática que se regenera cada 10 min o al editar la carta (revalidateTag "catalog").
 export const revalidate = 600;
-export const metadata: Metadata = { title: "Inicio" };
+export const metadata: Metadata = {
+  // Título completo (sin la plantilla «%s | Berypez»): es lo que Google muestra al buscar.
+  title: { absolute: "Berypez · Cevichería en Lince y Jesús María" },
+  description:
+    "Ceviches, arroz con mariscos, chicharrón y parihuela desde 2010. Pide delivery o recojo en Lince y Jesús María, o reserva tu mesa en línea.",
+};
 
 export default async function HomePage() {
   const [menus, products] = await Promise.all([
