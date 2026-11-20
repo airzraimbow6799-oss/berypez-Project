@@ -4,13 +4,15 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 import { cx } from "./cx";
 
-export type ButtonVariant = "primario" | "secundario" | "fantasma" | "peligro";
+export type ButtonVariant = "primario" | "secundario" | "claro" | "fantasma" | "peligro";
 export type ButtonSize = "md" | "lg";
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primario: "brillo bg-aji text-marino shadow-md hover:bg-aji-600 active:translate-y-px",
   secundario:
     "border-2 border-marino text-marino hover:bg-marino hover:text-crema active:translate-y-px",
+  // Para fondos oscuros (la portada con video): borde y texto crema.
+  claro: "border-2 border-crema text-crema hover:bg-crema hover:text-marino active:translate-y-px",
   fantasma: "text-marino hover:bg-crema-200",
   peligro: "bg-rocoto-texto text-white hover:brightness-95 active:translate-y-px",
 };

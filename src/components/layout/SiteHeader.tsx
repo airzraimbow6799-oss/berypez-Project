@@ -3,6 +3,7 @@
 import { BRANCHES, MAIN_NAV, PAYMENT_METHODS } from "@/config/site";
 
 import { CartButton } from "./CartButton";
+import { HeaderScrollState } from "./HeaderScrollState";
 import { Logo } from "./Logo";
 import { ModeSelector } from "./ModeSelector";
 
@@ -22,11 +23,14 @@ function TopBar() {
 
 export function SiteHeader() {
   return (
-    <header className="z-30 md:sticky md:top-0">
+    <header className="encabezado z-30 md:sticky md:top-0">
+      <HeaderScrollState />
       <TopBar />
-      <div className="bg-fondo/95 border-borde border-b backdrop-blur">
+      <div className="barra-principal bg-fondo/95 border-borde border-b backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-          <Logo />
+          <span className="logo-encoge inline-block origin-left">
+            <Logo />
+          </span>
           <nav aria-label="Principal" className="hidden lg:block">
             <ul className="flex items-center gap-1">
               {MAIN_NAV.map((item) => (

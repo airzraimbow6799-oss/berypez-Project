@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { type ReactNode, useEffect, useId, useRef } from "react";
+import { type ReactNode, useId, useLayoutEffect, useRef } from "react";
 
 import { cx } from "./cx";
 import { IconButton } from "./IconButton";
@@ -48,7 +48,9 @@ export function Dialog({
   const titleId = useId();
   const descriptionId = useId();
 
-  useEffect(() => {
+  // useLayoutEffect: el diálogo se abre en el mismo commit; así la foto del plato puede «viajar»
+  // a la vista rápida (View Transitions captura el estado final justo después del cambio).
+  useLayoutEffect(() => {
     const dialog = ref.current;
     if (!dialog) {
       return;

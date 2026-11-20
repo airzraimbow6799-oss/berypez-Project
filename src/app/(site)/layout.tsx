@@ -16,7 +16,10 @@ export default function SiteLayout({ children }: Readonly<{ children: React.Reac
       <div aria-hidden="true" className="fondo-mar" />
       <SkipLink />
       <SiteHeader />
-      <main id="contenido" tabIndex={-1} className="outline-none">
+      {/* overflow-x-clip: lo que entra desde un costado (revelado lateral, fotos inclinadas) no
+          abre scroll horizontal. clip (no hidden) no crea contenedor de scroll: el parallax y los
+          elementos sticky siguen funcionando. */}
+      <main id="contenido" tabIndex={-1} className="overflow-x-clip outline-none">
         {children}
       </main>
       <SiteFooter />
