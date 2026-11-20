@@ -7,6 +7,7 @@ import { Chip } from "@/components/ui/Chip";
 import { IconButton } from "@/components/ui/IconButton";
 import { toast } from "@/components/ui/Toaster";
 import { flyToCart } from "@/features/cart/fly-to-cart";
+import { morphTo } from "@/features/motion/view-transition";
 import { useCart } from "@/features/cart/store";
 import {
   applyFilters,
@@ -188,7 +189,12 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
                 product={product}
                 sizes={GRID_SIZES}
                 priority={sectionIndex === 0 && index < 2}
-                onOpen={() => setSelected(product)}
+                onOpen={() =>
+                  morphTo(
+                    document.querySelector<HTMLElement>(`[data-producto="${product.slug}"] img`),
+                    () => setSelected(product),
+                  )
+                }
                 action={
                   <IconButton
                     tone="aji"

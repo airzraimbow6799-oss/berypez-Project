@@ -5,6 +5,7 @@ import type { CSSProperties, ReactNode } from "react";
 
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { BranchMap } from "@/components/home/BranchMap";
+import { FloatingIngredients } from "@/components/brand/FloatingIngredients";
 import { CountUp } from "@/components/home/CountUp";
 import { Button } from "@/components/ui/Button";
 import {
@@ -46,7 +47,19 @@ const GRID_SIZES = "(min-width: 1024px) 270px, (min-width: 640px) 33vw, 50vw";
 /** F1-07 · Accesos a las 6 cartas con foto. */
 export function MenuAccess({ menus, covers }: { menus: Menu[]; covers: Map<string, Product> }) {
   return (
-    <section aria-labelledby="cartas" className="mx-auto max-w-6xl px-4 py-12">
+    <section aria-labelledby="cartas" className="relative isolate mx-auto max-w-6xl px-4 py-12">
+      <FloatingIngredients
+        items={[
+          { tipo: "limon", className: "top-4 right-2 size-16 rotate-12 md:size-20" },
+          {
+            tipo: "aji",
+            color: "aji",
+            velocidad: "rapida",
+            className: "top-20 right-28 hidden size-12 -rotate-12 md:block",
+          },
+          { tipo: "concha", className: "bottom-2 left-1/3 hidden size-14 md:block" },
+        ]}
+      />
       <SectionHeading
         id="cartas"
         title="Nuestras cartas"
@@ -56,7 +69,11 @@ export function MenuAccess({ menus, covers }: { menus: Menu[]; covers: Map<strin
         {menus.map((menu, index) => {
           const cover = covers.get(menu.slug);
           return (
-            <li key={menu.slug} data-reveal style={{ "--i": index % 3 } as CSSProperties}>
+            <li
+              key={menu.slug}
+              data-reveal={index % 2 === 0 ? "izq" : "der"}
+              style={{ "--i": index % 3 } as CSSProperties}
+            >
               <Link
                 href={`/carta/${menu.slug}`}
                 data-clip
@@ -164,16 +181,27 @@ export function Story() {
     },
   ];
   return (
-    <section aria-labelledby="historia" className="bg-crema-200">
+    <section aria-labelledby="historia" className="bg-crema-200 relative isolate">
+      <FloatingIngredients
+        items={[
+          { tipo: "pez", className: "top-8 right-6 size-20 -rotate-6 md:size-24" },
+          {
+            tipo: "limon",
+            color: "aji",
+            velocidad: "rapida",
+            className: "bottom-6 right-1/4 hidden size-12 md:block",
+          },
+        ]}
+      />
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-14 md:grid-cols-[auto_1fr] md:items-center md:gap-12">
         <p
-          data-reveal
+          data-reveal="izq"
           className="font-display text-marino text-7xl leading-none font-semibold md:text-8xl"
           aria-hidden="true"
         >
           <CountUp to={years} />
         </p>
-        <div data-reveal style={{ "--i": 1 } as CSSProperties}>
+        <div data-reveal="der" style={{ "--i": 1 } as CSSProperties}>
           <h2 id="historia" className="titulo-ola text-3xl font-semibold">
             Una cevichería de barrio, desde {FOUNDED_YEAR}
           </h2>
@@ -213,7 +241,7 @@ export function Branches() {
         {BRANCHES.map((branch, index) => (
           <li
             key={branch.slug}
-            data-reveal
+            data-reveal={index % 2 === 0 ? "izq" : "der"}
             style={{ "--i": index } as CSSProperties}
             className="border-borde bg-superficie overflow-hidden rounded-md border p-5 shadow-sm"
           >

@@ -8,6 +8,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { Stepper } from "@/components/ui/Stepper";
 import { toast } from "@/components/ui/Toaster";
 import { flyToCart } from "@/features/cart/fly-to-cart";
+import { PLATO_FOTO } from "@/features/motion/view-transition";
 import { useCart } from "@/features/cart/store";
 import {
   canAddToCart,
@@ -80,7 +81,10 @@ function QuickViewBody({ product, onAdded }: { product: Product; onAdded: () => 
   return (
     <div className="flex flex-col gap-5">
       {product.image ? (
-        <div className="relative -mx-5 -mt-4 aspect-[16/10] overflow-hidden">
+        <div
+          className="relative -mx-5 -mt-4 aspect-[16/10] overflow-hidden"
+          style={{ viewTransitionName: PLATO_FOTO }}
+        >
           <Image
             src={product.image.url}
             alt={product.image.alt}

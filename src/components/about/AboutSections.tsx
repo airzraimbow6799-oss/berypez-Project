@@ -68,7 +68,7 @@ export function AboutStory() {
   return (
     <section aria-labelledby="historia-bery" className="mx-auto max-w-6xl px-4 py-14">
       <div className="grid gap-10 md:grid-cols-[1.2fr_1fr] md:gap-14">
-        <div data-reveal>
+        <div data-reveal="izq">
           <h2 id="historia-bery" className="titulo-ola text-3xl font-semibold">
             De Piscocoto a tu mesa
           </h2>
@@ -90,7 +90,7 @@ export function AboutStory() {
           </div>
         </div>
         <blockquote
-          data-reveal
+          data-reveal="der"
           style={{ "--i": 1 } as CSSProperties}
           className="bg-crema-200 relative self-start rounded-md p-7"
         >

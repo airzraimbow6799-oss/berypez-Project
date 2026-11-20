@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Caveat, Fraunces, Inter } from "next/font/google";
 
 import "./globals.css";
 
-// Dos familias como máximo (presupuesto de rendimiento). Variables: un solo archivo por familia.
+// Dos familias para todo el texto (presupuesto de rendimiento) y una manuscrita de acento.
+// Variables: un solo archivo por familia.
 const fraunces = Fraunces({
   subsets: ["latin"],
   display: "swap",
@@ -15,6 +16,16 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
+});
+
+// Acento manuscrito (.acento-mano): solo 1–2 palabras por pantalla, como escrito en la pizarra
+// del local. Un peso y sin precarga, para no competir con la foto o el titular de la portada.
+const caveat = Caveat({
+  subsets: ["latin"],
+  display: "swap",
+  weight: "700",
+  preload: false,
+  variable: "--font-caveat",
 });
 
 export const metadata: Metadata = {
@@ -36,7 +47,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es-PE" className={`${fraunces.variable} ${inter.variable}`}>
+    <html lang="es-PE" className={`${fraunces.variable} ${inter.variable} ${caveat.variable}`}>
       <body className="antialiased">{children}</body>
     </html>
   );

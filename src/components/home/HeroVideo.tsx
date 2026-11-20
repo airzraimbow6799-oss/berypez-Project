@@ -27,7 +27,22 @@ export function canPlayMotion(win: Window): boolean {
  * y el elemento LCP; el video se pide después de la carga, sin audio, en bucle, y se puede
  * pausar (WCAG 2.2.2). Es decorativo: lo que cuenta ya está en el texto del HERO.
  */
-export function HeroVideo() {
+type HeroVideoProps = {
+  /**
+   * «fondo»: ocupa todo su contenedor (portada a pantalla completa), con una capa marino encima
+   * para que el texto se lea; el botón de pausa va arriba a la derecha.
+   * «ventana»: el recuadro 16:9 de antes.
+   */
+  variant?: "ventana" | "fondo";
+  /** Clases de la capa de color sobre el video (solo «fondo»). */
+  overlayClassName?: string;
+};
+
+export function HeroVideo({
+  variant = "ventana",
+  overlayClassName = "",
+}: Readonly<HeroVideoProps>) {
+  const isBackground = variant === "fondo";
   const videoRef = useRef<HTMLVideoElement>(null);
   const [shouldLoad, setShouldLoad] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -57,13 +72,19 @@ export function HeroVideo() {
   };
 
   return (
-    <div className="group bg-marino-800 relative aspect-video overflow-hidden rounded-lg shadow-lg">
+    <div
+      className={
+        isBackground
+          ? "group bg-marino-800 absolute inset-0 overflow-hidden"
+          : "group bg-marino-800 relative aspect-video overflow-hidden rounded-lg shadow-lg"
+      }
+    >
       <Image
         src={HERO_POSTER}
         alt="Ilustración de Berypez: ceviche, chicharrón de calamar y arroz con mariscos frente al mar"
         fill
         priority
-        sizes="(min-width: 1024px) 560px, 100vw"
+        sizes={isBackground ? "100vw" : "(min-width: 1024px) 560px, 100vw"}
         className="object-cover"
       />
       {shouldLoad ? (
@@ -96,6 +117,12 @@ export function HeroVideo() {
           ))}
         </video>
       ) : null}
+      {isBackground ? (
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-0 ${overlayClassName}`}
+        />
+      ) : null}
       {shouldLoad ? (
         <IconButton
           label={isPlaying ? "Pausar video" : "Reproducir video"}
@@ -110,7 +137,7 @@ export function HeroVideo() {
           // QA-008: discreto pero siempre alcanzable (WCAG 2.2.2, el video va en bucle).
           // Con mouse aparece al pasar sobre el video o con el teclado (foco); sin mouse (celular)
           // queda visible y tenue, porque ahí no hay "pasar por encima". Pausado, siempre visible.
-          className={`bg-marino/50 text-crema hover:bg-marino focus-visible:bg-marino absolute right-3 bottom-3 backdrop-blur transition-opacity duration-200 focus-visible:opacity-100 ${
+          className={`bg-marino/50 text-crema hover:bg-marino focus-visible:bg-marino absolute right-3 ${isBackground ? "top-[3.25rem]" : "bottom-3"} backdrop-blur transition-opacity duration-200 focus-visible:opacity-100 ${
             isPausedByUser
               ? "opacity-100"
               : "[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:focus-visible:opacity-100"
