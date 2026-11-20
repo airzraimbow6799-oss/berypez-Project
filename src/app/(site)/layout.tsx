@@ -12,6 +12,8 @@ import { Toaster } from "@/components/ui/Toaster";
 export default function SiteLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
+      {/* Dibujo de mariscos detrás de todo el sitio público (decorativo, ver .fondo-mar). */}
+      <div aria-hidden="true" className="fondo-mar" />
       <SkipLink />
       <SiteHeader />
       <main id="contenido" tabIndex={-1} className="outline-none">

@@ -93,3 +93,12 @@ Segunda tanda (más notoria; mismo criterio):
 
 Reglas: cada animación debe poder explicarse en una frase (jerarquía, orden de lectura, "esto se toca" o de dónde viene un diálogo);
 no animar nada que mueva el layout; las pruebas están en `tests/e2e/movimiento.spec.ts`.
+
+## Fondo de mariscos
+
+Dibujo de líneas azules (cangrejo, pulpo, langostinos, pescados, limones) detrás de todas las páginas **públicas**: `<div className="fondo-mar" />` en `src/app/(site)/layout.tsx`.
+
+- Archivo: `public/fondo/mariscos.webp` (líneas con transparencia, 1024 px, ~108 KB). Presupuesto de peso: 150 KB (lo vigila `tests/e2e/fondo.spec.ts`).
+- Va fijo, detrás de todo (`z-index: -1`), sin capturar clics y a 12 % de opacidad. Las tarjetas y secciones con fondo propio lo tapan, así que no resta legibilidad.
+- No está en el panel del restaurante (tiene su propio layout). Se oculta con alto contraste, al imprimir y con `prefers-reduced-data`.
+- Para cambiar la intensidad, ajustar `opacity` en `.fondo-mar` (`src/app/globals.css`).
