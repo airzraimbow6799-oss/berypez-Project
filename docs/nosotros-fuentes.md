@@ -49,3 +49,16 @@ Visión Gourmet, Cusqueña) ni sellos del Estado (Presidencia, SUNAT): son de su
 podría parecer un auspicio. Los medios se nombran con texto y cada dato enlaza a la nota original.
 Si la dueña consigue permiso o fotos propias de esos eventos (Mistura, ENBHIGA, RPP), se agregan.
 Los originales descargados están en `assets-src/nosotros/`.
+
+## Reseñas de Google Maps
+
+La sección «Cinco estrellas de nuestros clientes» lee las reseñas con la API de Places (New)
+(`src/features/reviews/google-reviews.ts`):
+
+- Necesita la variable secreta `GOOGLE_PLACES_API_KEY` en Vercel (solo servidor). Sin ella, la
+  sección muestra los botones «Reseñas de … en Google Maps».
+- Se consulta como mucho una vez al día por sede (caché de Next). Google entrega hasta 5 reseñas
+  «más relevantes» por lugar; se muestran las de 5 estrellas tal como fueron escritas, con el
+  nombre de quien la escribió y enlace a la reseña original.
+- La API de Places se cobra por consulta (con un tramo gratuito mensual): requiere una cuenta de
+  facturación en Google Cloud. Con la caché diaria son unas 120 consultas al mes.

@@ -277,3 +277,59 @@
     }
   }
 }
+
+/*
+ * Movimiento "marea" · línea de tiempo de «Nosotros».
+ *
+ *   [data-flota="lenta" | "rapida"]  Fotos que flotan a distinta velocidad que el scroll
+ *                                    (parallax): la más rápida se adelanta y da profundidad.
+ *   .riel-avance                     La línea ají de la historia se va llenando mientras se lee.
+ *
+ * Sin movimiento (o sin soporte, Firefox) las fotos quedan quietas y la línea llena.
+ */
+@layer components {
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      [data-flota] {
+        animation: marea-flota linear both;
+        animation-timeline: view();
+        animation-range: cover 0% cover 100%;
+      }
+
+      [data-flota="lenta"] {
+        --flota-desde: 48px;
+        --flota-hasta: -48px;
+      }
+
+      [data-flota="rapida"] {
+        --flota-desde: 120px;
+        --flota-hasta: -120px;
+      }
+
+      @keyframes marea-flota {
+        from {
+          translate: 0 var(--flota-desde, 0);
+        }
+        to {
+          translate: 0 var(--flota-hasta, 0);
+        }
+      }
+
+      .riel-avance {
+        transform-origin: top center;
+        animation: marea-riel linear both;
+        animation-timeline: view();
+        animation-range: cover 15% cover 85%;
+      }
+
+      @keyframes marea-riel {
+        from {
+          scale: 1 0;
+        }
+        to {
+          scale: 1 1;
+        }
+      }
+    }
+  }
+}
