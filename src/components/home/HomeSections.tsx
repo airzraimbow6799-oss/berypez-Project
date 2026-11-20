@@ -7,7 +7,14 @@ import { ProductCard } from "@/components/catalog/ProductCard";
 import { BranchMap } from "@/components/home/BranchMap";
 import { CountUp } from "@/components/home/CountUp";
 import { Button } from "@/components/ui/Button";
-import { BRANCHES, isGoogleMapsEmbed } from "@/config/site";
+import {
+  BRANCHES,
+  FOUNDED_YEAR,
+  isGoogleMapsEmbed,
+  MENU_LINKS,
+  PAYMENT_METHODS,
+  yearsOpen,
+} from "@/config/site";
 import type { Menu, Product } from "@/types/catalog";
 
 function SectionHeading({
@@ -140,8 +147,22 @@ export function ProductShelf({
   );
 }
 
-/** Historia en tres líneas (propuesta §8). */
+/** Historia en tres líneas (propuesta §8) y los números de la casa, todos calculados. */
 export function Story() {
+  const years = yearsOpen();
+  const facts = [
+    { value: String(BRANCHES.length), label: `sedes: ${BRANCHES.map((b) => b.name).join(" y ")}` },
+    { value: String(MENU_LINKS.length), label: "cartas, una sola cocina" },
+    {
+      value: String(PAYMENT_METHODS.length),
+      // Yape y Plin son marcas: van con mayúscula; el resto en minúscula dentro de la frase.
+      label: `formas de pago: ${PAYMENT_METHODS.map((m) =>
+        /^(Yape|Plin)$/.test(m) ? m : m.toLowerCase(),
+      )
+        .join(", ")
+        .replace(/, ([^,]+)$/, " y $1")}`,
+    },
+  ];
   return (
     <section aria-labelledby="historia" className="bg-crema-200">
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-14 md:grid-cols-[auto_1fr] md:items-center md:gap-12">
@@ -150,17 +171,34 @@ export function Story() {
           className="font-display text-marino text-7xl leading-none font-semibold md:text-8xl"
           aria-hidden="true"
         >
-          <CountUp to={14} />
+          <CountUp to={years} />
         </p>
         <div data-reveal style={{ "--i": 1 } as CSSProperties}>
           <h2 id="historia" className="titulo-ola text-3xl font-semibold">
-            Una cevichería de barrio, desde 2010
+            Una cevichería de barrio, desde {FOUNDED_YEAR}
           </h2>
           <p className="text-tinta-suave mt-3 max-w-2xl text-lg">
             Berla y Julio abrieron Berypez con una idea simple: pescado fresco, sazón de casa y
-            trato de familia. Catorce años después seguimos igual, ahora en Lince y en Jesús María.
+            trato de familia. {years} años después seguimos igual, ahora en Lince y en Jesús María.
           </p>
         </div>
+        <dl
+          data-reveal
+          style={{ "--i": 2 } as CSSProperties}
+          className="border-marino/15 grid gap-4 border-t pt-6 sm:grid-cols-3 md:col-span-2"
+        >
+          {facts.map((fact) => (
+            <div key={fact.label} className="flex items-baseline gap-3 sm:block">
+              <dt className="sr-only">{fact.label}</dt>
+              <dd className="font-display text-marino text-4xl leading-none font-semibold">
+                {fact.value}
+              </dd>
+              <dd className="text-tinta-suave sm:mt-2" aria-hidden="true">
+                {fact.label}
+              </dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
   );
@@ -177,8 +215,20 @@ export function Branches() {
             key={branch.slug}
             data-reveal
             style={{ "--i": index } as CSSProperties}
-            className="border-borde bg-superficie rounded-md border p-5 shadow-sm"
+            className="border-borde bg-superficie overflow-hidden rounded-md border p-5 shadow-sm"
           >
+            {branch.photo ? (
+              <div className="relative -mx-5 -mt-5 mb-5 aspect-[4/3]">
+                <Image
+                  src={branch.photo.src}
+                  alt={branch.photo.alt}
+                  fill
+                  sizes="(min-width: 1152px) 560px, (min-width: 640px) 50vw, 100vw"
+                  className="object-cover"
+                  style={{ objectPosition: branch.photo.position }}
+                />
+              </div>
+            ) : null}
             <h3 className="flex items-center gap-2 text-2xl font-semibold">
               <MapPin aria-hidden="true" className="text-rocoto-texto size-6" />
               {branch.name}

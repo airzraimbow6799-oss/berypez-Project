@@ -1,6 +1,10 @@
 import { expect, type Page, test } from "@playwright/test";
 
+import { yearsOpen } from "../../src/config/site";
 import { agregarSudados, botonCarrito, esperarHidratacion } from "./ayudas";
+
+/** Años desde la apertura: el contador ya no es un «14» fijo, se calcula desde 2010. */
+const ANOS = String(yearsOpen());
 
 // Movimiento «marea», segunda tanda: foto que se destapa, parallax de la portada, línea bajo los
 // títulos, destello del botón, contador «14» y plato que vuela al carrito (F2-09).
@@ -44,12 +48,12 @@ test.describe("Movimiento 2 · con «reducir movimiento»", () => {
     expect(alto).toBe("4px");
   });
 
-  test("el contador muestra 14 desde el principio y no cambia", async ({ page }) => {
+  test("el contador muestra los años desde el principio y no cambia", async ({ page }) => {
     await page.goto("/");
-    await expect(contador(page)).toHaveText("14");
+    await expect(contador(page)).toHaveText(ANOS);
     await contador(page).scrollIntoViewIfNeeded();
     await page.waitForTimeout(1800);
-    await expect(contador(page)).toHaveText("14");
+    await expect(contador(page)).toHaveText(ANOS);
   });
 
   test("agregar un plato no lanza el plato volador", async ({ page }) => {
@@ -123,12 +127,14 @@ test.describe("Movimiento 2 · con animaciones", () => {
     await expect.poll(posicion, { timeout: 3000 }).not.toBe(antes);
   });
 
-  test("el contador arranca en 0, cuenta al llegar y termina en 14", async ({ page }) => {
+  test("el contador arranca en 0, cuenta al llegar y termina en los años cumplidos", async ({
+    page,
+  }) => {
     await page.goto("/");
     // Fuera de pantalla espera en 0 (cuando la página ya hidrató).
     await expect(contador(page)).toHaveText("0");
     await contador(page).scrollIntoViewIfNeeded();
-    await expect(contador(page)).toHaveText("14", { timeout: 5000 });
+    await expect(contador(page)).toHaveText(ANOS, { timeout: 5000 });
   });
 
   test("al agregar un plato con un toque, el plato vuela al carrito y se retira", async ({
