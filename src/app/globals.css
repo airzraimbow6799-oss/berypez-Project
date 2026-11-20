@@ -110,6 +110,27 @@
 }
 
 @layer components {
+  /*
+   * Fondo de las páginas públicas: dibujo de mariscos en líneas azules (public/fondo/mariscos.webp,
+   * líneas con transparencia, 108 KB). Va fijo detrás de todo, muy suave (12 %), para que se vea en
+   * los espacios entre secciones sin quitar legibilidad. Las tarjetas y secciones con fondo propio
+   * lo tapan. El panel del restaurante no lo usa (no está en su layout).
+   */
+  .fondo-mar {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: url("/fondo/mariscos.webp") center / cover no-repeat;
+    opacity: 0.12;
+  }
+
+  @media (forced-colors: active), print, (prefers-reduced-data: reduce) {
+    .fondo-mar {
+      display: none;
+    }
+  }
+
   /* Borde inferior troquelado del ticket de reserva (como una comanda). */
   .ticket {
     -webkit-mask: radial-gradient(circle 6px at 8px 100%, #0000 98%, #000) 0 0 / 16px 100% repeat-x;
