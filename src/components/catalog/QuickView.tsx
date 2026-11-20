@@ -57,7 +57,15 @@ function Option({ name, value, label, hint, checked, disabled, onSelect }: Optio
   );
 }
 
-function QuickViewBody({ product, onAdded }: { product: Product; onAdded: () => void }) {
+function QuickViewBody({
+  product,
+  previewSrc,
+  onAdded,
+}: {
+  product: Product;
+  previewSrc: string | null;
+  onAdded: () => void;
+}) {
   const add = useCart((state) => state.add);
   const [selection, setSelection] = useState<Selection>(() => defaultSelection(product));
   const [quantity, setQuantity] = useState(1);
@@ -85,10 +93,24 @@ function QuickViewBody({ product, onAdded }: { product: Product; onAdded: () => 
           className="relative -mx-5 -mt-4 aspect-[16/10] overflow-hidden"
           style={{ viewTransitionName: PLATO_FOTO }}
         >
+          {/* La foto que la tarjeta ya tenía (caché): aparece al instante, sin hueco en blanco. */}
+          {previewSrc ? (
+            <Image
+              src={previewSrc}
+              alt=""
+              fill
+              unoptimized
+              loading="eager"
+              aria-hidden="true"
+              className="object-cover"
+            />
+          ) : null}
+          {/* La grande, con prioridad (no espera a «cuando se necesite»): cubre a la de arriba al llegar. */}
           <Image
             src={product.image.url}
             alt={product.image.alt}
             fill
+            priority
             sizes="(min-width: 640px) 512px, 100vw"
             className="object-cover"
           />
@@ -170,10 +192,26 @@ function QuickViewBody({ product, onAdded }: { product: Product; onAdded: () => 
 }
 
 /** F1-10 · Vista rápida: hoja inferior en celular, ventana en escritorio. */
-export function QuickView({ product, onClose }: { product: Product | null; onClose: () => void }) {
+export function QuickView({
+  product,
+  previewSrc = null,
+  onClose,
+}: {
+  product: Product | null;
+  /** URL de la foto ya cargada en la tarjeta, para mostrarla sin esperar. */
+  previewSrc?: string | null;
+  onClose: () => void;
+}) {
   return (
     <Dialog open={product !== null} onClose={onClose} title={product?.name ?? ""} variant="sheet">
-      {product ? <QuickViewBody key={product.id} product={product} onAdded={onClose} /> : null}
+      {product ? (
+        <QuickViewBody
+          key={product.id}
+          product={product}
+          previewSrc={previewSrc}
+          onAdded={onClose}
+        />
+      ) : null}
     </Dialog>
   );
 }

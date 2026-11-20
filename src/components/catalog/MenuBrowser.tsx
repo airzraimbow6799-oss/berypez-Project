@@ -40,6 +40,17 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
   const add = useCart((state) => state.add);
   const [filters, setFilters] = useState<MenuFilters>(NO_FILTERS);
   const [selected, setSelected] = useState<Product | null>(null);
+  // Foto que la tarjeta ya descargó: la vista rápida la muestra al instante mientras llega la grande.
+  const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+  const cardImage = (product: Product) =>
+    document.querySelector<HTMLImageElement>(`[data-producto="${product.slug}"] img`);
+  const openQuickView = (product: Product) => {
+    const image = cardImage(product);
+    morphTo(image, () => {
+      setPreviewSrc(image?.complete ? image.currentSrc || null : null);
+      setSelected(product);
+    });
+  };
 
   const sections = useMemo(
     () =>
@@ -66,7 +77,7 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
   const quickAdd = (product: Product, origin: Element | null) => {
     const selection = defaultSelection(product);
     if (needsQuickView(product) || !canAddToCart(product, selection)) {
-      setSelected(product);
+      openQuickView(product);
       return;
     }
     add(toCartInput(product, selection, ""), 1);
@@ -189,12 +200,7 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
                 product={product}
                 sizes={GRID_SIZES}
                 priority={sectionIndex === 0 && index < 2}
-                onOpen={() =>
-                  morphTo(
-                    document.querySelector<HTMLElement>(`[data-producto="${product.slug}"] img`),
-                    () => setSelected(product),
-                  )
-                }
+                onOpen={() => openQuickView(product)}
                 action={
                   <IconButton
                     tone="aji"
@@ -215,7 +221,7 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
         </section>
       ))}
 
-      <QuickView product={selected} onClose={() => setSelected(null)} />
+      <QuickView product={selected} previewSrc={previewSrc} onClose={() => setSelected(null)} />
     </>
   );
 }
