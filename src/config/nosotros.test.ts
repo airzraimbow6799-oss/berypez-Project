@@ -3,7 +3,41 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { formatMonthYear, MILESTONES, PRESS_QUOTES, PRESS_VIDEOS, RECOGNITIONS } from "./nosotros";
+import {
+  featuredReports,
+  formatMonthYear,
+  MILESTONES,
+  PRESS_QUOTES,
+  PRESS_VIDEOS,
+  RECOGNITIONS,
+  timelineByYear,
+} from "./nosotros";
+
+describe("timelineByYear", () => {
+  it("agrupa hitos y reportajes por año, en orden", () => {
+    const years = timelineByYear();
+    const numbers = years.map((y) => y.year);
+    expect(numbers).toEqual([...numbers].sort((a, b) => a - b));
+    const y2019 = years.find((y) => y.year === 2019);
+    expect(y2019?.milestones.map((m) => m.title)).toContain("La ruta de Infotur");
+    expect(y2019?.videos.map((v) => v.outlet)).toContain("Nativa · Mañanas Informativas");
+    // Un año con solo reportajes (2024) también aparece.
+    expect(years.find((y) => y.year === 2024)?.videos.length).toBeGreaterThan(0);
+  });
+
+  it("el carrusel usa reportajes que existen", () => {
+    expect(featuredReports().length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("todas las fotos de los hitos existen en public/ y tienen texto alternativo", () => {
+    for (const m of MILESTONES) {
+      for (const image of m.images ?? []) {
+        expect(existsSync(join(process.cwd(), "public", image.src))).toBe(true);
+        expect(image.alt.length).toBeGreaterThan(5);
+      }
+    }
+  });
+});
 
 describe("contenido de Nosotros", () => {
   it("los hitos van en orden y empiezan en la apertura de 2010", () => {

@@ -5,8 +5,9 @@ import {
   AboutPress,
   AboutRecognitions,
   AboutStory,
-  AboutTimeline,
 } from "@/components/about/AboutSections";
+import { AboutTimeline } from "@/components/about/AboutTimeline";
+import { GoogleReviews } from "@/components/about/GoogleReviews";
 import { Branches } from "@/components/home/HomeSections";
 import { Button } from "@/components/ui/Button";
 
@@ -24,8 +25,9 @@ export default function AboutPage() {
     <>
       <AboutHero />
       <AboutStory />
-      <AboutTimeline />
       <AboutPress />
+      <AboutTimeline />
+      <GoogleReviews />
       <AboutRecognitions />
       <Branches />
       <div className="mx-auto flex max-w-6xl flex-wrap justify-center gap-3 px-4 pb-12">
