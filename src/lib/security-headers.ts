@@ -48,10 +48,12 @@ export function contentSecurityPolicy({ supabaseUrl, isDev }: HeaderOptions): st
       "wss://ws-us3.pusher.com",
     ],
     // www.google.com: mapas de las sedes (solo /maps/embed, ver isGoogleMapsEmbed).
+    // youtube-nocookie: entrevistas en «Nosotros», solo cuando la persona toca el video.
     "frame-src": [
       "https://challenges.cloudflare.com",
       "https://vercel.live",
       "https://www.google.com",
+      "https://www.youtube-nocookie.com",
     ],
     "worker-src": ["'self'", "blob:"],
     "object-src": ["'none'"],
