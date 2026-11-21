@@ -122,19 +122,7 @@ export function CartaManager({ role }: { role: StaffRole }) {
       </dl>
 
       <div className="mt-5 flex flex-col gap-3">
-        <div className="relative max-w-md">
-          <Search
-            aria-hidden="true"
-            className="text-tinta-suave pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2"
-          />
-          <Input
-            label="Buscar plato"
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="pl-12"
-          />
-        </div>
+        <SearchField value={query} onChange={setQuery} />
         <div className="flex flex-wrap gap-2" role="group" aria-label="Filtros de la carta">
           <Chip pressed={category === null} onPressedChange={() => setCategory(null)}>
             Todos
@@ -222,6 +210,34 @@ export function CartaManager({ role }: { role: StaffRole }) {
           setPriceToConfirm(null);
         }}
       />
+    </div>
+  );
+}
+
+/**
+ * Buscador con lupa. La lupa se centra respecto del campo (no de la etiqueta), por eso el
+ * contenedor `relative` envuelve solo el input.
+ */
+function SearchField({ value, onChange }: { value: string; onChange: (text: string) => void }) {
+  const id = useId();
+  return (
+    <div className="max-w-md">
+      <label htmlFor={id} className="font-semibold">
+        Buscar plato
+      </label>
+      <div className="relative mt-1.5">
+        <Search
+          aria-hidden="true"
+          className="text-tinta-suave pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2"
+        />
+        <input
+          id={id}
+          type="search"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="min-h-tactil bg-superficie text-marino border-borde hover:border-marino-600 focus-visible:border-marino-600 w-full rounded-sm border pr-4 pl-12 text-base"
+        />
+      </div>
     </div>
   );
 }
