@@ -1,3 +1,4 @@
+import { DemoReservations } from "@/components/panel/DemoBoards";
 import { PanelNav } from "@/components/panel/PanelNav";
 import { ReservationsBoard } from "@/components/panel/ReservationsBoard";
 import { requireStaff } from "@/features/staff/session";
@@ -9,6 +10,14 @@ export const metadata = { title: "Reservas" };
 /** F4-06 · Reservas de hoy y próximos 7 días de la sede del personal (RLS). */
 export default async function PanelReservationsPage() {
   const session = await requireStaff("reservas");
+  if (session.isDemo) {
+    return (
+      <main className="mx-auto max-w-7xl px-4 py-6">
+        <PanelNav current="reservas" email={session.email} role={session.role} demo />
+        <DemoReservations />
+      </main>
+    );
+  }
 
   const supabase = await createClient();
   const from = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
@@ -39,7 +48,7 @@ export default async function PanelReservationsPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6">
-      <PanelNav current="reservas" email={session.email} role={session.role} />
+      <PanelNav current="reservas" email={session.email} role={session.role} demo={false} />
       <ReservationsBoard reservations={reservations} />
     </main>
   );
