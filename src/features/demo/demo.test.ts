@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   DEMO_ACCOUNTS,
+  DEMO_PANEL_BY_DEFAULT,
   demoAccountForCredentials,
   demoAccountForRole,
   isDemoPanel,
@@ -19,10 +20,11 @@ describe("isDemoPanel", () => {
   it("DEMO_PANEL=0 lo apaga aunque sea una vista previa", () => {
     expect(isDemoPanel(env({ DEMO_PANEL: "0", VERCEL_ENV: "preview" }))).toBe(false);
   });
-  it("sin definir: activo solo en vistas previas de Vercel", () => {
+  it("sin definir: hoy queda activo porque el sitio principal es la demo", () => {
+    expect(DEMO_PANEL_BY_DEFAULT).toBe(true);
+    expect(isDemoPanel(env({ VERCEL_ENV: "production" }))).toBe(true);
     expect(isDemoPanel(env({ VERCEL_ENV: "preview" }))).toBe(true);
-    expect(isDemoPanel(env({ VERCEL_ENV: "production" }))).toBe(false);
-    expect(isDemoPanel(env({}))).toBe(false);
+    expect(isDemoPanel(env({}))).toBe(true);
   });
 });
 
