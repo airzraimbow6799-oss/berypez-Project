@@ -1,13 +1,24 @@
 import Link from "next/link";
 
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import {
+  type PanelSectionKey,
+  roleLabel,
+  sectionsFor,
+  type StaffRole,
+} from "@/features/staff/roles";
 
-/** Navegación del panel: Pedidos · Reservas. */
-export function PanelNav({ current, email }: { current: "pedidos" | "reservas"; email: string }) {
-  const tabs = [
-    { key: "pedidos", href: "/panel", label: "Pedidos" },
-    { key: "reservas", href: "/panel/reservas", label: "Reservas" },
-  ] as const;
+/** Navegación del panel: muestra solo las secciones que el rol puede ver. */
+export function PanelNav({
+  current,
+  email,
+  role,
+}: {
+  current?: PanelSectionKey;
+  email: string;
+  role: StaffRole;
+}) {
+  const tabs = sectionsFor(role);
   return (
     <header className="flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-4">
@@ -28,7 +39,9 @@ export function PanelNav({ current, email }: { current: "pedidos" | "reservas"; 
           </ul>
         </nav>
       </div>
-      <p className="text-tinta-suave text-sm">{email}</p>
+      <p className="text-tinta-suave text-sm">
+        {email} · <span className="font-semibold">{roleLabel(role)}</span>
+      </p>
     </header>
   );
 }
