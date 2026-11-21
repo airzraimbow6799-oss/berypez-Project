@@ -11,7 +11,7 @@
 export const STAFF_ROLES = ["admin", "cocina", "salon"] as const;
 export type StaffRole = (typeof STAFF_ROLES)[number];
 
-export type PanelSectionKey = "pedidos" | "reservas" | "carta";
+export type PanelSectionKey = "pedidos" | "reservas" | "carta" | "dashboard" | "personal";
 
 export type PanelSection = {
   key: PanelSectionKey;
@@ -34,6 +34,20 @@ export const PANEL_SECTIONS: readonly PanelSection[] = [
     href: "/panel/carta",
     label: "Carta",
     roles: ["admin", "cocina"],
+    demoOnly: true,
+  },
+  {
+    key: "dashboard",
+    href: "/panel/dashboard",
+    label: "Resumen",
+    roles: ["admin"],
+    demoOnly: true,
+  },
+  {
+    key: "personal",
+    href: "/panel/personal",
+    label: "Personal",
+    roles: ["admin"],
     demoOnly: true,
   },
 ];

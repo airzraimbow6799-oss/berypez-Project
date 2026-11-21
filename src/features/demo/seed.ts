@@ -1,6 +1,8 @@
 import type { PanelReservation } from "@/components/panel/ReservationsBoard";
 import type { Dish } from "@/features/carta/schema";
 import type { PanelOrder } from "@/features/orders/panel";
+import type { ReservationSource } from "@/features/reservations/staff-form";
+import type { Member } from "@/features/staff/members";
 
 /**
  * Datos de ejemplo del modo demostración. Los nombres de clientes, teléfonos y precios son
@@ -11,6 +13,9 @@ export type DemoData = {
   dishes: Dish[];
   orders: PanelOrder[];
   reservations: PanelReservation[];
+  staff: Member[];
+  /** Ventas de los 6 días anteriores a hoy, en céntimos (de más antiguo a más reciente). */
+  salesHistoryCents: number[];
 };
 
 const MINUTE = 60_000;
@@ -275,13 +280,60 @@ const RESERVATIONS: ReservationSeed[] = [
   },
 ];
 
+const SOURCES: Record<number, ReservationSource> = {
+  311: "phone",
+  312: "web",
+  313: "whatsapp",
+  314: "web",
+  315: "web",
+};
+
 export function seedReservations(now: number): PanelReservation[] {
   return RESERVATIONS.map(({ inMinutes, ...reservation }) => ({
     ...reservation,
-    startsAt: new Date(now + inMinutes * MINUTE).toISOString(),
+    source: SOURCES[reservation.id] ?? "web",
+    notes: reservation.occasion,
+    startsAt: new Date(
+      Math.round((now + inMinutes * MINUTE) / (30 * MINUTE)) * 30 * MINUTE,
+    ).toISOString(),
   }));
 }
 
+export function seedStaff(): Member[] {
+  const person = (
+    id: number,
+    name: string,
+    role: Member["role"],
+    branch: Member["branch"],
+    extra: Partial<Pick<Member, "isActive" | "isPending" | "email">> = {},
+  ): Member => ({
+    id,
+    name,
+    role,
+    branch,
+    email: `${name.split(" ")[0]?.toLowerCase()}@demo.berypez.pe`,
+    isActive: true,
+    isPending: false,
+    ...extra,
+  });
+  return [
+    person(1, "Marta Rojas", "admin", null, { email: "admin@demo.berypez.pe" }),
+    person(2, "Luis Paredes", "cocina", "Lince"),
+    person(3, "Camila Torres", "salon", "Lince"),
+    person(4, "Jorge Mamani", "cocina", "Jesús María"),
+    person(5, "Ana Vilca", "salon", "Jesús María", { isActive: false, isPending: true }),
+  ];
+}
+
+/** Ventas de ejemplo de los 6 días anteriores (de S/ 874 a S/ 1,568). */
+export const SALES_HISTORY_CENTS = [112000, 98400, 134600, 87400, 156800, 143300];
+
 export function createDemoData(now: number): DemoData {
-  return { dishes: seedDishes(), orders: seedOrders(now), reservations: seedReservations(now) };
+  return {
+    dishes: seedDishes(),
+    orders: seedOrders(now),
+    reservations: seedReservations(now),
+    staff: seedStaff(),
+    salesHistoryCents: SALES_HISTORY_CENTS,
+  };
 }

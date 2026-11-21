@@ -436,3 +436,35 @@
     }
   }
 }
+
+/*
+ * Dashboard: las barras crecen desde su base al aparecer (ventas por día, platos más pedidos,
+ * ocupación de franjas). Motivo: mostrar que el dato se construyó, de más viejo a más nuevo,
+ * y guiar la lectura de izquierda a derecha. Solo `scale`, escalonado con --i.
+ *
+ *   .barra-sube      Barra vertical que crece desde abajo.
+ *   .barra-avanza    Barra horizontal que crece desde la izquierda.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .barra-sube {
+    animation: barra-sube 800ms var(--ease-out-suave) both;
+    animation-delay: calc(var(--i, 0) * 80ms);
+  }
+
+  .barra-avanza {
+    animation: barra-avanza 800ms var(--ease-out-suave) both;
+    animation-delay: calc(var(--i, 0) * 80ms);
+  }
+
+  @keyframes barra-sube {
+    from {
+      scale: 1 0;
+    }
+  }
+
+  @keyframes barra-avanza {
+    from {
+      scale: 0 1;
+    }
+  }
+}

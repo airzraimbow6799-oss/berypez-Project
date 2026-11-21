@@ -54,11 +54,11 @@ La pasarela **no cobra mensualidad fija conocida** en las fuentes consultadas; c
 | Cimientos, QA global, manual y puesta en producción (transversal) | 9      | 72      |
 | 1 · Login y roles                                                 | 4      | 32      |
 | 2 · Panel admin de la carta                                       | 6      | 48      |
-| 3 · Reservas con plano                                            | 12.5   | 100     |
+| 3 · Reservas centralizadas                                        | 9.5    | 76      |
 | 4 · Notificaciones en tiempo real                                 | 3.5    | 28      |
 | 5 · Pasarela de pagos (hasta producción)                          | 15     | 120     |
 | 6 · Dashboard                                                     | 6      | 48      |
-| **Total**                                                         | **56** | **448** |
+| **Total**                                                         | **53** | **424** |
 
 ### Plantilla para calcular el costo de desarrollo
 
@@ -69,34 +69,35 @@ Recomendado: sumar 15 %-20 % de imprevistos (cambios pedidos tras la reunión 1,
 
 | Persona               | Horas | Tarifa / hora | Subtotal     |
 | --------------------- | ----- | ------------- | ------------ |
-| Axel                  | 222   | _a definir_   | 222 × tarifa |
-| Rafael                | 226   | _a definir_   | 226 × tarifa |
+| Axel                  | 226   | _a definir_   | 226 × tarifa |
+| Rafael                | 198   | _a definir_   | 198 × tarifa |
 | Imprevistos (15-20 %) |       |               | _a definir_  |
 
-(Las horas de cada uno salen de 27.75 y 28.25 días × 8.)
+(Las horas de cada uno salen de 28.25 y 24.75 días × 8.)
 
 ## 4. Opciones para que la dueña elija (por escalones)
 
 Cada escalón **suma** al anterior. Los días incluyen la parte transversal (cimientos, QA, producción).
 
-| Escalón                  | Contiene                                                                                  | Días acumulados | Horas acumuladas |
-| ------------------------ | ----------------------------------------------------------------------------------------- | --------------- | ---------------- |
-| 1 · Núcleo operativo     | Login y roles + panel de carta (precios, agotados, stock) + notificaciones en tiempo real | 22.5            | 180              |
-| 2 · + Reservas con plano | Plano de mesas, asignación sin choques                                                    | 35              | 280              |
-| 3 · + Dashboard          | Ventas, pedidos, reservas, platos más pedidos                                             | 41              | 328              |
-| 4 · + Pasarela de pagos  | Yape, Plin y tarjeta con confirmación automática                                          | 56              | 448              |
+| Escalón                      | Contiene                                                                                                     | Días acumulados | Horas acumuladas |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------ | --------------- | ---------------- |
+| 1 · Núcleo operativo         | Login y roles + panel de carta (precios, agotados, stock) + notificaciones en tiempo real                    | 22.5            | 180              |
+| 2 · + Reservas centralizadas | Reservar por web y por teléfono desde el panel, franjas tachadas, límite de terraza y correo de confirmación | 32              | 256              |
+| 3 · + Dashboard              | Ventas, pedidos, reservas, platos más pedidos                                                                | 38              | 304              |
+| 4 · + Pasarela de pagos      | Yape, Plin y tarjeta con confirmación automática                                                             | 53              | 424              |
 
 La pasarela es el escalón más caro en horas y el único que además tiene **costos por venta y un trámite del negocio**. Si la dueña quiere abrir pronto, puede salir con los escalones 1-3 cobrando en efectivo y sumar la pasarela después.
 
 ## 5. Costos que pueden aparecer y hoy no están incluidos
 
-| Concepto                                 | Estado                                                                                                                                                      |
-| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Boleta y factura electrónica (SUNAT)     | La web **no** las emite en esta versión. El negocio debe revisar con su contador cómo cumple; si se integra un proveedor de comprobantes, se cotiza aparte. |
-| WhatsApp automático (API oficial)        | Solo si la dueña lo pide; tiene proveedor y costo propios.                                                                                                  |
-| Notificaciones push (PWA)                | Mejora opcional (~3 días); no tiene costo mensual por sí misma.                                                                                             |
-| Soporte y mantenimiento después de salir | A definir: horas al mes incluidas, tiempo de respuesta y qué cuenta como «cambio nuevo».                                                                    |
-| Fotos profesionales de los platos        | Pendiente del MVP (issue #25); mejora mucho las ventas pero no es desarrollo.                                                                               |
+| Concepto                                   | Estado                                                                                                                                                      |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cuenta de cliente con historial (módulo 7) | Opcional, versión 2.1: unos 6 días-persona (≈ 48 horas). No está en los escalones.                                                                          |
+| Boleta y factura electrónica (SUNAT)       | La web **no** las emite en esta versión. El negocio debe revisar con su contador cómo cumple; si se integra un proveedor de comprobantes, se cotiza aparte. |
+| WhatsApp automático (API oficial)          | Solo si la dueña lo pide; tiene proveedor y costo propios.                                                                                                  |
+| Notificaciones push (PWA)                  | Mejora opcional (~3 días); no tiene costo mensual por sí misma.                                                                                             |
+| Soporte y mantenimiento después de salir   | A definir: horas al mes incluidas, tiempo de respuesta y qué cuenta como «cambio nuevo».                                                                    |
+| Fotos profesionales de los platos          | Pendiente del MVP (issue #25); mejora mucho las ventas pero no es desarrollo.                                                                               |
 
 ## 6. Fuentes consultadas (21-nov-2026)
 
