@@ -102,3 +102,16 @@ Dibujo de líneas azules (cangrejo, pulpo, langostinos, pescados, limones) detr�
 - Va fijo, detrás de todo (`z-index: -1`), sin capturar clics y a 12 % de opacidad. Las tarjetas y secciones con fondo propio lo tapan, así que no resta legibilidad.
 - No está en el panel del restaurante (tiene su propio layout). Se oculta con alto contraste, al imprimir y con `prefers-reduced-data`.
 - Para cambiar la intensidad, ajustar `opacity` en `.fondo-mar` (`src/app/globals.css`).
+
+## Movimiento del dashboard
+
+Archivo: `src/styles/motion.css` (final del archivo). Mismo criterio que la «marea»: solo `scale`/`opacity`, escalonado con `--i`, y todo dentro de `prefers-reduced-motion: no-preference`.
+
+| Utilidad             | Para qué                                                                                                            | Cómo se usa                                                                              |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `.barra-sube`        | La barra vertical crece desde su base (ventas por día). Muestra que el dato se «construye» de más viejo a más nuevo | `className="barra-sube origin-bottom"` y `style={{ "--i": n }}`                          |
+| `.barra-avanza`      | La barra horizontal crece desde la izquierda (platos más pedidos, ocupación de franjas)                             | `className="barra-avanza origin-left"` y `--i`                                           |
+| `.entra`             | Las tarjetas del resumen entran una tras otra (jerarquía: primero los números, luego los gráficos)                  | Ya existente                                                                             |
+| `<AnimatedNumber />` | Los números suben hasta su valor al aparecer y vuelven a contar si cambian (un pedido nuevo)                        | `src/components/panel/AnimatedNumber.tsx`. Con «reducir movimiento» se ve el valor final |
+
+El gráfico de barras es decorativo para quien usa lector de pantalla: tiene una tabla equivalente (`sr-only`) con los mismos datos.

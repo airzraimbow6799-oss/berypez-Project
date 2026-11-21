@@ -10,6 +10,7 @@ import { toast } from "@/components/ui/Toaster";
 import type { PanelOrder } from "@/features/orders/panel";
 import { nextStatuses, type OrderStatus, STATUS_LABELS } from "@/features/orders/status";
 import { formatPrice } from "@/lib/format";
+import { beep } from "@/lib/beep";
 import { createClient } from "@/lib/supabase/client";
 
 const ACTION_LABELS: Partial<Record<OrderStatus, string>> = {
@@ -27,23 +28,6 @@ const ACTIVE: readonly OrderStatus[] = [
   "on_the_way",
   "ready_for_pickup",
 ];
-
-/** Pitido corto con Web Audio (sin archivos). Los navegadores lo permiten tras un clic. */
-function beep() {
-  try {
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.frequency.value = 880;
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
-    osc.connect(gain).connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.6);
-  } catch {
-    // Sin audio disponible.
-  }
-}
 
 /** F3-12 / F3-14 · Tablero en vivo: pedidos nuevos al instante, con sonido, y cambio de estado. */
 export function PanelBoard({

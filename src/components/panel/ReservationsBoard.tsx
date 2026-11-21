@@ -3,8 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { toast } from "@/components/ui/Toaster";
+import { SOURCE_LABELS } from "@/features/reservations/staff-form";
 
 export type PanelReservation = {
   id: number;
@@ -16,6 +18,10 @@ export type PanelReservation = {
   phone: string;
   status: "confirmed" | "arrived" | "no_show" | "cancelled";
   branch: string;
+  /** Por dónde entró: web, llamada o WhatsApp (si se conoce). */
+  source?: "web" | "phone" | "whatsapp";
+  notes?: string | null;
+  email?: string | null;
 };
 
 const LABELS = {
@@ -110,9 +116,12 @@ export function ReservationsBoard({
                   {r.area ? ` · ${r.area}` : ""}
                   {r.occasion ? ` · ${r.occasion}` : ""}
                 </p>
-                <a href={`tel:+51${r.phone}`} className="text-sm underline underline-offset-4">
-                  {r.phone}
-                </a>
+                <div className="flex flex-wrap items-center gap-2">
+                  <a href={`tel:+51${r.phone}`} className="text-sm underline underline-offset-4">
+                    {r.phone}
+                  </a>
+                  {r.source ? <Badge>{SOURCE_LABELS[r.source]}</Badge> : null}
+                </div>
                 {r.status === "confirmed" ? (
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Button isLoading={busy === r.id} onClick={() => update(r.id, "arrived")}>
