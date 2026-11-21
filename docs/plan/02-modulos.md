@@ -12,11 +12,11 @@ Cada módulo trae: **objetivo, pantallas, datos, reglas, riesgos y pruebas**. Lo
 
 ### Roles
 
-| Rol      | Quién                        | Puede                                                                                  | No puede                                 |
-| -------- | ---------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------- |
-| `admin`  | Dueña / gerente              | Todo: carta, precios, stock, personal, dashboard, reembolsos, plano, reservas, pedidos | —                                        |
-| `cocina` | Cocina / despacho            | Ver y avanzar pedidos de su sede; marcar «agotado» (no cambia precios)                 | Ventas, reservas, personal, precios      |
-| `salon`  | Anfitrión / mozo (**nuevo**) | Ver y gestionar reservas y el plano de su sede; ver pedidos                            | Precios, dashboard, personal, reembolsos |
+| Rol      | Quién                        | Puede                                                                           | No puede                                 |
+| -------- | ---------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------- |
+| `admin`  | Dueña / gerente              | Todo: carta, precios, stock, personal, dashboard, reembolsos, reservas, pedidos | —                                        |
+| `cocina` | Cocina / despacho            | Ver y avanzar pedidos de su sede; marcar «agotado» (no cambia precios)          | Ventas, reservas, personal, precios      |
+| `salon`  | Anfitrión / mozo (**nuevo**) | Ver y gestionar las reservas de su sede; ver pedidos                            | Precios, dashboard, personal, reembolsos |
 
 `branch_id` de `staff_roles` limita a una sede; `null` = todas (hoy ya funciona así).
 
@@ -98,74 +98,81 @@ Cada módulo trae: **objetivo, pantallas, datos, reglas, riesgos y pruebas**. Lo
 
 ---
 
-## 3. Reservas con plano de mesas
+## 3. Reservas centralizadas (sin plano de mesas)
 
-**Objetivo:** ver en un plano qué mesas están libres, reservadas u ocupadas, y que el sistema nunca asigne la misma mesa a dos reservas que se solapan.
+**Objetivo:** que **toda** reserva quede registrada en la web, venga de donde venga (el cliente desde la página, una llamada o un WhatsApp), y que nadie se pase del cupo. No se maneja número de mesa.
 
-### Decisión de diseño (recomendada)
+### Qué cambió y por qué
 
-| Quién        | Qué ve                                                                                                    |
-| ------------ | --------------------------------------------------------------------------------------------------------- |
-| **Cliente**  | Elige fecha, hora, personas y zona (interior/terraza). **No elige la mesa exacta**: el sistema la asigna. |
-| **Personal** | Ve el **plano del local en tiempo real** y puede mover una reserva a otra mesa.                           |
+Según lo que comentó el local el 21-nov-2026 (audios del equipo):
 
-Por qué: dejar que el cliente elija la mesa crea conflictos (todos quieren la misma), obliga a mantener el plano exacto y no mejora la ocupación. Si la dueña quiere «elige tu mesa» para el cliente, es una mejora posterior sobre los mismos datos (ver «Fase 2» más abajo).
+- Hoy toman reservas por **WhatsApp y por llamada** y las anotan **en papel**. Eso es lo que causa los choques: dos personas piden la terraza a la misma hora, una llega primero y la otra se queda esperando.
+- **No usan número de mesa por reserva:** el personal ya sabe cuál es cada mesa por su capacitación.
+- Por eso el **plano de mesas, su editor y la asignación automática salen del alcance**. Lo que hace falta es **trazabilidad**: una sola fuente de verdad en la web.
+
+La idea del equipo: si todo se registra en la web, lo que ya está reservado **aparece tachado** para el siguiente, y los administradores también reservan desde el panel cuando alguien llama.
+
+### Cómo funciona
+
+1. **Una sola fuente:** la tabla `reservations` (ya existe). Cada reserva guarda de dónde vino (`source`: web, teléfono o WhatsApp) y quién la registró (`created_by`, si fue personal).
+2. **Cupo por franja y por zona.** Hoy hay un aforo por franja de 30 minutos (`seats_per_slot`) y una zona opcional (interior o terraza). Se suma un **límite de reservas de terraza por franja** (por ejemplo 2 o 3, lo define el local). Cuando se llena, la opción «Terraza» se **bloquea para esa hora** y quedan «Interior» y «Me da igual».
+3. **El sitio público tacha** las franjas completas y muestra un mensaje claro: «La terraza está completa a esta hora. Elige interior o "me da igual"».
+4. **El panel tiene una sección de Reservas** con:
+   - la lista del día y de los próximos 7 días (ya existe),
+   - el botón **«Nueva reserva»** para cuando alguien llama o escribe por WhatsApp: formulario corto (día, hora, personas, zona, nombre, celular, correo opcional, observación) que **muestra qué franjas están libres y cuáles ocupadas antes de guardar**,
+   - la ocupación de cada franja del día, con el contador de terraza («2 de 3»).
+5. **Misma validación para todos.** La web y el panel crean la reserva con la **misma función de la base de datos** (`reservations_create`, que ya bloquea por sede y franja dentro de la transacción). Así dos personas al mismo tiempo no superan el cupo, ni por la web ni por el panel.
+6. **Correo de confirmación** (Resend; `email_log` ya existe): agradece, repite fecha y hora, pide **llegar 15 minutos antes** e incluye el enlace para cancelar (el token de gestión ya existe). Si la reserva fue por teléfono y no hay correo, no se envía.
+7. **Aviso en vivo al panel** con cada reserva nueva, venga de la web o de otro administrador (módulo 4).
+8. **Los correos sirven después:** con consentimiento del cliente, permiten avisos y promociones a clientes inactivos. Hay que pedir el consentimiento de forma explícita y revisar el tratamiento de datos personales (Ley 29733 de Perú) con asesoría legal antes de usarlos para publicidad.
 
 ### Pantallas
 
-- **Editor del plano** (`/panel/plano/editar`, solo `admin`): arrastrar mesas sobre un lienzo, definir etiqueta, asientos, forma (redonda/cuadrada/rectangular) y zona; un plano por sede. Hecho con SVG y eventos de puntero (sin librería de canvas) para mantener el panel liviano.
-- **Plano del día** (`/panel/plano`): mesas coloreadas — 🟢 libre, 🟡 reservada próximamente, 🔴 ocupada ahora, ⚪ fuera de servicio. Selector de fecha y de hora (línea de tiempo), clic en una mesa → ver la reserva.
-- **Lista de reservas** (existe, se mejora): hoy los estados son `confirmed`, `arrived`, `no_show` y `cancelled`. Se agregan `seated` (sentados) y `completed` (terminó) para que el plano distinga «llegó» de «ocupando la mesa» y libere la mesa al terminar (valores nuevos del enum, en su propia migración).
-- **Alternativa accesible:** todo lo del plano también existe como lista (mesa, hora, estado), porque un plano solo gráfico no sirve con lector de pantalla ni en celulares pequeños.
+- **Reservas** (`/panel/reservas`): lista por día, con filtros por sede y estado; estados actuales `confirmed`, `arrived`, `no_show` y `cancelled`.
+- **Nueva reserva** (desde la misma sección): formulario corto con las franjas libres y ocupadas a la vista.
+- **Ocupación del día:** una tira de franjas con la barra de aforo y el contador de terraza.
+- **Reserva pública** (`/reservas`): franjas tachadas y terraza bloqueada con su mensaje.
 
 ### Datos
 
-```sql
--- Mesas y su posición (en % del lienzo, para que escale en cualquier pantalla)
-dining_tables (id, branch_id, label, seats smallint, area text, shape text,
-               x numeric, y numeric, w numeric, h numeric, is_active boolean)
-
--- Duración de la reserva
-reservations.ends_at timestamptz   -- starts_at + duración (por defecto 90 min, ajustable por tamaño de grupo)
-
--- Mesa(s) asignada(s); evita choques desde la base
-reservation_tables (reservation_id, table_id, during tstzrange,
-  exclude using gist (table_id with =, during with &&))   -- requiere la extensión btree_gist
-```
-
-La restricción de exclusión hace que **la base rechace** un solape aunque dos personas reserven al mismo milisegundo. Se debe cancelar/liberar la fila cuando la reserva se cancela.
+- `reservations`: + `source` (`web` | `phone` | `whatsapp`), + `created_by` (usuario del personal, opcional), + `notes` (observación, opcional).
+- `branches`: + `terrace_max_parties_per_slot` (nulo = sin límite). El administrador lo cambia desde el panel.
+- `reservations_create` se amplía: valida el límite de terraza y acepta `source`, `created_by` y `notes`. Si la terraza está llena, responde con un error claro que la pantalla convierte en el mensaje de arriba.
+- **No hay** `dining_tables`, ni restricción de exclusión, ni asignación de mesas.
 
 ### Reglas
 
-- **Asignación automática:** la mesa libre más chica donde quepa el grupo en ese horario; si no hay, se intenta **juntar mesas adyacentes marcadas como combinables**. Si no hay nada → ese horario no se ofrece.
-- Disponibilidad pública: se calcula como hoy por franja, pero en base a mesas libres, no a asientos sueltos.
-- **Compatibilidad:** sedes sin plano configurado siguen con el aforo actual (`seats_per_slot`) mediante un interruptor por sede (`branches.uses_tables`). No se rompe lo que ya funciona.
-- Reglas vigentes que se mantienen: máximo 20 personas, antelación mínima de 1 h, fechas bloqueadas, cancelación con el token de gestión.
-- Una reserva que no se presenta pasa a `no_show` a los N minutos (a confirmar) y libera la mesa.
-- Reservas hechas por teléfono: el personal puede **crearlas desde el panel** (mismo cálculo y misma restricción).
+- Se mantienen las vigentes: máximo 20 personas por reserva, antelación mínima de 1 hora, fechas bloqueadas y cancelación con el token de gestión.
+- Una reserva hecha desde el panel entra con estado `confirmed` y **cuenta igual** para el cupo.
+- «Si no está en la web, no existe»: el local deja de anotar en papel. Al lanzar se cargan las reservas que ya estén anotadas en papel.
+- El personal puede editar o cancelar una reserva; el cambio libera la franja.
+- Una reserva que no llega pasa a `no_show` pasado el tiempo de espera (a confirmar) y libera el cupo.
 
 ### A confirmar con la dueña (bloquean el módulo)
 
-1. Cantidad de mesas por sede, asientos de cada una y plano aproximado (una foto del salón sirve).
-2. ¿Cuáles se pueden juntar?
-3. Duración típica de una reserva y tiempo de limpieza entre turnos.
-4. ¿Cuánto esperan una reserva que no llega?
-5. ¿Reciben clientes sin reserva (walk-ins)? El plano debería poder marcar una mesa «ocupada sin reserva».
-
-### Fase 2 del módulo (no incluida en las estimaciones base)
-
-«Elige tu mesa» para el cliente: mostrar el plano en la reserva pública. Requiere un plano muy fiel, bloqueo temporal de la mesa mientras el cliente completa (≈ 5 min) y manejo de abandono.
+1. ¿Cuántas reservas de terraza al mismo tiempo caben por hora? ¿Y de interior?
+2. ¿El aforo por franja actual (`seats_per_slot`, hoy 40) es correcto en cada sede?
+3. ¿Cuánto tiempo ocupa una reserva (90 minutos, 2 horas)? Hoy se cuenta por franja de 30 minutos.
+4. ¿Cuántos minutos esperan a una reserva que no llega?
+5. ¿Quiénes van a registrar las reservas por llamada o WhatsApp? Se les capacita con pasos simples.
+6. ¿Piden siempre el correo, o es opcional cuando reserva el personal por teléfono?
 
 ### Riesgos
 
-- Plano desactualizado respecto al salón real → el editor es parte del módulo y la dueña lo puede corregir sola.
-- Complejidad del cálculo de disponibilidad con mesas combinadas → se empieza **sin combinar** y se agrega la combinación en una segunda iteración.
+- **Doble registro** (papel y web): se resuelve con la regla «si no está en la web, no existe» y con capacitación.
+- **Límite de terraza mal puesto:** se ajusta desde el panel sin tocar código.
+- **Correos a spam:** depende de Resend con SPF, DKIM y DMARC (tarea F0-14 del README).
+- **Datos personales:** consentimiento explícito para usar el correo con fines de promoción.
 
 ### Pruebas
 
-- Base de datos: dos reservas simultáneas en la misma mesa → una falla; cancelar libera la mesa.
-- Unitarias: asignación (mejor ajuste, grupo grande, sin mesas), borde de horarios y cambio de día.
-- E2E: reservar para 4 → aparece una mesa roja/amarilla en el plano del personal; cancelar → vuelve a verde.
+- Base de datos: dos reservas de terraza simultáneas con un solo cupo → una falla; cancelar libera el cupo; las reservas del panel y de la web cuentan igual.
+- Unitarias: cálculo de franjas libres y ocupadas, bloqueo de terraza, borde de horarios y cambio de día.
+- E2E: llamada simulada (reserva desde el panel) → la franja aparece tachada en la web; la web reserva la última terraza → el panel muestra «terraza completa».
+
+### Fuera de alcance (mejora futura)
+
+El plano de mesas, la asignación automática y «elige tu mesa» para el cliente. Si el local lo pide más adelante, se retoma sobre los mismos datos.
 
 ---
 
@@ -227,7 +234,7 @@ Resumen. Los requisitos del negocio, el flujo técnico, las pruebas y la lista d
 | Pedidos       | Por estado, por modalidad (delivery / recojo), cancelaciones, tiempo medio de preparación                    |
 | Carta         | Platos más y menos pedidos, categorías que más venden                                                        |
 | Sedes y pagos | Ventas por sede, por método de pago (efectivo, Yape, Plin, tarjeta)                                          |
-| Reservas      | Por día, ocupación estimada de mesas, no-shows y cancelaciones                                               |
+| Reservas      | Por día, ocupación por franja (y terraza), no-shows y cancelaciones                                          |
 
 Filtros: sede, rango de fechas (hoy, 7 días, 30 días, mes, personalizado). Exportar a CSV.
 
@@ -248,3 +255,36 @@ Filtros: sede, rango de fechas (hoy, 7 días, 30 días, mes, personalizado). Exp
 
 - Con un conjunto de pedidos conocido, los totales del dashboard coinciden exactamente con la suma hecha a mano.
 - Borde de zona horaria: un pedido a las 23:50 de Lima cuenta en ese día.
+
+---
+
+## 7. Cuenta de cliente, historial y seguimiento (opcional, versión 2.1)
+
+**Idea:** que quien pide pueda entrar con su cuenta, ver su historial de pedidos y reservas y seguir cómo va su pedido.
+
+**Qué ya existe:** el **seguimiento sin cuenta**. Cada pedido tiene un enlace único (`tracking_token`, página `/pedido` y `GET /api/orders/[token]`) que muestra el estado paso a paso. Los pedidos hoy **no** se asocian a un usuario: se piden como invitado.
+
+**Recomendación:** no obligar a crear cuenta. Quien pide una vez y quiere su ceviche rápido no debe pasar por un registro; exigirlo baja las ventas. Lo sensato es una **cuenta opcional**, ofrecida después de pedir («Guarda tus pedidos»).
+
+### Cómo se haría
+
+1. **Ingreso sin contraseña:** enlace mágico al correo con Supabase Auth (el cliente no recuerda ni guarda claves). Opción de Google más adelante.
+2. **Asociar lo que ya hay:** `orders.user_id` y `reservations.user_id` (opcionales). Al entrar, se enlazan los pedidos y reservas hechos con el mismo correo confirmado.
+3. **Pantallas:** «Mis pedidos» (historial con estado y total), detalle con el seguimiento paso a paso, «Mis reservas», botón «Volver a pedir» y datos guardados (celular, direcciones) para pagar más rápido.
+4. **Seguridad:** políticas RLS para que cada cliente lea solo lo suyo; el seguimiento por enlace sigue funcionando para invitados.
+5. **Datos personales:** consentimiento explícito y opción de borrar la cuenta (Ley 29733 de Perú; revisar con asesoría legal).
+
+### Cuánto cuesta
+
+Estimación nuestra (±30 %): **unos 6 días-persona** (≈ 2.5 de pantallas y ≈ 3.5 de base de datos, RLS, enlace mágico y pruebas). **No está incluida** en los 53 días del plan ni en los escalones del presupuesto; se agenda después de abrir al público, cuando haya clientes que repitan.
+
+### Por qué no ahora
+
+- La prioridad del local es **ordenar reservas y pedidos** y **cobrar en línea**.
+- Una cuenta aporta más valor cuando ya hay clientes recurrentes y se quiere fidelizarlos (promociones a clientes inactivos, que también necesitan el correo y su consentimiento).
+- El seguimiento del pedido, que es lo que el cliente más usa, **ya funciona** sin cuenta.
+
+### A confirmar con la dueña
+
+1. ¿Quiere un historial para el cliente, o con el seguimiento por enlace basta por ahora?
+2. ¿Piensa en promociones o puntos para clientes frecuentes? (decide si conviene adelantar este módulo).

@@ -8,32 +8,32 @@
 
 - [ ] Enlace de Vercel (vista previa) con las pantallas listas, probado en un celular y en escritorio.
 - [ ] Los datos de ejemplo están marcados como «datos de ejemplo» en pantalla.
-- [ ] Una foto o un croquis del salón en el celular, para dibujar las mesas.
+- [ ] Una foto del salón y de dónde queda la terraza (no hace falta dibujar mesas).
 - [ ] Lista de documentos para la pasarela impresa o en el chat ([06-requisitos-pasarela.md](../plan/06-requisitos-pasarela.md) §2).
 
 ## Agenda
 
-| Min   | Qué                                                                                                                                     |
-| ----- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| 0-20  | **Demo guiada:** carta (precios y agotados), plano de mesas, aviso de reserva en vivo, dashboard, pago en el checkout.                  |
-| 20-40 | **Que lo toque ella** con su celular. Anotar dónde duda o se equivoca, sin explicar antes.                                              |
-| 40-70 | **Preguntas de decisión** (siguiente sección).                                                                                          |
-| 70-80 | **Trámite de la pasarela:** qué documentos faltan y quién los junta.                                                                    |
-| 80-90 | **Prioridades:** qué es imprescindible para abrir y qué puede esperar (escalones de [05-presupuesto.md](../plan/05-presupuesto.md) §4). |
+| Min   | Qué                                                                                                                                                 |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0-20  | **Demo guiada:** carta (precios y agotados), reservas (con «Nueva reserva» por teléfono), aviso de reserva en vivo, dashboard, pago en el checkout. |
+| 20-40 | **Que lo toque ella** con su celular. Anotar dónde duda o se equivoca, sin explicar antes.                                                          |
+| 40-70 | **Preguntas de decisión** (siguiente sección).                                                                                                      |
+| 70-80 | **Trámite de la pasarela:** qué documentos faltan y quién los junta.                                                                                |
+| 80-90 | **Prioridades:** qué es imprescindible para abrir y qué puede esperar (escalones de [05-presupuesto.md](../plan/05-presupuesto.md) §4).             |
 
 ## Preguntas de decisión
 
 Cada una dice **qué módulo desbloquea**. Dejar la respuesta escrita.
 
-### Reservas y mesas (bloquean el plano)
+### Reservas (bloquean el módulo)
 
-| #   | Pregunta                                                                       | Respuesta |
-| --- | ------------------------------------------------------------------------------ | --------- |
-| 1   | ¿Cuántas mesas tiene cada local, de cuántos asientos? ¿Hay interior y terraza? |           |
-| 2   | ¿Qué mesas se pueden juntar para grupos grandes?                               |           |
-| 3   | ¿Cuánto dura en promedio una reserva (90 min, 2 h)? ¿Cuánto tarda la limpieza? |           |
-| 4   | ¿Cuántos minutos espera una reserva que no llega antes de liberar la mesa?     |           |
-| 5   | ¿Atienden clientes sin reserva? ¿Quiere marcar una mesa «ocupada sin reserva»? |           |
+| #   | Pregunta                                                                            | Respuesta |
+| --- | ----------------------------------------------------------------------------------- | --------- |
+| 1   | ¿Cuántas reservas de terraza caben al mismo tiempo por hora? ¿Y de interior?        |           |
+| 2   | ¿Cuál es el aforo por franja de cada sede? (hoy figura 40 personas)                 |           |
+| 3   | ¿Cuánto dura en promedio una reserva (90 min, 2 h)? ¿Cuánto tarda la limpieza?      |           |
+| 4   | ¿Cuántos minutos esperan a una reserva que no llega antes de liberar el cupo?       |           |
+| 5   | ¿Quiénes registrarán las reservas por llamada y WhatsApp? ¿Piden siempre el correo? |           |
 
 ### Carta (bloquean precios y stock)
 
