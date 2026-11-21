@@ -120,6 +120,11 @@ test.describe("Movimiento 2 · con animaciones", () => {
     await page.goto("/");
     const boton = page.getByRole("link", { name: "Pedir ahora" });
     await expect(boton).toBeVisible();
+    // Esperar a que termine la entrada de la portada (.entra sube el bloque 18 px): si el mouse
+    // llega antes, el botón se mueve debajo del puntero y el hover se pierde (prueba inestable).
+    await boton.evaluate((el) =>
+      Promise.all((el.closest(".entra")?.getAnimations() ?? []).map((a) => a.finished)),
+    );
     const posicion = () => boton.evaluate((el) => getComputedStyle(el, "::after").translate);
 
     const antes = await posicion();
