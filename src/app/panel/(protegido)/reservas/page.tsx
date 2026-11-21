@@ -1,8 +1,6 @@
-import { redirect } from "next/navigation";
-
 import { PanelNav } from "@/components/panel/PanelNav";
 import { ReservationsBoard } from "@/components/panel/ReservationsBoard";
-import { getStaffSession } from "@/features/orders/panel";
+import { requireStaff } from "@/features/staff/session";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -10,8 +8,7 @@ export const metadata = { title: "Reservas" };
 
 /** F4-06 · Reservas de hoy y próximos 7 días de la sede del personal (RLS). */
 export default async function PanelReservationsPage() {
-  const session = await getStaffSession();
-  if (!session) redirect("/panel/ingresar");
+  const session = await requireStaff("reservas");
 
   const supabase = await createClient();
   const from = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
@@ -42,7 +39,7 @@ export default async function PanelReservationsPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6">
-      <PanelNav current="reservas" email={session.email} />
+      <PanelNav current="reservas" email={session.email} role={session.role} />
       <ReservationsBoard reservations={reservations} />
     </main>
   );

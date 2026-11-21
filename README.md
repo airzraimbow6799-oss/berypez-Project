@@ -195,7 +195,8 @@ berypez-web/
 
 ## 4. Forma de trabajo
 
-- **Ramas:** `main` (estable y demo), `develop` (integración) y `feat/<fase>-<tema>`, por ejemplo `feat/f1-carta-grid`.
+- **Ramas permanentes (solo tres):** `develop` (DEV: integración), `qa` (QA: lo que Rafael prueba antes de producción) y `main` (producción). Flujo: `feat/*` o `fix/*` → PR a `develop` → PR `develop` → `qa` → PR `qa` → `main`.
+- **Ramas de trabajo:** `feat/<fase>-<tema>` o `fix/<tema>`, por ejemplo `feat/f1-carta-grid`. Viven un solo PR y se **borran al fusionar** (activar «Automatically delete head branches» en GitHub).
 - **Commits:** convencionales (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`).
 - **Pull Requests:** Axel abre el PR y Rafael lo revisa y lo prueba en el preview de Vercel. Se mergea solo con la CI en verde y la aprobación de Rafael.
 - **Bugs:** Rafael los reporta como _issues_ con pasos para reproducir, resultado esperado, resultado real, dispositivo y captura. Etiquetas `bug`, `fase-N` y severidad (`crítico`, `alto`, `medio`, `bajo`).
