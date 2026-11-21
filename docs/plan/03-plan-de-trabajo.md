@@ -101,12 +101,12 @@ Se reemplazan los mocks por la base de datos, módulo por módulo. Cada PR trae 
 
 ### Fase D · Producción (semanas 6-7)
 
-| ID   | Tarea                                                                                                     | Resp. | Días | Depende          |
-| ---- | --------------------------------------------------------------------------------------------------------- | ----- | ---- | ---------------- |
-| D-A1 | Adaptador de la pasarela de producción (Izipay o Culqi), credenciales reales, pruebas con montos mínimos  | **A** | 2    | afiliación lista |
-| D-A2 | Proyecto de producción en Supabase y Vercel (Pro), dominio, correo con SPF/DKIM/DMARC, copias de respaldo | **A** | 1    | Hito 2           |
-| D-R1 | QA completo (E2E, accesibilidad, rendimiento del panel y del sitio) y corrección de lo hallado            | **R** | 3    | Hito 2           |
-| D-R2 | Manual corto para la dueña y el personal + capacitación presencial o por video                            | **R** | 1    | Hito 2           |
+| ID   | Tarea                                                                                                                                                                 | Resp. | Días | Depende          |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | ---------------- |
+| D-A1 | Adaptador de la pasarela de producción (Izipay o Culqi), credenciales reales, pruebas con montos mínimos                                                              | **A** | 2    | afiliación lista |
+| D-A2 | Proyecto de producción en Supabase y Vercel (Pro), dominio, correo con SPF/DKIM/DMARC, copias de respaldo; **apagar el modo demostración del panel (`DEMO_PANEL=0`)** | **A** | 1    | Hito 2           |
+| D-R1 | QA completo (E2E, accesibilidad, rendimiento del panel y del sitio) y corrección de lo hallado                                                                        | **R** | 3    | Hito 2           |
+| D-R2 | Manual corto para la dueña y el personal + capacitación presencial o por video                                                                                        | **R** | 1    | Hito 2           |
 
 **Sale de la fase cuando:** el primer pedido real pagado de punta a punta se concilia con el abono de la pasarela, y la dueña tiene un manual y un contacto para dudas.
 

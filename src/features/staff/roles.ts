@@ -11,19 +11,31 @@
 export const STAFF_ROLES = ["admin", "cocina", "salon"] as const;
 export type StaffRole = (typeof STAFF_ROLES)[number];
 
-export type PanelSectionKey = "pedidos" | "reservas";
+export type PanelSectionKey = "pedidos" | "reservas" | "carta";
 
 export type PanelSection = {
   key: PanelSectionKey;
   href: string;
   label: string;
   roles: readonly StaffRole[];
+  /**
+   * Sección que por ahora solo funciona con datos de ejemplo (modo demostración). Se oculta
+   * en el panel real hasta que tenga su backend (ver docs/plan/03-plan-de-trabajo.md).
+   */
+  demoOnly?: boolean;
 };
 
 /** Secciones del panel. Cada módulo nuevo (carta, plano, dashboard…) suma su entrada aquí. */
 export const PANEL_SECTIONS: readonly PanelSection[] = [
   { key: "pedidos", href: "/panel", label: "Pedidos", roles: ["admin", "cocina", "salon"] },
   { key: "reservas", href: "/panel/reservas", label: "Reservas", roles: ["admin", "salon"] },
+  {
+    key: "carta",
+    href: "/panel/carta",
+    label: "Carta",
+    roles: ["admin", "cocina"],
+    demoOnly: true,
+  },
 ];
 
 const ROLE_LABELS: Record<StaffRole, string> = {
@@ -36,16 +48,18 @@ export function roleLabel(role: StaffRole): string {
   return ROLE_LABELS[role];
 }
 
-/** Secciones que el rol puede ver, en el orden del menú. */
-export function sectionsFor(role: StaffRole): PanelSection[] {
-  return PANEL_SECTIONS.filter((section) => section.roles.includes(role));
+/** Secciones que el rol puede ver, en el orden del menú. `demo` suma las que solo existen en la demostración. */
+export function sectionsFor(role: StaffRole, demo = false): PanelSection[] {
+  return PANEL_SECTIONS.filter(
+    (section) => section.roles.includes(role) && (demo || !section.demoOnly),
+  );
 }
 
-export function canAccess(role: StaffRole, key: PanelSectionKey): boolean {
-  return sectionsFor(role).some((section) => section.key === key);
+export function canAccess(role: StaffRole, key: PanelSectionKey, demo = false): boolean {
+  return sectionsFor(role, demo).some((section) => section.key === key);
 }
 
 /** Primera sección permitida: a dónde mandar a quien no tiene acceso a la que pidió. */
-export function homeFor(role: StaffRole): PanelSection | undefined {
-  return sectionsFor(role)[0];
+export function homeFor(role: StaffRole, demo = false): PanelSection | undefined {
+  return sectionsFor(role, demo)[0];
 }

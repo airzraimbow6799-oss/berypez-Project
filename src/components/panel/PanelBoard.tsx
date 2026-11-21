@@ -46,7 +46,14 @@ function beep() {
 }
 
 /** F3-12 / F3-14 · Tablero en vivo: pedidos nuevos al instante, con sonido, y cambio de estado. */
-export function PanelBoard({ initialOrders }: { initialOrders: PanelOrder[] }) {
+export function PanelBoard({
+  initialOrders,
+  demo,
+}: {
+  initialOrders: PanelOrder[];
+  /** Modo demostración: sin Supabase; los cambios se hacen sobre los datos de ejemplo. */
+  demo?: { onAdvance: (id: number, status: OrderStatus) => void };
+}) {
   const router = useRouter();
   const [onlyActive, setOnlyActive] = useState(true);
   const [isSoundOn, setIsSoundOn] = useState(false);
@@ -55,6 +62,7 @@ export function PanelBoard({ initialOrders }: { initialOrders: PanelOrder[] }) {
   soundRef.current = isSoundOn;
 
   useEffect(() => {
+    if (demo) return;
     const supabase = createClient();
     const channel = supabase
       .channel("panel-pedidos")
@@ -69,10 +77,14 @@ export function PanelBoard({ initialOrders }: { initialOrders: PanelOrder[] }) {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [router]);
+  }, [router, demo]);
 
   const advance = async (order: PanelOrder, status: OrderStatus) => {
     if (status === "cancelled" && !window.confirm(`¿Cancelar el pedido N.º ${order.id}?`)) return;
+    if (demo) {
+      demo.onAdvance(order.id, status);
+      return;
+    }
     setBusyId(order.id);
     const res = await fetch(`/api/admin/orders/${order.id}/status`, {
       method: "PATCH",
@@ -89,8 +101,10 @@ export function PanelBoard({ initialOrders }: { initialOrders: PanelOrder[] }) {
   };
 
   const logout = async () => {
-    await createClient().auth.signOut();
+    if (demo) await fetch("/api/demo/login", { method: "DELETE" });
+    else await createClient().auth.signOut();
     router.replace("/panel/ingresar");
+    router.refresh();
   };
 
   const orders = onlyActive

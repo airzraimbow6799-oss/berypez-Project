@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { toast } from "@/components/ui/Toaster";
 
-type Reservation = {
+export type PanelReservation = {
   id: number;
   startsAt: string;
   partySize: number;
@@ -34,11 +34,22 @@ const dayKey = (iso: string) =>
   }).format(new Date(iso));
 
 /** F4-06 · Lista de reservas por día con cambio de estado (llegó / no vino / cancelar). */
-export function ReservationsBoard({ reservations }: { reservations: Reservation[] }) {
+export function ReservationsBoard({
+  reservations,
+  onStatusChange,
+}: {
+  reservations: PanelReservation[];
+  /** Modo demostración: cambia el estado en los datos de ejemplo, sin llamar a la API. */
+  onStatusChange?: (id: number, status: PanelReservation["status"]) => void;
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState<number | null>(null);
 
-  const update = async (id: number, status: Reservation["status"]) => {
+  const update = async (id: number, status: PanelReservation["status"]) => {
+    if (onStatusChange) {
+      onStatusChange(id, status);
+      return;
+    }
     setBusy(id);
     const res = await fetch(`/api/admin/reservations/${id}/status`, {
       method: "PATCH",
@@ -61,7 +72,7 @@ export function ReservationsBoard({ reservations }: { reservations: Reservation[
     );
   }
 
-  const groups = reservations.reduce<Map<string, Reservation[]>>((map, r) => {
+  const groups = reservations.reduce<Map<string, PanelReservation[]>>((map, r) => {
     const key = dayKey(r.startsAt);
     return new Map(map).set(key, [...(map.get(key) ?? []), r]);
   }, new Map());

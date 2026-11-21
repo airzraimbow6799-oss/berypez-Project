@@ -59,6 +59,8 @@ export default defineConfig({
         env: {
           // Fotos sin optimizar en el servidor de pruebas (ver next.config.ts).
           E2E: "1",
+          // Modo demostración del panel activo para probar el panel por rol sin Supabase.
+          DEMO_PANEL: "1",
           CATALOG_SOURCE: "snapshot",
           NEXT_PUBLIC_SITE_URL: baseURL,
           NEXT_PUBLIC_SUPABASE_URL:
