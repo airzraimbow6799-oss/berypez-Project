@@ -27,22 +27,6 @@ export type PanelOrder = {
   }>;
 };
 
-export type StaffSession = { email: string; role: "admin" | "cocina"; branchId: number | null };
-
-/** Personal con sesión válida, o null. getUser() valida el token con Supabase. */
-export async function getStaffSession(): Promise<StaffSession | null> {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
-  if (!data.user) return null;
-  const { data: role } = await supabase
-    .from("staff_roles")
-    .select("role, branch_id")
-    .eq("user_id", data.user.id)
-    .maybeSingle();
-  if (!role) return null;
-  return { email: data.user.email ?? "", role: role.role, branchId: role.branch_id };
-}
-
 /** Pedidos activos y de las últimas 24 h. RLS limita a la sede del personal. */
 export async function getPanelOrders(): Promise<PanelOrder[]> {
   const supabase = await createClient();
