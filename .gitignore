@@ -48,3 +48,6 @@ assets-src/*.mp4
 /playwright-report/
 /test-results/
 /blob-report/
+
+# Propuesta comercial para la dueña: se queda en local, no se sube al repositorio.
+docs/propuesta/Propuesta_Comercial_*.pptx

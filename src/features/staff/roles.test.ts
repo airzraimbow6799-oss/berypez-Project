@@ -3,8 +3,10 @@ import { describe, expect, it } from "vitest";
 import { canAccess, homeFor, PANEL_SECTIONS, roleLabel, sectionsFor, STAFF_ROLES } from "./roles";
 
 describe("roles del personal", () => {
-  it("admin ve todas las secciones", () => {
-    expect(sectionsFor("admin").map((s) => s.key)).toEqual(PANEL_SECTIONS.map((s) => s.key));
+  it("admin ve todas las secciones (con las de demostración solo en modo demo)", () => {
+    const real = PANEL_SECTIONS.filter((s) => !s.demoOnly).map((s) => s.key);
+    expect(sectionsFor("admin").map((s) => s.key)).toEqual(real);
+    expect(sectionsFor("admin", true).map((s) => s.key)).toEqual(PANEL_SECTIONS.map((s) => s.key));
   });
 
   it("cocina ve pedidos pero no reservas", () => {
@@ -34,6 +36,19 @@ describe("roles del personal", () => {
     const hrefs = PANEL_SECTIONS.map((s) => s.href);
     expect(new Set(hrefs).size).toBe(hrefs.length);
     for (const href of hrefs) expect(href.startsWith("/panel")).toBe(true);
+  });
+
+  it("la carta solo existe en modo demostración y solo para administración y cocina", () => {
+    expect(canAccess("admin", "carta")).toBe(false);
+    expect(canAccess("admin", "carta", true)).toBe(true);
+    expect(canAccess("cocina", "carta", true)).toBe(true);
+    expect(canAccess("salon", "carta", true)).toBe(false);
+  });
+
+  it("el menú real no muestra secciones de demostración", () => {
+    for (const role of STAFF_ROLES) {
+      expect(sectionsFor(role).some((s) => s.demoOnly)).toBe(false);
+    }
   });
 
   it("cada rol tiene un nombre legible", () => {

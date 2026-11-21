@@ -3,10 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { toast } from "@/components/ui/Toaster";
+import { SOURCE_LABELS } from "@/features/reservations/staff-form";
 
-type Reservation = {
+export type PanelReservation = {
   id: number;
   startsAt: string;
   partySize: number;
@@ -16,6 +18,10 @@ type Reservation = {
   phone: string;
   status: "confirmed" | "arrived" | "no_show" | "cancelled";
   branch: string;
+  /** Por dónde entró: web, llamada o WhatsApp (si se conoce). */
+  source?: "web" | "phone" | "whatsapp";
+  notes?: string | null;
+  email?: string | null;
 };
 
 const LABELS = {
@@ -34,11 +40,22 @@ const dayKey = (iso: string) =>
   }).format(new Date(iso));
 
 /** F4-06 · Lista de reservas por día con cambio de estado (llegó / no vino / cancelar). */
-export function ReservationsBoard({ reservations }: { reservations: Reservation[] }) {
+export function ReservationsBoard({
+  reservations,
+  onStatusChange,
+}: {
+  reservations: PanelReservation[];
+  /** Modo demostración: cambia el estado en los datos de ejemplo, sin llamar a la API. */
+  onStatusChange?: (id: number, status: PanelReservation["status"]) => void;
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState<number | null>(null);
 
-  const update = async (id: number, status: Reservation["status"]) => {
+  const update = async (id: number, status: PanelReservation["status"]) => {
+    if (onStatusChange) {
+      onStatusChange(id, status);
+      return;
+    }
     setBusy(id);
     const res = await fetch(`/api/admin/reservations/${id}/status`, {
       method: "PATCH",
@@ -61,7 +78,7 @@ export function ReservationsBoard({ reservations }: { reservations: Reservation[
     );
   }
 
-  const groups = reservations.reduce<Map<string, Reservation[]>>((map, r) => {
+  const groups = reservations.reduce<Map<string, PanelReservation[]>>((map, r) => {
     const key = dayKey(r.startsAt);
     return new Map(map).set(key, [...(map.get(key) ?? []), r]);
   }, new Map());
@@ -99,9 +116,12 @@ export function ReservationsBoard({ reservations }: { reservations: Reservation[
                   {r.area ? ` · ${r.area}` : ""}
                   {r.occasion ? ` · ${r.occasion}` : ""}
                 </p>
-                <a href={`tel:+51${r.phone}`} className="text-sm underline underline-offset-4">
-                  {r.phone}
-                </a>
+                <div className="flex flex-wrap items-center gap-2">
+                  <a href={`tel:+51${r.phone}`} className="text-sm underline underline-offset-4">
+                    {r.phone}
+                  </a>
+                  {r.source ? <Badge>{SOURCE_LABELS[r.source]}</Badge> : null}
+                </div>
                 {r.status === "confirmed" ? (
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Button isLoading={busy === r.id} onClick={() => update(r.id, "arrived")}>

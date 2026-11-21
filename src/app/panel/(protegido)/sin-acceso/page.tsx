@@ -10,11 +10,11 @@ export const metadata = { title: "Sin acceso" };
 /** A donde llega el personal que pide una sección que su rol no puede ver. */
 export default async function NoAccessPage() {
   const session = await requireStaff();
-  const home = homeFor(session.role);
+  const home = homeFor(session.role, session.isDemo);
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6">
-      <PanelNav email={session.email} role={session.role} />
+      <PanelNav email={session.email} role={session.role} demo={session.isDemo} />
       <section className="mt-10 max-w-xl" aria-labelledby="sin-acceso">
         <h1 id="sin-acceso" className="text-marino text-3xl">
           No tienes acceso a esta sección

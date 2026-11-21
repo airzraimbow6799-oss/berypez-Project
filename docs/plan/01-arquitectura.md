@@ -12,7 +12,7 @@ Parte de lo que **ya existe** (Next.js 15 App Router, Supabase con RLS, Vercel, 
 flowchart LR
   subgraph Cliente
     W[Sitio público\ncarta, carrito, checkout, reservas]
-    P[Panel del restaurante\npedidos, reservas, plano, carta, dashboard]
+    P[Panel del restaurante\npedidos, reservas, carta, dashboard]
   end
   subgraph Vercel
     N[Next.js\nServer Components + Route Handlers + Server Actions]
@@ -60,7 +60,7 @@ src/features/<módulo>/
 Reglas:
 
 1. **La UI nunca habla con la base directamente para escribir.** Escribe por `actions.ts`, que valida con Zod y comprueba el rol.
-2. **Toda regla de negocio crítica vive en Postgres** (función RPC o restricción), no solo en TypeScript: aforo, choques de mesa, descuento de stock, estado del pago. TypeScript valida para dar buenos mensajes; la base garantiza que no se rompa.
+2. **Toda regla de negocio crítica vive en Postgres** (función RPC o restricción), no solo en TypeScript: aforo y cupo de terraza, descuento de stock, estado del pago. TypeScript valida para dar buenos mensajes; la base garantiza que no se rompa.
 3. **Los montos van en centavos enteros** (`price_cents`) y en soles (PEN). Nunca decimales flotantes.
 4. **Las fechas se guardan en UTC (`timestamptz`) y se muestran en `America/Lima`.** Los reportes agrupan «por día» con `at time zone 'America/Lima'`; si no, las ventas de la noche caen en el día siguiente.
 
@@ -86,17 +86,17 @@ Otras reglas:
 
 Detalle de columnas en [02-modulos.md](02-modulos.md). Todas las tablas nuevas llevan RLS activado desde su migración.
 
-| Tabla / cambio                                                                         | Para qué                                                                 |
-| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `staff_role` + valor `salon`                                                           | Rol para atender reservas y mesas sin ver ventas.                        |
-| `staff_roles.display_name`, `is_active`                                                | Nombre visible y desactivar a alguien sin borrar su historial.           |
-| `branch_products (branch_id, product_id, is_available, stock_qty, stock_resets_daily)` | Disponibilidad y stock **por sede** (hoy `is_available` es global).      |
-| `audit_log`                                                                            | Quién cambió qué y cuándo.                                               |
-| `dining_tables (branch_id, label, seats, area, shape, x, y, w, h, is_active)`          | Mesas y su posición en el plano.                                         |
-| `reservations.ends_at`, `reservation_tables`                                           | Duración de la reserva y mesa(s) asignada(s), con restricción de choque. |
-| `reservations.acknowledged_at / acknowledged_by`                                       | «Ya la vi»: apaga la alerta para todo el equipo.                         |
-| `payment_events` (ya existe) + `orders.payment_*`                                      | Estado del pago y eventos de la pasarela.                                |
-| Funciones `dashboard_*`                                                                | Agregados para el dashboard, en SQL, con `security_invoker`.             |
+| Tabla / cambio                                                                         | Para qué                                                            |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `staff_role` + valor `salon`                                                           | Rol para atender reservas sin ver ventas.                           |
+| `staff_roles.display_name`, `is_active`                                                | Nombre visible y desactivar a alguien sin borrar su historial.      |
+| `branch_products (branch_id, product_id, is_available, stock_qty, stock_resets_daily)` | Disponibilidad y stock **por sede** (hoy `is_available` es global). |
+| `audit_log`                                                                            | Quién cambió qué y cuándo.                                          |
+| `branches.terrace_max_parties_per_slot`                                                | Límite de reservas de terraza por franja (nulo = sin límite).       |
+| `reservations.source`, `created_by`, `notes`                                           | Origen (web, teléfono, WhatsApp), quién la registró y observación.  |
+| `reservations.acknowledged_at / acknowledged_by`                                       | «Ya la vi»: apaga la alerta para todo el equipo.                    |
+| `payment_events` (ya existe) + `orders.payment_*`                                      | Estado del pago y eventos de la pasarela.                           |
+| Funciones `dashboard_*`                                                                | Agregados para el dashboard, en SQL, con `security_invoker`.        |
 
 ## 6. Entornos y despliegue
 
@@ -117,13 +117,13 @@ Migraciones:
 
 ## 7. Pruebas (pirámide)
 
-| Nivel          | Herramienta                                                | Qué cubre en la v2                                                                      |
-| -------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| Unitarias      | Vitest                                                     | Esquemas Zod, cálculo de disponibilidad, asignación de mesas, estados de pago.          |
-| Base de datos  | SQL de prueba (pgTAP o script en CI) contra Supabase local | Políticas RLS por rol, choque de mesas, descuento de stock concurrente.                 |
-| Integración    | Vitest + MSW                                               | Webhook de pago (firma buena, firma mala, duplicado, fuera de orden).                   |
-| E2E            | Playwright                                                 | Login por rol, editar precio, reservar y ver la mesa en el plano, pago sandbox.         |
-| No funcionales | Lighthouse CI, axe                                         | El panel también se puede usar con teclado; el sitio público no empeora su rendimiento. |
+| Nivel          | Herramienta                                                | Qué cubre en la v2                                                                                                  |
+| -------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Unitarias      | Vitest                                                     | Esquemas Zod, cálculo de disponibilidad, cupo por franja y bloqueo de terraza, estados de pago.                     |
+| Base de datos  | SQL de prueba (pgTAP o script en CI) contra Supabase local | Políticas RLS por rol, cupo de terraza, descuento de stock concurrente.                                             |
+| Integración    | Vitest + MSW                                               | Webhook de pago (firma buena, firma mala, duplicado, fuera de orden).                                               |
+| E2E            | Playwright                                                 | Login por rol, editar precio, reservar por teléfono desde el panel y ver la franja tachada en la web, pago sandbox. |
+| No funcionales | Lighthouse CI, axe                                         | El panel también se puede usar con teclado; el sitio público no empeora su rendimiento.                             |
 
 **Las pruebas de RLS son obligatorias** para cada tabla nueva: para cada rol, un caso que debe poder y uno que no.
 
