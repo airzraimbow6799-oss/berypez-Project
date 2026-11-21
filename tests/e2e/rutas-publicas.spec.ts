@@ -40,3 +40,10 @@ test("/panel sin sesión no muestra pedidos y manda a ingresar", async ({ page }
   await page.goto("/panel");
   await expect(page).toHaveURL(/\/panel\/ingresar/);
 });
+
+test("las secciones del panel sin sesión también mandan a ingresar", async ({ page }) => {
+  for (const ruta of ["/panel/reservas", "/panel/sin-acceso"]) {
+    await page.goto(ruta);
+    await expect(page, ruta).toHaveURL(/\/panel\/ingresar/);
+  }
+});
