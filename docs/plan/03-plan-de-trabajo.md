@@ -21,7 +21,7 @@ Semanas de **trabajo efectivo** con dos personas a tiempo completo. Si cada uno 
 | **Hito 1 · Reunión con la dueña**                                            |     |     | ◆   |     |     |     |     |
 | Trámite de la pasarela (lo hace el negocio, 5-15 días hábiles según fuentes) |     |     | ■   | ■   | ■   |     |     |
 | Fase B · Backend real                                                        |     |     | ■   | ■   | ■   |     |     |
-| Fase C · Pasarela en sandbox                                                 |     |     |     | ■   | ■   | ■   |     |
+| Fase C · Pasarela en sandbox                                                 |     |     | ■   | ■   | ■   |     |     |
 | **Hito 2 · Pruebas de aceptación**                                           |     |     |     |     |     | ◆   |     |
 | Fase D · Producción                                                          |     |     |     |     |     | ■   | ■   |
 
@@ -82,7 +82,7 @@ Se reemplazan los mocks por la base de datos, módulo por módulo. Cada PR trae 
 
 **Sale de la fase cuando:** ya no queda ningún mock en el panel, todas las políticas RLS nuevas tienen su prueba y hay un conjunto de datos de ejemplo cargado en `berypez-dev`.
 
-### Fase C · Pasarela en sandbox (semanas 4-6, Axel con apoyo de Rafael en pruebas)
+### Fase C · Pasarela en sandbox (semanas 3-5, Axel con apoyo de Rafael en pruebas)
 
 | ID   | Tarea                                                                                                          | Resp. | Días | Depende |
 | ---- | -------------------------------------------------------------------------------------------------------------- | ----- | ---- | ------- |
