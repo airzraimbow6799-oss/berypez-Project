@@ -1,7 +1,6 @@
 "use client";
 
 import { PanelBoard } from "@/components/panel/PanelBoard";
-import { ReservationsBoard } from "@/components/panel/ReservationsBoard";
 import { useDemoReady } from "@/components/panel/useDemoReady";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useDemoStore } from "@/features/demo/store";
@@ -23,13 +22,4 @@ export function DemoOrders() {
   const advanceOrder = useDemoStore((s) => s.advanceOrder);
   if (!isReady) return <BoardSkeleton />;
   return <PanelBoard initialOrders={orders} demo={{ onAdvance: advanceOrder }} />;
-}
-
-/** Reservas del modo demostración: mismo tablero, sobre los datos de ejemplo. */
-export function DemoReservations() {
-  const isReady = useDemoReady();
-  const reservations = useDemoStore((s) => s.reservations);
-  const setReservationStatus = useDemoStore((s) => s.setReservationStatus);
-  if (!isReady) return <BoardSkeleton />;
-  return <ReservationsBoard reservations={reservations} onStatusChange={setReservationStatus} />;
 }

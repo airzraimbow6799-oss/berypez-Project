@@ -1,4 +1,4 @@
-import { DemoReservations } from "@/components/panel/DemoBoards";
+import { ReservationsDesk } from "@/components/panel/ReservationsDesk";
 import { PanelNav } from "@/components/panel/PanelNav";
 import { ReservationsBoard } from "@/components/panel/ReservationsBoard";
 import { requireStaff } from "@/features/staff/session";
@@ -14,7 +14,7 @@ export default async function PanelReservationsPage() {
     return (
       <main className="mx-auto max-w-7xl px-4 py-6">
         <PanelNav current="reservas" email={session.email} role={session.role} demo />
-        <DemoReservations />
+        <ReservationsDesk />
       </main>
     );
   }

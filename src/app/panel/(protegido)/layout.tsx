@@ -8,7 +8,7 @@ export default async function ProtectedPanelLayout({
   const session = await getStaffSession();
   return (
     <>
-      {session?.isDemo ? <DemoBar /> : null}
+      {session?.isDemo ? <DemoBar role={session.role} /> : null}
       {children}
     </>
   );

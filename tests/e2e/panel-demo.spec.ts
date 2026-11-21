@@ -108,6 +108,71 @@ test.describe("Panel en modo demostración", () => {
     await expect(page).toHaveURL(/\/panel\/ingresar/);
   });
 
+  test("cocina no ve el Resumen ni el Personal; administración ve las cinco secciones", async ({
+    page,
+  }) => {
+    await entrarComo(page, "Cocina");
+    await expect(menu(page).getByRole("link", { name: "Resumen" })).toHaveCount(0);
+    await expect(menu(page).getByRole("link", { name: "Personal" })).toHaveCount(0);
+    await page.goto("/panel/dashboard", { waitUntil: "domcontentloaded" });
+    await expect(page).toHaveURL(/\/panel\/sin-acceso/);
+
+    await page.getByRole("button", { name: "Cambiar de rol" }).click();
+    await expect(page).toHaveURL(/\/panel\/ingresar/);
+    await entrarComo(page, "Administración");
+    for (const nombre of ["Pedidos", "Reservas", "Carta", "Resumen", "Personal"]) {
+      await expect(menu(page).getByRole("link", { name: nombre })).toBeVisible();
+    }
+  });
+
+  test("el resumen muestra las ventas de hoy y una tabla equivalente del gráfico", async ({
+    page,
+  }) => {
+    await entrarComo(page, "Administración");
+    await menu(page).getByRole("link", { name: "Resumen" }).click();
+    await expect(page.getByRole("heading", { name: "Resumen", level: 1 })).toBeVisible();
+    await expect(page.getByText("Ventas de hoy")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Ventas de los últimos 7 días" })).toBeVisible();
+    await expect(page.getByRole("table", { name: "Ventas por día" })).toBeAttached();
+  });
+
+  test("una reserva nueva avisa al instante en el panel", async ({ page }) => {
+    await entrarComo(page, "Administración");
+    await expect(page.getByRole("button", { name: "Simular reserva" })).toBeEnabled();
+    await page.getByRole("button", { name: "Simular reserva" }).click();
+    await expect(page.getByText(/Reserva nueva/).first()).toBeVisible();
+    await expect(page.getByRole("button", { name: "Avisos, 1 sin leer" })).toBeVisible();
+  });
+
+  test("se anota una reserva por llamada y queda en la lista con su origen", async ({ page }) => {
+    await entrarComo(page, "Administración");
+    await menu(page).getByRole("link", { name: "Reservas" }).click();
+    await expect(page.getByRole("heading", { name: "Reservas", level: 1 })).toBeVisible();
+    await page.getByRole("button", { name: /Nueva reserva/ }).click();
+    const dialogo = page.getByRole("dialog", { name: "Nueva reserva" });
+    await dialogo
+      .getByRole("radiogroup", { name: "Hora" })
+      .getByRole("radio", { disabled: false })
+      .last()
+      .click();
+    await dialogo.getByLabel(/Nombre/).fill("Camila Prueba");
+    await dialogo.getByLabel(/Celular/).fill("991736402");
+    await dialogo.getByRole("button", { name: "Guardar reserva" }).click();
+    const tarjeta = page.locator("main li").filter({ hasText: "Camila Prueba" });
+    await expect(tarjeta).toBeVisible();
+    await expect(tarjeta.getByText("Llamada")).toBeVisible();
+  });
+
+  test("la única persona de administración no se puede desactivar", async ({ page }) => {
+    await entrarComo(page, "Administración");
+    await menu(page).getByRole("link", { name: "Personal" }).click();
+    await expect(page.getByRole("heading", { name: "Personal", level: 1 })).toBeVisible();
+    const interruptor = page.getByRole("switch", { name: "Marta Rojas: activo" });
+    await interruptor.click();
+    await expect(interruptor).toHaveAttribute("aria-checked", "true");
+    await expect(page.getByText(/al menos una persona de administración/)).toBeVisible();
+  });
+
   test("el panel de demostración no desborda a los lados en el celular", async ({ page }) => {
     await entrarComo(page, "Administración");
     await menu(page).getByRole("link", { name: "Carta" }).click();
