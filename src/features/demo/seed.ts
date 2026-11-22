@@ -318,9 +318,9 @@ export function seedStaff(): Member[] {
   });
   return [
     person(1, "Marta Rojas", "admin", null, { email: "admin@demo.berypez.pe" }),
-    person(2, "Luis Paredes", "cocina", "Lince"),
+    person(2, "Luis Paredes", "salon", "Lince"),
     person(3, "Camila Torres", "salon", "Lince"),
-    person(4, "Jorge Mamani", "cocina", "Jesús María"),
+    person(4, "Jorge Mamani", "salon", "Jesús María"),
     person(5, "Ana Vilca", "salon", "Jesús María", { isActive: false, isPending: true }),
   ];
 }

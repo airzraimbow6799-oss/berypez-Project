@@ -177,7 +177,7 @@ describe("Personal", () => {
     );
   });
 
-  it("desactiva a alguien de cocina sin borrarlo", async () => {
+  it("desactiva a alguien de recepción sin borrarlo", async () => {
     render(<StaffManager currentEmail="admin@demo.berypez.pe" />);
     await screen.findByRole("heading", { name: "Luis Paredes" });
     await user().click(screen.getByRole("switch", { name: "Luis Paredes: activo" }));
@@ -216,13 +216,13 @@ describe("Avisos en vivo (franja de demostración)", () => {
     expect(screen.getByRole("button", { name: "Avisos, 1 sin leer" })).toBeInTheDocument();
   });
 
-  it("cocina recibe avisos de pedidos pero no de reservas", async () => {
-    render(<DemoBar role="cocina" />);
-    await user().click(await screen.findByRole("button", { name: "Simular reserva" }));
+  it("recepción recibe avisos de reservas pero no de pedidos", async () => {
+    render(<DemoBar role="salon" />);
+    await user().click(await screen.findByRole("button", { name: "Simular pedido" }));
     expect(screen.getByRole("button", { name: "Avisos, 0 sin leer" })).toBeInTheDocument();
-    await user().click(screen.getByRole("button", { name: "Simular pedido" }));
+    await user().click(screen.getByRole("button", { name: "Simular reserva" }));
     expect(screen.getByRole("button", { name: "Avisos, 1 sin leer" })).toBeInTheDocument();
-    expect(toast.success).toHaveBeenCalledWith(expect.stringContaining("Pedido nuevo"));
+    expect(toast.success).toHaveBeenCalledWith(expect.stringContaining("Reserva nueva"));
   });
 
   it("marcar todo como leído apaga el contador", async () => {
