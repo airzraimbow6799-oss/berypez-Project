@@ -162,7 +162,8 @@ describe("CartaManager · añadir y editar platos", () => {
       menus: ["marina", "piqueos"],
       section: "Tiraditos",
       tags: ["nuevo"],
-      image: { url: "blob:foto-de-prueba", alt: "Tiradito nikkei" },
+      // En demostración la foto se guarda dentro del dato: sigue viéndose al recargar.
+      image: { url: expect.stringMatching(/^data:image\//), alt: "Tiradito nikkei" },
       priceGroup: null,
       choiceGroups: [],
     });

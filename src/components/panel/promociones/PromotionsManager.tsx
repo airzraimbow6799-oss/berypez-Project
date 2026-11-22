@@ -133,9 +133,9 @@ export function PromotionsManager({ backend }: { backend: PromotionsBackend }) {
         >
           <Info aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
           <span>
-            <strong>Modo demostración:</strong> estas promociones son de ejemplo y no se publican en
-            la web. Usa «Ver ventana emergente» para ver cómo saldrían. Para publicarlas de verdad,
-            entra con tu cuenta de Administración.
+            <strong>Modo demostración:</strong> las promociones se guardan en este navegador y la
+            web las muestra aquí mismo: recarga Inicio para ver la ventana emergente. En otros
+            dispositivos se ven las de ejemplo hasta que pasemos a cuentas reales.
           </span>
         </p>
       )}
