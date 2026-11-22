@@ -19,7 +19,8 @@ export function isStaffRole(value: unknown): value is StaffRole {
   return typeof value === "string" && (STAFF_ROLES as readonly string[]).includes(value);
 }
 
-export type PanelSectionKey = "pedidos" | "reservas" | "carta" | "dashboard" | "personal";
+export type PanelSectionKey =
+  "pedidos" | "reservas" | "carta" | "promociones" | "dashboard" | "personal";
 
 export type PanelSection = {
   key: PanelSectionKey;
@@ -53,6 +54,7 @@ export const PANEL_SECTIONS: readonly PanelSection[] = [
     label: "Carta",
     roles: ["admin"],
   },
+  { key: "promociones", href: "/panel/promociones", label: "Promociones", roles: ["admin"] },
   {
     key: "personal",
     href: "/panel/personal",

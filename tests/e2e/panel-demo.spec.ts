@@ -55,10 +55,15 @@ test.describe("Panel en modo demostración", () => {
     await entrarComo(page, "Recepción");
     await expect(page.getByRole("region", { name: "Modo demostración" })).toBeVisible();
     await expect(menu(page).getByRole("link", { name: "Reservas" })).toBeVisible();
-    for (const nombre of ["Pedidos", "Carta", "Resumen", "Personal"]) {
+    for (const nombre of ["Pedidos", "Carta", "Promociones", "Resumen", "Personal"]) {
       await expect(menu(page).getByRole("link", { name: nombre })).toHaveCount(0);
     }
-    for (const ruta of ["/panel/pedidos", "/panel/carta", "/panel/dashboard"]) {
+    for (const ruta of [
+      "/panel/pedidos",
+      "/panel/carta",
+      "/panel/promociones",
+      "/panel/dashboard",
+    ]) {
       await page.goto(ruta, { waitUntil: "domcontentloaded" });
       await expect(page).toHaveURL(/\/panel\/sin-acceso/);
     }
@@ -128,6 +133,27 @@ test.describe("Panel en modo demostración", () => {
     ).toBeVisible();
   });
 
+  test("administración crea una promoción 2×1 y la pausa", async ({ page }) => {
+    await entrarComo(page, "Administración");
+    await menu(page).getByRole("link", { name: "Promociones" }).click();
+    await expect(page.getByRole("heading", { name: "Promociones", level: 1 })).toBeVisible();
+
+    await page.getByRole("button", { name: /Nueva promoción/ }).click();
+    const dialogo = page.getByRole("dialog", { name: "Nueva promoción" });
+    await dialogo.getByLabel("Plato").selectOption({ label: "Jaleas" });
+    await dialogo.getByText("2×1", { exact: true }).click();
+    await dialogo.getByRole("button", { name: "Guardar promoción" }).click();
+
+    const fila = page
+      .getByRole("listitem")
+      .filter({ has: page.getByRole("heading", { name: "Jaleas 2×1" }) });
+    await expect(fila).toBeVisible();
+    const interruptor = fila.getByRole("switch");
+    await expect(interruptor).toHaveAttribute("aria-checked", "true");
+    await interruptor.click();
+    await expect(interruptor).toHaveAttribute("aria-checked", "false");
+  });
+
   test("«Cambiar de rol» cierra la sesión de ejemplo y vuelve al ingreso", async ({ page }) => {
     await entrarComo(page, "Administración");
     await page.getByRole("button", { name: "Cambiar de rol" }).click();
@@ -136,10 +162,10 @@ test.describe("Panel en modo demostración", () => {
     await expect(page).toHaveURL(/\/panel\/ingresar/);
   });
 
-  test("administración entra directo a su Resumen y ve las cinco secciones", async ({ page }) => {
+  test("administración entra directo a su Resumen y ve las seis secciones", async ({ page }) => {
     await entrarComo(page, "Administración");
     await expect(page.getByRole("heading", { name: "Resumen", level: 1 })).toBeVisible();
-    for (const nombre of ["Resumen", "Pedidos", "Reservas", "Carta", "Personal"]) {
+    for (const nombre of ["Resumen", "Pedidos", "Reservas", "Carta", "Promociones", "Personal"]) {
       await expect(menu(page).getByRole("link", { name: nombre })).toBeVisible();
     }
   });

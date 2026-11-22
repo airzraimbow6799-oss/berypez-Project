@@ -469,3 +469,58 @@ describe("carta administrable (B-R2)", () => {
     ).rejects.toThrow(/Solo Administración/);
   });
 });
+
+describe("promociones", () => {
+  const insertAsAdmin = (values: string) =>
+    as(
+      "authenticated",
+      ADMIN,
+      `insert into promotions (product_id, kind, percent_off, price_cents, title, starts_at, ends_at, is_active) values ${values}`,
+    );
+
+  it("solo Administración crea promociones", async () => {
+    await expect(
+      as(
+        "authenticated",
+        STAFF_LINCE,
+        "insert into promotions (product_id, kind, percent_off, title) values (1, 'percent', 20, 'Promo')",
+      ),
+    ).rejects.toThrow(/row-level security/);
+    await expect(
+      as(
+        "anon",
+        null,
+        "insert into promotions (product_id, kind, title) values (1, 'two_for_one', 'Promo')",
+      ),
+    ).rejects.toThrow(/row-level security|permission denied/);
+  });
+
+  it("exige los datos de cada tipo", async () => {
+    await expect(
+      insertAsAdmin("(1, 'percent', null, null, 'Sin %', null, null, true)"),
+    ).rejects.toThrow(/promotions_kind_values/);
+    await expect(
+      insertAsAdmin("(1, 'two_for_one', 20, null, 'Mezcla', null, null, true)"),
+    ).rejects.toThrow(/promotions_kind_values/);
+  });
+
+  it("el público ve solo las activas, vigentes y de platos publicados", async () => {
+    await db.exec(
+      "insert into products (id, slug, name, price_cents, category_id) values (3, 'promo', 'Promo', 3000, 73)",
+    );
+    await insertAsAdmin(`
+      (3, 'percent', 20, null, 'Vigente', now() - interval '1 day', now() + interval '1 day', true),
+      (3, 'fixed_price', null, 2500, 'Pausada', null, null, false),
+      (3, 'two_for_one', null, null, 'Programada', now() + interval '1 day', null, true),
+      (3, 'two_for_one', null, null, 'Vencida', null, now() - interval '1 hour', true),
+      (2, 'two_for_one', null, null, 'Plato oculto', null, null, true)`);
+    const publico = await as<{ title: string }>("anon", null, "select title from promotions");
+    expect(publico.rows.map((r) => r.title)).toEqual(["Vigente"]);
+    const admin = await as<{ title: string }>(
+      "authenticated",
+      ADMIN,
+      "select title from promotions",
+    );
+    expect(admin.rows).toHaveLength(5);
+  });
+});

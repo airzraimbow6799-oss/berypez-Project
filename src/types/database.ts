@@ -574,6 +574,72 @@ export type Database = {
           },
         ]
       }
+      promotions: {
+        Row: {
+          created_at: string
+          ends_at: string | null
+          id: number
+          image_path: string | null
+          is_active: boolean
+          is_featured: boolean
+          kind: Database["public"]["Enums"]["promotion_kind"]
+          percent_off: number | null
+          price_cents: number | null
+          product_id: number
+          starts_at: string | null
+          title: string
+          updated_at: string
+          variant_id: number | null
+        }
+        Insert: {
+          created_at?: string
+          ends_at?: string | null
+          id?: never
+          image_path?: string | null
+          is_active?: boolean
+          is_featured?: boolean
+          kind: Database["public"]["Enums"]["promotion_kind"]
+          percent_off?: number | null
+          price_cents?: number | null
+          product_id: number
+          starts_at?: string | null
+          title: string
+          updated_at?: string
+          variant_id?: number | null
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string | null
+          id?: never
+          image_path?: string | null
+          is_active?: boolean
+          is_featured?: boolean
+          kind?: Database["public"]["Enums"]["promotion_kind"]
+          percent_off?: number | null
+          price_cents?: number | null
+          product_id?: number
+          starts_at?: string | null
+          title?: string
+          updated_at?: string
+          variant_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promotions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "promotions_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rate_limits: {
         Row: {
           hits: number
@@ -775,6 +841,7 @@ export type Database = {
         | "cancelled"
       payment_method: "yape" | "plin" | "card" | "cash"
       payment_status: "unpaid" | "pending" | "paid" | "failed" | "refunded"
+      promotion_kind: "percent" | "fixed_price" | "two_for_one"
       reservation_status: "confirmed" | "arrived" | "no_show" | "cancelled"
       staff_role: "admin" | "cocina" | "salon"
     }
@@ -924,6 +991,7 @@ export const Constants = {
       ],
       payment_method: ["yape", "plin", "card", "cash"],
       payment_status: ["unpaid", "pending", "paid", "failed", "refunded"],
+      promotion_kind: ["percent", "fixed_price", "two_for_one"],
       reservation_status: ["confirmed", "arrived", "no_show", "cancelled"],
       staff_role: ["admin", "cocina", "salon"],
     },

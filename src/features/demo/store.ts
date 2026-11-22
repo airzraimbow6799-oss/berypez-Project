@@ -5,6 +5,7 @@ import { create } from "zustand";
 import type { PanelReservation } from "@/components/panel/ReservationsBoard";
 import { isSoldOut } from "@/features/carta/logic";
 import type { Dish, DishFormOutput } from "@/features/carta/schema";
+import type { PromotionData } from "@/features/promotions/schema";
 import type { PanelOrder } from "@/features/orders/panel";
 import { canTransition, type OrderStatus } from "@/features/orders/status";
 import { checkSlot, dateKeyLima, slotStart, slotTimes } from "@/features/reservations/capacity";
@@ -40,6 +41,10 @@ type DemoState = DemoData & {
   updateDish: (id: number, data: DishFormOutput) => void;
   removeDish: (id: number) => void;
 
+  savePromotion: (id: number | null, data: PromotionData) => void;
+  setPromotionFlag: (id: number, flag: "isActive" | "isFeatured", value: boolean) => void;
+  removePromotion: (id: number) => void;
+
   advanceOrder: (id: number, status: OrderStatus) => void;
   setReservationStatus: (id: number, status: PanelReservation["status"]) => void;
   addReservation: (reservation: Omit<PanelReservation, "id">) => PanelReservation;
@@ -57,6 +62,18 @@ type DemoState = DemoData & {
 
 const mapDish = (dishes: Dish[], id: number, change: (dish: Dish) => Dish) =>
   dishes.map((dish) => (dish.id === id ? change(dish) : dish));
+
+/** Como en la base: cada opción con precio tiene id (las promociones de precio fijo lo usan). */
+export function withOptionIds(dish: Dish): Dish {
+  if (!dish.priceGroup) return dish;
+  return {
+    ...dish,
+    priceGroup: {
+      ...dish.priceGroup,
+      options: dish.priceGroup.options.map((o, i) => ({ ...o, id: o.id ?? dish.id * 100 + i })),
+    },
+  };
+}
 
 const NAMES = [
   "Rocío Alarcón",
@@ -92,6 +109,7 @@ const notification = (
 
 export const useDemoStore = create<DemoState>((set, get) => ({
   dishes: [],
+  promotions: [],
   orders: [],
   reservations: [],
   staff: [],
@@ -111,15 +129,39 @@ export const useDemoStore = create<DemoState>((set, get) => ({
     set((state) => ({ dishes: mapDish(state.dishes, id, (d) => ({ ...d, isAvailable })) })),
 
   addDish: (data) => {
-    const dish: Dish = { ...data, id: nextId(get().dishes) };
+    const dish = withOptionIds({ ...data, id: nextId(get().dishes) });
     set((state) => ({ dishes: [...state.dishes, dish] }));
     return dish;
   },
 
   updateDish: (id, data) =>
-    set((state) => ({ dishes: mapDish(state.dishes, id, () => ({ ...data, id })) })),
+    set((state) => ({ dishes: mapDish(state.dishes, id, () => withOptionIds({ ...data, id })) })),
 
-  removeDish: (id) => set((state) => ({ dishes: state.dishes.filter((d) => d.id !== id) })),
+  removeDish: (id) =>
+    set((state) => ({
+      dishes: state.dishes.filter((d) => d.id !== id),
+      // Igual que en la base: un plato que sale de la carta no puede seguir en promoción.
+      promotions: state.promotions.filter((p) => p.dishId !== id),
+    })),
+
+  savePromotion: (id, data) =>
+    set((state) => ({
+      promotions:
+        id === null
+          ? [
+              { ...data, id: nextId(state.promotions), createdAt: new Date().toISOString() },
+              ...state.promotions,
+            ]
+          : state.promotions.map((p) => (p.id === id ? { ...p, ...data } : p)),
+    })),
+
+  setPromotionFlag: (id, flag, value) =>
+    set((state) => ({
+      promotions: state.promotions.map((p) => (p.id === id ? { ...p, [flag]: value } : p)),
+    })),
+
+  removePromotion: (id) =>
+    set((state) => ({ promotions: state.promotions.filter((p) => p.id !== id) })),
 
   advanceOrder: (id, status) =>
     set((state) => ({
