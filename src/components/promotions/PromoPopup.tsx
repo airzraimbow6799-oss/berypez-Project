@@ -7,6 +7,8 @@ import { CONSENT_EVENT, readConsent } from "@/features/consent/consent";
 import { POPUP_MAX_SLIDES } from "@/features/promotions/links";
 import type { Product } from "@/types/catalog";
 
+import { useDemoWebPromos } from "./useDemoWebPromos";
+
 // El carrusel (y sus fotos) se descarga solo cuando de verdad se va a mostrar.
 const PromoCarousel = dynamic(() => import("./PromoCarousel").then((m) => m.PromoCarousel), {
   ssr: false,
@@ -75,8 +77,17 @@ function whenReady(onReady: () => void): () => void {
 }
 
 /** Ventana emergente de promociones de Inicio (carrusel si hay varias, la más relevante primero). */
-export function PromoPopup({ products }: { products: Product[] }) {
+export function PromoPopup({
+  products: realProducts,
+  demo = false,
+}: {
+  products: Product[];
+  /** Modo demostración: sin promociones reales, muestra las del panel de demostración. */
+  demo?: boolean;
+}) {
   const [isOpen, setIsOpen] = useState(false);
+  const demoPromos = useDemoWebPromos(demo && realProducts.length === 0);
+  const products = realProducts.length > 0 ? realProducts : (demoPromos?.popup ?? []);
 
   useEffect(() => {
     if (decidedInThisDocument || products.length === 0) return;

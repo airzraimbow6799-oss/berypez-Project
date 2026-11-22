@@ -1,6 +1,6 @@
 import { slugify } from "@/features/carta/bridge";
 import type { Dish } from "@/features/carta/schema";
-import type { Product } from "@/types/catalog";
+import type { Product, ProductPromotion } from "@/types/catalog";
 
 import { byRelevance, isPromotionLive } from "./pricing";
 import type { Promotion } from "./schema";
@@ -28,7 +28,7 @@ export function previewProducts(
 }
 
 function dishToPromoProduct(dish: Dish, promo: Promotion): Product {
-  const slug = slugify(dish.name);
+  const slug = dish.slug ?? slugify(dish.name);
   return {
     id: dish.id,
     slug,
@@ -51,17 +51,22 @@ function dishToPromoProduct(dish: Dish, promo: Promotion): Product {
       selections: {},
     })),
     choiceGroups: [],
-    promotion: {
-      id: promo.id,
-      kind: promo.kind,
-      percentOff: promo.percentOff,
-      priceCents: promo.priceCents,
-      variantId: promo.variantId,
-      title: promo.title,
-      imageUrl: promo.image?.url ?? null,
-      isFeatured: promo.isFeatured,
-      startsAt: promo.startsAt,
-      endsAt: promo.endsAt,
-    },
+    promotion: toProductPromotion(promo),
+  };
+}
+
+/** La promoción tal como la lee la web (tarjetas, carrusel y carrito). */
+export function toProductPromotion(promo: Promotion): ProductPromotion {
+  return {
+    id: promo.id,
+    kind: promo.kind,
+    percentOff: promo.percentOff,
+    priceCents: promo.priceCents,
+    variantId: promo.variantId,
+    title: promo.title,
+    imageUrl: promo.image?.url ?? null,
+    isFeatured: promo.isFeatured,
+    startsAt: promo.startsAt,
+    endsAt: promo.endsAt,
   };
 }

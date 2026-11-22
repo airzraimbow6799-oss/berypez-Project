@@ -9,6 +9,7 @@ import {
   getProductsBySlugsCached,
   getPromotedProductsCached,
 } from "@/features/catalog/data/cached";
+import { isDemoPanel } from "@/features/demo/config";
 import { POPUP_MAX_SLIDES } from "@/features/promotions/links";
 
 // Portada estática que se regenera cada 10 min o al editar la carta (revalidateTag "catalog").
@@ -61,7 +62,7 @@ export default async function HomePage() {
       />
       <Story />
       <Branches />
-      <PromoPopup products={promoted.slice(0, POPUP_MAX_SLIDES)} />
+      <PromoPopup products={promoted.slice(0, POPUP_MAX_SLIDES)} demo={isDemoPanel()} />
     </>
   );
 }

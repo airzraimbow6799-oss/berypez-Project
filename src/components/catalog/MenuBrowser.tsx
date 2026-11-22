@@ -19,6 +19,8 @@ import { canAddToCart, defaultSelection, toCartInput } from "@/features/catalog/
 import type { MenuPage, Product, ProductTag } from "@/types/catalog";
 
 import { PromotionsStrip } from "@/components/promotions/PromotionsStrip";
+import { useDemoWebPromos } from "@/components/promotions/useDemoWebPromos";
+import { applyDemoPromotions } from "@/features/demo/apply-promos";
 
 import { ProductCard } from "./ProductCard";
 import { SectionNav } from "./SectionNav";
@@ -39,13 +41,27 @@ function needsQuickView(product: Product): boolean {
 
 /** F1-08 / F1-11 · Carta navegable: filtros, búsqueda, secciones y vista rápida. */
 export function MenuBrowser({
-  page,
-  promoted = [],
+  page: basePage,
+  promoted: basePromoted = [],
+  demo = false,
 }: {
   page: MenuPage;
   /** Platos con promoción vigente (de todas las cartas) para la franja «Promociones». */
   promoted?: Product[];
+  /** Modo demostración: sin promociones reales, usa las del panel de demostración. */
+  demo?: boolean;
 }) {
+  const usesDemoPromos = demo && basePromoted.length === 0;
+  const demoPromos = useDemoWebPromos(usesDemoPromos);
+  const { page, promoted } = useMemo(
+    () =>
+      demoPromos
+        ? applyDemoPromotions(basePage, demoPromos)
+        : { page: basePage, promoted: basePromoted },
+    [basePage, basePromoted, demoPromos],
+  );
+  // El enlace directo a un plato espera las promociones de demostración (precio correcto).
+  const isWaitingDemo = usesDemoPromos && demoPromos === null;
   const add = useCart((state) => state.add);
   const [filters, setFilters] = useState<MenuFilters>(NO_FILTERS);
   const [selected, setSelected] = useState<Product | null>(null);
@@ -64,6 +80,7 @@ export function MenuBrowser({
   // Enlace directo a un plato (ventana emergente de promociones, franja): ?plato=<slug>.
   // Se lleva a la tarjeta y se abre su vista rápida una sola vez; luego se limpia la URL.
   useEffect(() => {
+    if (isWaitingDemo) return;
     const url = new URL(window.location.href);
     const slug = url.searchParams.get("plato");
     if (!slug) return;
@@ -73,7 +90,7 @@ export function MenuBrowser({
     if (!product) return;
     document.getElementById(product.slug)?.scrollIntoView({ block: "center" });
     setSelected(product);
-  }, [page.sections]);
+  }, [page.sections, isWaitingDemo]);
 
   const sections = useMemo(
     () =>

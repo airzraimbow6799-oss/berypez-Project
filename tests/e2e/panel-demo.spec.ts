@@ -159,7 +159,7 @@ test.describe("Panel en modo demostración", () => {
   }) => {
     await entrarComo(page, "Administración");
     await menu(page).getByRole("link", { name: "Promociones" }).click();
-    await expect(page.getByRole("note")).toContainText("no se publican en la web");
+    await expect(page.getByRole("note")).toContainText("se guardan en este navegador");
 
     await page.getByRole("button", { name: "Ver ventana emergente" }).click();
     const ventana = page.getByRole("dialog", { name: /Promociones de hoy/ });
