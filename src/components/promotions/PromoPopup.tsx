@@ -10,13 +10,13 @@ import type { Product } from "@/types/catalog";
 import { useDemoWebPromos } from "./useDemoWebPromos";
 
 // El carrusel (y sus fotos) se descarga solo cuando de verdad se va a mostrar.
-const PromoCarousel = dynamic(() => import("./PromoCarousel").then((m) => m.PromoCarousel), {
-  ssr: false,
-});
+const loadCarousel = () => import("./PromoCarousel").then((m) => m.PromoCarousel);
+const PromoCarousel = dynamic(loadCarousel, { ssr: false });
 
 /** Las pruebas E2E la ponen para que la ventana no tape lo que prueban (y QA si lo necesita). */
 export const OPT_OUT_COOKIE = "berypez_sin_promo";
-const DELAY_MS = 1200;
+/** Un respiro tras el aviso de cookies para que no se encimen. */
+const DELAY_MS = 300;
 
 /** Ya se decidió en este documento: volver a Inicio navegando dentro del sitio no la repite. */
 let decidedInThisDocument = false;
@@ -53,25 +53,21 @@ function storage(): Storage | undefined {
   }
 }
 
-/** Espera a que la página termine de cargar (PageLoadedFlag) y a que se elija en el aviso de cookies. */
+/**
+ * Espera solo a que se responda el aviso de cookies (si ya se respondió, sale enseguida).
+ * Antes esperaba además la carga completa y que el navegador quedara libre: tardaba segundos.
+ */
 function whenReady(onReady: () => void): () => void {
-  const html = document.documentElement;
   let timer: number | undefined;
   const check = () => {
-    if (html.dataset.cargado !== "true" || readConsent(storage()) === null) return;
-    cleanup();
+    if (readConsent(storage()) === null) return;
+    window.removeEventListener(CONSENT_EVENT, check);
     timer = window.setTimeout(onReady, DELAY_MS);
   };
-  const observer = new MutationObserver(check);
-  const cleanup = () => {
-    observer.disconnect();
-    window.removeEventListener(CONSENT_EVENT, check);
-  };
-  observer.observe(html, { attributes: true, attributeFilter: ["data-cargado"] });
   window.addEventListener(CONSENT_EVENT, check);
   check();
   return () => {
-    cleanup();
+    window.removeEventListener(CONSENT_EVENT, check);
     window.clearTimeout(timer);
   };
 }
@@ -100,6 +96,8 @@ export function PromoPopup({
       decidedInThisDocument = true;
       return;
     }
+    // El carrusel se descarga mientras tanto: cuando toca abrir, ya está.
+    void loadCarousel();
     const stop = whenReady(() => {
       decidedInThisDocument = true;
       setIsOpen(true);
