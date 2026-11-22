@@ -102,3 +102,40 @@ export function cardPrices(product: Priced): {
     isFrom: list.length > 1,
   };
 }
+
+export type PromoSummary = {
+  /** Precio sin la promoción (en 2×1: lo que costarían los 2 platos). */
+  beforeCents: number;
+  /** Precio con la promoción (en 2×1: lo que se paga por los 2). */
+  nowCents: number;
+  /** Hay opciones con distinto precio: se antepone «desde». */
+  isFrom: boolean;
+  /** Para qué cantidad es el precio y por qué baja: «por plato · 20 % menos». */
+  detail: string;
+};
+
+/**
+ * Un solo formato para toda promoción (ventana emergente y franja): antes → ahora + detalle.
+ * Así el 2×1 también se lee en soles: «S/ 80.00 → S/ 40.00 · por 2 platos · pagas solo 1».
+ */
+export function promoSummary(product: Priced): PromoSummary {
+  const prices = cardPrices(product);
+  const promo = product.promotion ?? null;
+  if (promo?.kind === "two_for_one") {
+    return {
+      beforeCents: prices.regularCents * 2,
+      nowCents: prices.regularCents,
+      isFrom: prices.isFrom,
+      detail: "por 2 platos · pagas solo 1",
+    };
+  }
+  return {
+    beforeCents: prices.regularCents,
+    nowCents: prices.promoCents,
+    isFrom: prices.isFrom,
+    detail:
+      promo?.kind === "percent"
+        ? `por plato · ${promo.percentOff} % menos`
+        : "por plato · precio especial",
+  };
+}
