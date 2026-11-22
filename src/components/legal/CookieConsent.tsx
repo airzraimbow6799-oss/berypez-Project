@@ -93,7 +93,7 @@ export function CookieConsent() {
             <p className="text-tinta-suave text-sm sm:mt-1">
               Usamos cookies necesarias para tu carrito y, con tu permiso, de analítica para mejorar
               la web.{" "}
-              <Link href="/privacidad" className="underline underline-offset-4">
+              <Link href="/privacidad" prefetch={false} className="underline underline-offset-4">
                 Más información sobre cookies
               </Link>
             </p>

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Caveat, Fraunces, Inter } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
+import localFont from "next/font/local";
 
 import "./globals.css";
 
@@ -19,11 +20,12 @@ const inter = Inter({
 });
 
 // Acento manuscrito (.acento-mano): solo 1–2 palabras por pantalla, como escrito en la pizarra
-// del local. Un peso y sin precarga, para no competir con la foto o el titular de la portada.
-const caveat = Caveat({
-  subsets: ["latin"],
-  display: "swap",
+// del local. Caveat Bold recortada a los caracteres del español (15 KB en vez de 51 KB, #58):
+// src/fonts/caveat-700-es.woff2, generada con fontTools (ver docs/design-system.md).
+const caveat = localFont({
+  src: "../fonts/caveat-700-es.woff2",
   weight: "700",
+  display: "swap",
   preload: false,
   variable: "--font-caveat",
 });

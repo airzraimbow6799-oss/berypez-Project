@@ -3,7 +3,6 @@
  * El valor guardado se valida: el almacenamiento del navegador puede venir
  * vacío, corrupto o bloqueado (modo privado).
  */
-import { z } from "zod";
 
 import { BRANCHES, type BranchInfo } from "@/config/site";
 
@@ -22,10 +21,25 @@ const STORAGE_KEY = "berypez:modo-pedido";
 /** Evento que avisa a toda la página que la modalidad cambió (cabecera, portada, carrito…). */
 export const MODE_CHANGE_EVENT = "berypez:modo-pedido-cambio";
 
-const modeSchema = z.discriminatedUnion("modality", [
-  z.object({ modality: z.literal("delivery") }),
-  z.object({ modality: z.literal("pickup"), branch: z.enum(["lince", "jesus-maria"]) }),
-]);
+const BRANCH_SLUGS: readonly string[] = ["lince", "jesus-maria"];
+
+/**
+ * Validación a mano, sin Zod (#58): este módulo se carga en todas las páginas (cabecera y
+ * portada) y Zod sumaba ~19–28 KB comprimidos solo para leer la modalidad guardada.
+ */
+function toMode(value: unknown): OrderMode | null {
+  if (typeof value !== "object" || value === null) {
+    return null;
+  }
+  const v = value as Record<string, unknown>;
+  if (v.modality === "delivery") {
+    return { modality: "delivery" };
+  }
+  if (v.modality === "pickup" && typeof v.branch === "string" && BRANCH_SLUGS.includes(v.branch)) {
+    return { modality: "pickup", branch: v.branch as BranchSlug };
+  }
+  return null;
+}
 
 function branchName(slug: BranchSlug): string {
   return BRANCHES.find((b) => b.slug === slug)?.name ?? slug;
@@ -59,8 +73,7 @@ export function parseMode(raw: string | null): OrderMode | null {
     return null;
   }
   try {
-    const result = modeSchema.safeParse(JSON.parse(raw));
-    return result.success ? result.data : null;
+    return toMode(JSON.parse(raw));
   } catch {
     return null;
   }

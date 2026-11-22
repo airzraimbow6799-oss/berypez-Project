@@ -5,7 +5,7 @@ import { type CSSProperties, useMemo, useState } from "react";
 
 import { Chip } from "@/components/ui/Chip";
 import { IconButton } from "@/components/ui/IconButton";
-import { toast } from "@/components/ui/Toaster";
+import { notifySuccess } from "@/components/ui/notify";
 import { flyToCart } from "@/features/cart/fly-to-cart";
 import { morphTo } from "@/features/motion/view-transition";
 import { useCart } from "@/features/cart/store";
@@ -83,7 +83,7 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
     add(toCartInput(product, selection, ""), 1);
     navigator.vibrate?.(20);
     flyToCart(origin, product.image?.url);
-    toast.success(`Agregaste ${product.name}`, {
+    notifySuccess(`Agregaste ${product.name}`, {
       action: { label: "Ver carrito", onClick: () => window.location.assign("/carrito") },
     });
   };
