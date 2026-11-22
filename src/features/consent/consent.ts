@@ -3,6 +3,9 @@ export type Consent = "accepted" | "rejected";
 
 const KEY = "berypez:cookies";
 
+/** Evento del navegador al elegir en el aviso (la ventana de promociones espera a que se elija). */
+export const CONSENT_EVENT = "berypez:consentimiento";
+
 export function readConsent(storage: Storage | undefined): Consent | null {
   try {
     const value = storage?.getItem(KEY);
@@ -18,6 +21,7 @@ export function writeConsent(storage: Storage | undefined, consent: Consent): vo
   } catch {
     // Sin almacenamiento: la elección vale solo para esta visita.
   }
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(CONSENT_EVENT));
 }
 
 /** Solo se carga analítica con consentimiento explícito y un ID configurado. */

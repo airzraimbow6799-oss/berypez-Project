@@ -27,6 +27,23 @@ export default defineConfig({
   reporter: [["list"], ["html", { open: "never", outputFolder: "playwright-report" }]],
   use: {
     baseURL,
+    // Sin la ventana de promociones de Inicio: taparía lo que prueban las demás pruebas.
+    // tests/e2e/promociones.spec.ts la quita para probar la ventana.
+    storageState: {
+      cookies: [
+        {
+          name: "berypez_sin_promo",
+          value: "1",
+          domain: new URL(baseURL).hostname,
+          path: "/",
+          expires: -1,
+          httpOnly: false,
+          secure: false,
+          sameSite: "Lax",
+        },
+      ],
+      origins: [],
+    },
     locale: "es-PE",
     timezoneId: "America/Lima",
     trace: "retain-on-failure",

@@ -31,6 +31,13 @@ export const getProductsBySlugsCached = unstable_cache(
   options,
 );
 
+/** Platos con promoción vigente (ventana emergente y franja de la carta). */
+export const getPromotedProductsCached = unstable_cache(
+  () => repository().getPromotedProducts(),
+  ["promoted-products"],
+  options,
+);
+
 export const getProductCached = unstable_cache(
   (slug: string) => repository().getProduct(slug),
   ["product"],

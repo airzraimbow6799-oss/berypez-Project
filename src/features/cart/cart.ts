@@ -18,6 +18,8 @@ export type CartLineInput = {
   note: string;
   unitPriceCents: number;
   imageUrl: string | null;
+  /** Promoción 2×1: de cada 2 iguales se cobra 1 (el servidor lo vuelve a calcular). */
+  twoForOne?: boolean;
 };
 
 export type CartLine = CartLineInput & { key: string; quantity: number };
@@ -77,6 +79,7 @@ function toCartLine(value: unknown): CartLine | null {
     unitPriceCents: v.unitPriceCents as number,
     imageUrl: v.imageUrl as string | null,
     quantity: v.quantity as number,
+    ...(v.twoForOne === true ? { twoForOne: true } : {}),
   };
 }
 
@@ -128,8 +131,17 @@ export function cartCount(lines: readonly CartLine[]): number {
   return lines.reduce((sum, line) => sum + line.quantity, 0);
 }
 
+/** Unidades que se pagan en la línea: en 2×1, la mitad redondeada hacia arriba. */
+export function paidUnits(line: Pick<CartLine, "quantity" | "twoForOne">): number {
+  return line.twoForOne ? Math.ceil(line.quantity / 2) : line.quantity;
+}
+
+export function lineTotalCents(line: Pick<CartLine, "quantity" | "twoForOne" | "unitPriceCents">) {
+  return line.unitPriceCents * paidUnits(line);
+}
+
 export function cartSubtotalCents(lines: readonly CartLine[]): number {
-  return lines.reduce((sum, line) => sum + line.unitPriceCents * line.quantity, 0);
+  return lines.reduce((sum, line) => sum + lineTotalCents(line), 0);
 }
 
 /** Valida lo guardado en el navegador; si algo está corrupto, empieza vacío. */

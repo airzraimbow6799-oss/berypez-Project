@@ -1,5 +1,6 @@
 /** F1-10 · Lógica de la vista rápida: variante, elecciones, precio y paso al carrito. */
 import type { CartLineInput } from "@/features/cart/cart";
+import { promotionApplies, promoUnitPrice } from "@/features/promotions/pricing";
 import type { ChoiceGroup, Product, Variant } from "@/types/catalog";
 
 export type Selection = { variantId: number | null; choices: Record<string, string> };
@@ -13,8 +14,21 @@ export function defaultSelection(product: Product): Selection {
   return { variantId: first?.id ?? null, choices: {} };
 }
 
-export function unitPriceCents(product: Product, variantId: number | null): number {
+/** Precio sin promoción de la opción elegida (o del plato). */
+export function regularUnitPriceCents(product: Product, variantId: number | null): number {
   return findVariant(product, variantId)?.priceCents ?? product.priceCents;
+}
+
+/** Precio que se cobra por unidad: con la promoción vigente, si aplica a esa opción. */
+export function unitPriceCents(product: Product, variantId: number | null): number {
+  return promoUnitPrice(regularUnitPriceCents(product, variantId), product.promotion, variantId);
+}
+
+/** ¿Esta opción del plato está en 2×1? */
+export function isTwoForOne(product: Product, variantId: number | null): boolean {
+  return (
+    product.promotion?.kind === "two_for_one" && promotionApplies(product.promotion, variantId)
+  );
 }
 
 /** Grupos que la persona debe elegir: los que la variante no deja fijos. */
@@ -59,5 +73,6 @@ export function toCartInput(product: Product, selection: Selection, note: string
     note,
     unitPriceCents: unitPriceCents(product, selection.variantId),
     imageUrl: product.image?.url ?? null,
+    ...(isTwoForOne(product, selection.variantId) ? { twoForOne: true } : {}),
   };
 }
