@@ -111,6 +111,17 @@
 
 @layer components {
   /*
+   * Sección que el navegador no calcula ni pinta hasta que está cerca de la pantalla (#58): en
+   * celulares ahorra el estilo, el diseño y las animaciones de lo que está más abajo al cargar.
+   * El alto estimado solo se usa hasta la primera vez que se dibuja (después recuerda el real).
+   * No se usa en la carta: su barra de categorías necesita las posiciones exactas de cada sección.
+   */
+  .diferida {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 800px;
+  }
+
+  /*
    * Acento manuscrito, como escrito con tiza en la pizarra del local: solo 1–2 palabras por
    * pantalla (p. ej. «de cariño»). Un poco más grande que el texto que lo rodea porque Caveat
    * es más chica a igual tamaño, y levemente inclinado. El color lo pone quien lo usa.
@@ -136,8 +147,15 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: url("/fondo/mariscos.webp") center / cover no-repeat;
+    background: center / cover no-repeat;
     opacity: 0.12;
+  }
+
+  /* El dibujo se pide cuando la página ya cargó (PageLoadedFlag, #58): no compite en celulares
+     con la foto principal ni las fuentes. Al 12 % de opacidad, que llegue un instante después no
+     se nota. */
+  html[data-cargado] .fondo-mar {
+    background-image: url("/fondo/mariscos.webp");
   }
 
   @media (forced-colors: active), print, (prefers-reduced-data: reduce) {

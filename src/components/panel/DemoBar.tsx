@@ -21,10 +21,10 @@ import { type DemoNotification, useDemoStore } from "@/features/demo/store";
 import type { StaffRole } from "@/features/staff/roles";
 import { beep } from "@/lib/beep";
 
-/** Qué avisos ve cada rol: cocina los pedidos, salón las reservas, administración todo. */
+/** Qué avisos ve cada rol: recepción las reservas, administración todo. */
 export function isForRole(notification: Pick<DemoNotification, "kind">, role: StaffRole): boolean {
   if (role === "admin") return true;
-  return role === "cocina" ? notification.kind === "order" : notification.kind === "reservation";
+  return notification.kind === "reservation";
 }
 
 const timeOf = (iso: string) =>

@@ -1,7 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
 import { yearsOpen } from "../../src/config/site";
-import { agregarSudados, botonCarrito, esperarHidratacion } from "./ayudas";
+import { agregarSudados, botonCarrito, esperarHidratacion, llevarALaVista } from "./ayudas";
 
 /** Años desde la apertura: el contador ya no es un «14» fijo, se calcula desde 2010. */
 const ANOS = String(yearsOpen());
@@ -61,10 +61,9 @@ test.describe("Movimiento 2 · con «reducir movimiento»", () => {
     await expect(page.getByLabel("Buscar en la carta")).toBeVisible();
     await esperarHidratacion(page, "#buscar-carta");
 
-    await page
-      .getByRole("button", { name: /^Agregar / })
-      .first()
-      .click();
+    const boton = page.getByRole("button", { name: /^Agregar / }).first();
+    await llevarALaVista(page, boton);
+    await boton.click();
     await expect(page.getByText(/^Agregaste /)).toBeVisible();
     await expect(volador(page)).toHaveCount(0);
   });
@@ -149,10 +148,9 @@ test.describe("Movimiento 2 · con animaciones", () => {
     await expect(page.getByLabel("Buscar en la carta")).toBeVisible();
     await esperarHidratacion(page, "#buscar-carta");
 
-    await page
-      .getByRole("button", { name: /^Agregar / })
-      .first()
-      .click();
+    const boton = page.getByRole("button", { name: /^Agregar / }).first();
+    await llevarALaVista(page, boton);
+    await boton.click();
     await expect(page.getByText(/^Agregaste /)).toBeVisible();
     await expect(volador(page)).toHaveCount(1, { timeout: 1500 });
     await expect(volador(page)).toHaveCount(0, { timeout: 4000 });

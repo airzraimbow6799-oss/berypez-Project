@@ -49,6 +49,7 @@ export function AboutHero() {
                 alt="Berla Carlos con su chaqueta de chef en el stand de Berypez, sosteniendo el afiche del Día Nacional del Cebiche 2023."
                 fill
                 priority
+                fetchPriority="high"
                 sizes="(min-width: 768px) 384px, 90vw"
                 className="object-cover"
               />

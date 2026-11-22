@@ -30,7 +30,7 @@ describe("isDemoPanel", () => {
 
 describe("cuentas de demostración", () => {
   it("hay una por rol y los correos son de ejemplo", () => {
-    expect(DEMO_ACCOUNTS.map((a) => a.role)).toEqual(["admin", "cocina", "salon"]);
+    expect(DEMO_ACCOUNTS.map((a) => a.role)).toEqual(["admin", "salon"]);
     for (const account of DEMO_ACCOUNTS)
       expect(account.email.endsWith("@demo.berypez.pe")).toBe(true);
   });
@@ -40,7 +40,9 @@ describe("cuentas de demostración", () => {
     expect(demoAccountForCredentials("alguien@correo.pe", "demo1234")).toBeUndefined();
   });
   it("solo reconoce roles conocidos", () => {
-    expect(demoAccountForRole("cocina")?.title).toBe("Cocina");
+    expect(demoAccountForRole("salon")?.title).toBe("Recepción");
+    // Ya no hay cuenta de cocina: la cocina trabaja con la ticketera de su sistema.
+    expect(demoAccountForRole("cocina")).toBeUndefined();
     expect(demoAccountForRole("superadmin")).toBeUndefined();
   });
 });
@@ -59,11 +61,10 @@ describe("datos de ejemplo", () => {
       expect(new Set(ids).size).toBe(ids.length);
     }
   });
-  it("incluye platos agotados y con poco stock para poder enseñarlos", () => {
+  it("usa platos reales con foto e incluye agotados y apartados para poder enseñarlos", () => {
+    expect(data.dishes.every((d) => d.image?.url.startsWith("/catalog/"))).toBe(true);
     expect(data.dishes.some((d) => !d.isAvailable)).toBe(true);
-    expect(data.dishes.some((d) => d.stockQty !== null && d.stockQty > 0 && d.stockQty <= 5)).toBe(
-      true,
-    );
+    expect(data.dishes.some((d) => d.priceGroup !== null && d.choiceGroups.length > 0)).toBe(true);
   });
   it("los pedidos recientes quedan antes de ahora y hay uno por estado activo", () => {
     for (const order of data.orders) {

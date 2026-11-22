@@ -3,7 +3,13 @@
 import { Hero } from "@/components/home/Hero";
 import { Branches, MenuAccess, ProductShelf, Story } from "@/components/home/HomeSections";
 import { COMBO_SLUGS, FEATURED_PRODUCT_SLUG, HOUSE_PICKS, MENU_COVERS } from "@/config/home";
-import { getMenusCached, getProductsBySlugsCached } from "@/features/catalog/data/cached";
+import { PromoPopup } from "@/components/promotions/PromoPopup";
+import {
+  getMenusCached,
+  getProductsBySlugsCached,
+  getPromotedProductsCached,
+} from "@/features/catalog/data/cached";
+import { POPUP_MAX_SLIDES } from "@/features/promotions/links";
 
 // Portada estática que se regenera cada 10 min o al editar la carta (revalidateTag "catalog").
 export const revalidate = 600;
@@ -15,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [menus, products] = await Promise.all([
+  const [menus, products, promoted] = await Promise.all([
     getMenusCached(),
     getProductsBySlugsCached([
       FEATURED_PRODUCT_SLUG,
@@ -23,6 +29,7 @@ export default async function HomePage() {
       ...HOUSE_PICKS,
       ...COMBO_SLUGS,
     ]),
+    getPromotedProductsCached(),
   ]);
 
   const bySlug = new Map(products.map((p) => [p.slug, p]));
@@ -54,6 +61,7 @@ export default async function HomePage() {
       />
       <Story />
       <Branches />
+      <PromoPopup products={promoted.slice(0, POPUP_MAX_SLIDES)} />
     </>
   );
 }

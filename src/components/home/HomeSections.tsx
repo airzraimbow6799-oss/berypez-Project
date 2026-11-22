@@ -47,7 +47,10 @@ const GRID_SIZES = "(min-width: 1024px) 270px, (min-width: 640px) 33vw, 50vw";
 /** F1-07 · Accesos a las 6 cartas con foto. */
 export function MenuAccess({ menus, covers }: { menus: Menu[]; covers: Map<string, Product> }) {
   return (
-    <section aria-labelledby="cartas" className="relative isolate mx-auto max-w-6xl px-4 py-12">
+    <section
+      aria-labelledby="cartas"
+      className="diferida relative isolate mx-auto max-w-6xl px-4 py-12"
+    >
       <FloatingIngredients
         items={[
           { tipo: "limon", className: "top-4 right-2 size-16 rotate-12 md:size-20" },
@@ -76,6 +79,7 @@ export function MenuAccess({ menus, covers }: { menus: Menu[]; covers: Map<strin
             >
               <Link
                 href={`/carta/${menu.slug}`}
+                prefetch={false}
                 data-clip
                 className="group elevar relative block aspect-[4/3] overflow-hidden rounded-md shadow-sm"
               >
@@ -127,7 +131,7 @@ export function ProductShelf({
     return null;
   }
   return (
-    <section aria-labelledby={id} className="mx-auto max-w-6xl px-4 py-12">
+    <section aria-labelledby={id} className="diferida mx-auto max-w-6xl px-4 py-12">
       <SectionHeading
         id={id}
         title={title}
@@ -135,6 +139,7 @@ export function ProductShelf({
         link={
           <Link
             href={`/carta/${menuSlug}`}
+            prefetch={false}
             className="text-marino-600 min-h-tactil inline-flex items-center gap-1 font-semibold hover:underline"
           >
             Ver la carta <ArrowRight aria-hidden="true" className="size-4" />
@@ -181,7 +186,7 @@ export function Story() {
     },
   ];
   return (
-    <section aria-labelledby="historia" className="bg-crema-200 relative isolate">
+    <section aria-labelledby="historia" className="diferida bg-crema-200 relative isolate">
       <FloatingIngredients
         items={[
           { tipo: "pez", className: "top-8 right-6 size-20 -rotate-6 md:size-24" },
@@ -235,7 +240,7 @@ export function Story() {
 /** Sedes con acciones. Dirección, horario y mapa aparecen cuando la dueña los confirme. */
 export function Branches() {
   return (
-    <section aria-labelledby="sedes" className="mx-auto max-w-6xl px-4 py-12">
+    <section aria-labelledby="sedes" className="diferida mx-auto max-w-6xl px-4 py-12">
       <SectionHeading id="sedes" title="Nuestras sedes" />
       <ul className="mt-6 grid gap-4 sm:grid-cols-2">
         {BRANCHES.map((branch, index) => (

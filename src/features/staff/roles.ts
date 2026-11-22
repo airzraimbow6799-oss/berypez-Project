@@ -4,14 +4,23 @@
  * Es la capa 1 de seguridad (la pantalla). La capa 3, la que de verdad protege los datos, son
  * las políticas RLS de Postgres: aquí solo se decide qué se muestra y a dónde se redirige.
  *
- * `salon` aún no existe en el enum `staff_role` de la base (lo agrega la tarea B-R1): mientras
- * tanto la base solo devuelve `admin` y `cocina`, y este tipo ya está listo para el tercero.
+ * Dos roles (pedido del local, 22/11): **Administración** (la dueña: resumen, pedidos, reservas,
+ * carta y personal) y **Recepción** (`salon`: lleva las reservas de la web, llamadas y WhatsApp).
+ * No hay rol de cocina: la cocina trabaja con la ticketera de su sistema (Trinetsoft).
+ *
+ * En la base, el enum `staff_role` aún tiene `cocina` y no tiene `salon` (lo ajusta la tarea
+ * B-R1). Un rol que no esté aquí no entra al panel (ver `isStaffRole` en session.ts).
  */
 
-export const STAFF_ROLES = ["admin", "cocina", "salon"] as const;
+export const STAFF_ROLES = ["admin", "salon"] as const;
 export type StaffRole = (typeof STAFF_ROLES)[number];
 
-export type PanelSectionKey = "pedidos" | "reservas" | "carta" | "dashboard" | "personal";
+export function isStaffRole(value: unknown): value is StaffRole {
+  return typeof value === "string" && (STAFF_ROLES as readonly string[]).includes(value);
+}
+
+export type PanelSectionKey =
+  "pedidos" | "reservas" | "carta" | "promociones" | "dashboard" | "personal";
 
 export type PanelSection = {
   key: PanelSectionKey;
@@ -25,17 +34,11 @@ export type PanelSection = {
   demoOnly?: boolean;
 };
 
-/** Secciones del panel. Cada módulo nuevo (carta, plano, dashboard…) suma su entrada aquí. */
+/**
+ * Secciones del panel, en el orden del menú. La primera permitida es a donde entra cada rol:
+ * Administración entra a su Resumen; Recepción, a las Reservas.
+ */
 export const PANEL_SECTIONS: readonly PanelSection[] = [
-  { key: "pedidos", href: "/panel", label: "Pedidos", roles: ["admin", "cocina", "salon"] },
-  { key: "reservas", href: "/panel/reservas", label: "Reservas", roles: ["admin", "salon"] },
-  {
-    key: "carta",
-    href: "/panel/carta",
-    label: "Carta",
-    roles: ["admin", "cocina"],
-    demoOnly: true,
-  },
   {
     key: "dashboard",
     href: "/panel/dashboard",
@@ -43,6 +46,15 @@ export const PANEL_SECTIONS: readonly PanelSection[] = [
     roles: ["admin"],
     demoOnly: true,
   },
+  { key: "pedidos", href: "/panel/pedidos", label: "Pedidos", roles: ["admin"] },
+  { key: "reservas", href: "/panel/reservas", label: "Reservas", roles: ["admin", "salon"] },
+  {
+    key: "carta",
+    href: "/panel/carta",
+    label: "Carta",
+    roles: ["admin"],
+  },
+  { key: "promociones", href: "/panel/promociones", label: "Promociones", roles: ["admin"] },
   {
     key: "personal",
     href: "/panel/personal",
@@ -54,8 +66,7 @@ export const PANEL_SECTIONS: readonly PanelSection[] = [
 
 const ROLE_LABELS: Record<StaffRole, string> = {
   admin: "Administración",
-  cocina: "Cocina",
-  salon: "Salón",
+  salon: "Recepción",
 };
 
 export function roleLabel(role: StaffRole): string {

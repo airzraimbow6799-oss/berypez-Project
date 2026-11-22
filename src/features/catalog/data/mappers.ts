@@ -12,19 +12,74 @@ import {
   type Menu,
   type MenuSlug,
   type Product,
+  type ProductPromotion,
   PRODUCT_TAGS,
   type ProductTag,
   type Variant,
 } from "@/types/catalog";
 
+import { byRelevance, isPromotionLive } from "@/features/promotions/pricing";
+import type { Database } from "@/types/database";
+
 import type { CategoryRow, MenuRow, ProductRow, VariantRow } from "./fixtures";
 
 export const STORAGE_BUCKET = "catalog";
 
+export type PromotionRow = Pick<
+  Database["public"]["Tables"]["promotions"]["Row"],
+  | "id"
+  | "kind"
+  | "percent_off"
+  | "price_cents"
+  | "variant_id"
+  | "title"
+  | "image_path"
+  | "starts_at"
+  | "ends_at"
+  | "is_active"
+  | "is_featured"
+  | "created_at"
+>;
+
 export type ProductRowWithRelations = ProductRow & {
   variants: VariantRow[];
   product_menus: Array<{ menu_slug: MenuSlug }>;
+  /** Solo cuando la consulta las pide; con la clave pública RLS ya deja solo las vigentes. */
+  promotions?: PromotionRow[];
 };
+
+/** La promoción vigente más relevante del plato (también se filtra aquí: el checkout usa la clave secreta). */
+export function toPromotion(
+  rows: readonly PromotionRow[] | undefined,
+  supabaseUrl: string,
+  now: number,
+): ProductPromotion | null {
+  const live = (rows ?? [])
+    .map((r) => ({
+      row: r,
+      isActive: r.is_active,
+      isFeatured: r.is_featured,
+      startsAt: r.starts_at,
+      endsAt: r.ends_at,
+      createdAt: r.created_at,
+    }))
+    .filter((p) => isPromotionLive(p, now))
+    .sort(byRelevance);
+  const best = live[0]?.row;
+  if (!best) return null;
+  return {
+    id: best.id,
+    kind: best.kind,
+    percentOff: best.percent_off,
+    priceCents: best.price_cents,
+    variantId: best.variant_id,
+    title: best.title,
+    imageUrl: best.image_path ? imageUrl(supabaseUrl, best.image_path) : null,
+    isFeatured: best.is_featured,
+    startsAt: best.starts_at,
+    endsAt: best.ends_at,
+  };
+}
 
 const choiceGroupsSchema = z.array(
   z.object({ key: z.string(), label: z.string(), options: z.array(z.string()) }),
@@ -58,8 +113,14 @@ function toVariant(row: VariantRow, productName: string): Variant {
   };
 }
 
-export function toProduct(row: ProductRowWithRelations, supabaseUrl: string): Product {
-  const variants = [...row.variants]
+export function toProduct(
+  row: ProductRowWithRelations,
+  supabaseUrl: string,
+  now: number = Date.now(),
+): Product {
+  // Opciones quitadas desde el panel que ya tenían pedidos: siguen en la base pero no se ofrecen.
+  const variants = row.variants
+    .filter((v) => !v.is_archived)
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((v) => toVariant(v, row.name));
 
@@ -81,6 +142,7 @@ export function toProduct(row: ProductRowWithRelations, supabaseUrl: string): Pr
     isAvailable: row.is_available,
     variants,
     choiceGroups: parseOrThrow(choiceGroupsSchema, row.choice_groups, `${row.name} (elecciones)`),
+    promotion: toPromotion(row.promotions, supabaseUrl, now),
   };
 }
 

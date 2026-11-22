@@ -1,75 +1,88 @@
 "use client";
 
-import { Plus, Search, Trash2 } from "lucide-react";
-import { type FormEvent, useId, useMemo, useState } from "react";
+import { Pencil, Plus, Search, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { useId, useMemo, useState } from "react";
 
-import { useDemoReady } from "@/components/panel/useDemoReady";
+import type { CartaBackend, Outcome } from "@/components/panel/carta/backend";
+import { DishEditor } from "@/components/panel/carta/DishEditor";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
-import { Input } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { toast } from "@/components/ui/Toaster";
+import { MENU_LINKS } from "@/config/site";
 import {
-  canMarkAvailable,
   filterDishes,
+  hasPriceOptions,
   isSoldOut,
-  LOW_STOCK_THRESHOLD,
   parsePriceInput,
-  parseStockInput,
   priceChangeNeedsConfirm,
   summarize,
 } from "@/features/carta/logic";
-import {
-  DISH_CATEGORIES,
-  type Dish,
-  type NewDishFormInput,
-  newDishFormSchema,
-} from "@/features/carta/schema";
-import { useDemoStore } from "@/features/demo/store";
+import { type Dish, dishToForm, emptyDishForm, TAG_LABELS } from "@/features/carta/schema";
 import type { StaffRole } from "@/features/staff/roles";
 import { formatPrice } from "@/lib/format";
+import type { MenuSlug } from "@/types/catalog";
 
 /** Centavos a texto editable en soles: 3800 → "38.00". */
 const toSoles = (cents: number) => (cents / 100).toFixed(2);
 
+const MENU_LABEL = Object.fromEntries(MENU_LINKS.map((m) => [m.slug, m.label])) as Record<
+  MenuSlug,
+  string
+>;
+
+type EditorState = { mode: "crear" } | { mode: "editar"; dish: Dish };
+
 /**
- * Módulo 2 · Carta administrable (con datos de ejemplo).
- * Administración cambia precios, añade y elimina platos; cocina solo marca agotados y ajusta
- * el stock. Cada cambio se ve al instante y avisa con un mensaje.
+ * Módulo 2 · Carta administrable.
+ * Administración crea y edita platos (foto, descripción, precio, etiquetas y apartados),
+ * cambia precios al vuelo, marca agotados y elimina. Sin stock: un plato está disponible o
+ * agotado. Los datos vienen del `backend`: el real (Supabase) o el del modo demostración.
  */
-export function CartaManager({ role }: { role: StaffRole }) {
-  const isReady = useDemoReady();
-  const dishes = useDemoStore((s) => s.dishes);
-  const setDishPrice = useDemoStore((s) => s.setDishPrice);
-  const setDishAvailable = useDemoStore((s) => s.setDishAvailable);
-  const setDishStock = useDemoStore((s) => s.setDishStock);
-  const addDish = useDemoStore((s) => s.addDish);
-  const removeDish = useDemoStore((s) => s.removeDish);
+export function CartaManager({ role, backend }: { role: StaffRole; backend: CartaBackend }) {
+  const { isReady, dishes } = backend;
 
   const canEditCarta = role === "admin";
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<string | null>(null);
+  const [menu, setMenu] = useState<MenuSlug | null>(null);
   const [onlySoldOut, setOnlySoldOut] = useState(false);
-  const [isAdding, setIsAdding] = useState(false);
+  const [editor, setEditor] = useState<EditorState | null>(null);
+  // Cambia en cada apertura: el formulario se monta de nuevo y arranca limpio.
+  const [editorKey, setEditorKey] = useState(0);
   const [toDelete, setToDelete] = useState<Dish | null>(null);
   const [priceToConfirm, setPriceToConfirm] = useState<{ dish: Dish; cents: number } | null>(null);
 
   const visible = useMemo(
-    () => filterDishes(dishes, { query, category, onlySoldOut }),
-    [dishes, query, category, onlySoldOut],
+    () => filterDishes(dishes, { query, menu, onlySoldOut }),
+    [dishes, query, menu, onlySoldOut],
   );
   const summary = useMemo(() => summarize(dishes), [dishes]);
+  const sections = useMemo(
+    () => [...new Set(dishes.map((d) => d.section))].sort((a, b) => a.localeCompare(b, "es")),
+    [dishes],
+  );
 
   if (!isReady) return <CartaSkeleton />;
 
-  const commitPrice = (dish: Dish, cents: number) => {
-    setDishPrice(dish.id, cents);
-    toast.success(`${dish.name}: ahora cuesta ${formatPrice(cents)}`);
+  const openEditor = (state: EditorState) => {
+    setEditorKey((k) => k + 1);
+    setEditor(state);
   };
+
+  /** Avisa el resultado de un cambio: éxito con `message`, o el error que dio el servidor. */
+  const report = async (pending: Promise<Outcome>, message: string) => {
+    const outcome = await pending;
+    if (outcome.ok) toast.success(message);
+    else toast.error(outcome.message);
+    return outcome;
+  };
+
+  const commitPrice = (dish: Dish, cents: number) =>
+    void report(backend.setPrice(dish, cents), `${dish.name}: ahora cuesta ${formatPrice(cents)}`);
 
   const requestPrice = (dish: Dish, cents: number) => {
     if (cents === dish.priceCents) return;
@@ -80,22 +93,11 @@ export function CartaManager({ role }: { role: StaffRole }) {
     commitPrice(dish, cents);
   };
 
-  const toggleAvailable = (dish: Dish, isAvailable: boolean) => {
-    setDishAvailable(dish.id, isAvailable);
-    toast.success(isAvailable ? `${dish.name}: disponible` : `${dish.name}: marcado como agotado`);
-  };
-
-  const changeStock = (dish: Dish, qty: number | null) => {
-    if (qty === dish.stockQty) return;
-    setDishStock(dish.id, qty);
-    toast.success(
-      qty === null
-        ? `${dish.name}: sin control de stock`
-        : qty === 0
-          ? `${dish.name}: sin stock, queda agotado`
-          : `${dish.name}: quedan ${qty}`,
+  const toggleAvailable = (dish: Dish, isAvailable: boolean) =>
+    void report(
+      backend.setAvailable(dish, isAvailable),
+      isAvailable ? `${dish.name}: disponible` : `${dish.name}: marcado como agotado`,
     );
-  };
 
   return (
     <div className="mt-6">
@@ -104,12 +106,13 @@ export function CartaManager({ role }: { role: StaffRole }) {
           <h1 className="text-3xl">Carta</h1>
           <p className="text-tinta-suave mt-1 max-w-prose">
             {canEditCarta
-              ? "Cambia precios, marca platos agotados y controla el stock. Cada cambio se ve al instante."
-              : "Marca los platos agotados y ajusta el stock. Los precios los cambia la administración."}
+              ? "Crea y edita platos con su foto, etiquetas y apartados. Marca agotado lo que se acabe."
+              : "Marca los platos agotados. Los precios y los platos los cambia la administración."}
+            {backend.isLive ? " Los cambios se ven en la web al guardar." : ""}
           </p>
         </div>
         {canEditCarta ? (
-          <Button onClick={() => setIsAdding(true)}>
+          <Button onClick={() => openEditor({ mode: "crear" })}>
             <Plus aria-hidden="true" className="size-5" /> Añadir plato
           </Button>
         ) : null}
@@ -118,22 +121,22 @@ export function CartaManager({ role }: { role: StaffRole }) {
       <dl className="mt-5 grid grid-cols-3 gap-3 sm:max-w-xl" aria-live="polite">
         <SummaryTile label="Platos" value={summary.total} />
         <SummaryTile label="Agotados" value={summary.soldOut} tone="alerta" />
-        <SummaryTile label="Poco stock" value={summary.lowStock} />
+        <SummaryTile label="Con apartados" value={summary.withOptions} />
       </dl>
 
       <div className="mt-5 flex flex-col gap-3">
         <SearchField value={query} onChange={setQuery} />
         <div className="flex flex-wrap gap-2" role="group" aria-label="Filtros de la carta">
-          <Chip pressed={category === null} onPressedChange={() => setCategory(null)}>
-            Todos
+          <Chip pressed={menu === null} onPressedChange={() => setMenu(null)}>
+            Todas las cartas
           </Chip>
-          {DISH_CATEGORIES.map((name) => (
+          {MENU_LINKS.map((m) => (
             <Chip
-              key={name}
-              pressed={category === name}
-              onPressedChange={(on) => setCategory(on ? name : null)}
+              key={m.slug}
+              pressed={menu === m.slug}
+              onPressedChange={(on) => setMenu(on ? m.slug : null)}
             >
-              {name}
+              {m.label}
             </Chip>
           ))}
           <Chip pressed={onlySoldOut} onPressedChange={setOnlySoldOut}>
@@ -158,22 +161,39 @@ export function CartaManager({ role }: { role: StaffRole }) {
               canEditCarta={canEditCarta}
               onPrice={(cents) => requestPrice(dish, cents)}
               onAvailable={(on) => toggleAvailable(dish, on)}
-              onStock={(qty) => changeStock(dish, qty)}
+              onEdit={() => openEditor({ mode: "editar", dish })}
               onDelete={() => setToDelete(dish)}
             />
           ))}
         </ul>
       )}
 
-      <AddDishDialog
-        open={isAdding}
-        onClose={() => setIsAdding(false)}
-        onAdd={(form) => {
-          const dish = addDish(form);
-          toast.success(`Añadiste «${dish.name}» a la carta`);
-          setIsAdding(false);
-        }}
-      />
+      {editor ? (
+        <DishEditor
+          key={editorKey}
+          open
+          mode={editor.mode}
+          initial={
+            editor.mode === "editar" ? dishToForm(editor.dish) : emptyDishForm(menu ?? "marina")
+          }
+          sections={sections}
+          onClose={() => setEditor(null)}
+          onUpload={backend.uploadPhoto}
+          onSave={async (input, data) => {
+            const id = editor.mode === "editar" ? editor.dish.id : null;
+            const outcome = await backend.save(id, input, data);
+            if (outcome.ok) {
+              toast.success(
+                id === null
+                  ? `Añadiste «${data.name}» a la carta`
+                  : `Guardaste los cambios de «${data.name}»`,
+              );
+              setEditor(null);
+            }
+            return outcome;
+          }}
+        />
+      ) : null}
 
       <ConfirmDialog
         open={toDelete !== null}
@@ -187,10 +207,7 @@ export function CartaManager({ role }: { role: StaffRole }) {
         tone="peligro"
         onClose={() => setToDelete(null)}
         onConfirm={() => {
-          if (toDelete) {
-            removeDish(toDelete.id);
-            toast.success(`Eliminaste «${toDelete.name}»`);
-          }
+          if (toDelete) void report(backend.remove(toDelete), `Eliminaste «${toDelete.name}»`);
           setToDelete(null);
         }}
       />
@@ -260,56 +277,83 @@ function DishRow({
   canEditCarta,
   onPrice,
   onAvailable,
-  onStock,
+  onEdit,
   onDelete,
 }: {
   dish: Dish;
   canEditCarta: boolean;
   onPrice: (cents: number) => void;
   onAvailable: (isAvailable: boolean) => void;
-  onStock: (qty: number | null) => void;
+  onEdit: () => void;
   onDelete: () => void;
 }) {
   const soldOut = isSoldOut(dish);
-  const isLow = !soldOut && dish.stockQty !== null && dish.stockQty <= LOW_STOCK_THRESHOLD;
+  const optionCount = (dish.priceGroup ? 1 : 0) + dish.choiceGroups.length;
+  const where = `${dish.menus.map((m) => MENU_LABEL[m]).join(" · ")} — ${dish.section}`;
+  const options =
+    optionCount > 0 ? ` · ${optionCount} ${optionCount === 1 ? "apartado" : "apartados"}` : "";
 
   return (
     <li
-      className={`bg-superficie border-borde grid gap-4 rounded-md border p-4 shadow-sm md:grid-cols-[minmax(0,1fr)_auto_auto_auto] md:items-center ${soldOut ? "bg-crema-200" : ""}`}
+      className={`border-borde grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-4 gap-y-3 rounded-md border p-4 shadow-sm md:grid-cols-[5.5rem_minmax(0,1fr)_auto_auto] md:items-center ${soldOut ? "bg-crema-200" : "bg-superficie"}`}
     >
+      <div className="bg-crema-200 relative aspect-square overflow-hidden rounded-sm">
+        {dish.image ? (
+          <Image
+            src={dish.image.url}
+            alt=""
+            fill
+            sizes="88px"
+            unoptimized={dish.image.url.startsWith("blob:")}
+            className="object-cover"
+          />
+        ) : null}
+      </div>
+
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="text-lg font-semibold">{dish.name}</h2>
-          <Badge>{dish.category}</Badge>
           {soldOut ? <Badge tone="agotado">Agotado</Badge> : null}
-          {isLow ? <Badge tone="promo">Quedan {dish.stockQty}</Badge> : null}
         </div>
-        <p className="text-tinta-suave mt-1 text-sm">{dish.description}</p>
+        <p className="text-tinta-suave mt-0.5 text-sm">
+          {where}
+          {options}
+        </p>
+        {dish.tags.length > 0 ? (
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {dish.tags.map((tag) => (
+              <Badge key={tag}>{TAG_LABELS[tag]}</Badge>
+            ))}
+          </div>
+        ) : null}
       </div>
 
-      {canEditCarta ? (
-        <PriceField dish={dish} onCommit={onPrice} />
-      ) : (
-        <p className="text-lg font-semibold tabular-nums md:text-right">
-          {formatPrice(dish.priceCents)}
-        </p>
-      )}
+      <div className="col-span-2 md:col-span-1">
+        {canEditCarta && !hasPriceOptions(dish) ? (
+          <PriceField dish={dish} onCommit={onPrice} />
+        ) : (
+          <p className="text-lg font-semibold tabular-nums md:text-right">
+            {dish.priceGroup ? "Desde " : ""}
+            {formatPrice(dish.priceCents)}
+          </p>
+        )}
+      </div>
 
-      <StockField dish={dish} onCommit={onStock} />
-
-      <div className="flex items-center justify-between gap-3 md:justify-end">
-        <AvailabilitySwitch
-          name={dish.name}
-          checked={!soldOut}
-          disabled={!canMarkAvailable(dish) && soldOut}
-          onChange={onAvailable}
-        />
+      <div className="col-span-2 flex items-center justify-between gap-2 md:col-span-1 md:justify-end">
+        <AvailabilitySwitch name={dish.name} checked={!soldOut} onChange={onAvailable} />
         {canEditCarta ? (
-          <IconButton
-            label={`Eliminar ${dish.name}`}
-            icon={<Trash2 aria-hidden="true" className="size-5" />}
-            onClick={onDelete}
-          />
+          <div className="flex items-center gap-1">
+            <IconButton
+              label={`Editar ${dish.name}`}
+              icon={<Pencil aria-hidden="true" className="size-5" />}
+              onClick={onEdit}
+            />
+            <IconButton
+              label={`Eliminar ${dish.name}`}
+              icon={<Trash2 aria-hidden="true" className="size-5" />}
+              onClick={onDelete}
+            />
+          </div>
         ) : null}
       </div>
     </li>
@@ -323,7 +367,7 @@ function PriceField({ dish, onCommit }: { dish: Dish; onCommit: (cents: number) 
   const [error, setError] = useState("");
   const [lastCents, setLastCents] = useState(dish.priceCents);
 
-  // Si el precio cambia desde fuera (confirmación, reinicio), el campo lo refleja.
+  // Si el precio cambia desde fuera (confirmación, edición, reinicio), el campo lo refleja.
   if (lastCents !== dish.priceCents) {
     setLastCents(dish.priceCents);
     setText(toSoles(dish.priceCents));
@@ -378,67 +422,14 @@ function PriceField({ dish, onCommit }: { dish: Dish; onCommit: (cents: number) 
   );
 }
 
-/** Stock opcional: vacío = sin control. Se guarda al salir del campo o con Enter. */
-function StockField({ dish, onCommit }: { dish: Dish; onCommit: (qty: number | null) => void }) {
-  const id = useId();
-  const [text, setText] = useState(dish.stockQty === null ? "" : String(dish.stockQty));
-  const [error, setError] = useState("");
-  const [lastQty, setLastQty] = useState(dish.stockQty);
-
-  if (lastQty !== dish.stockQty) {
-    setLastQty(dish.stockQty);
-    setText(dish.stockQty === null ? "" : String(dish.stockQty));
-    setError("");
-  }
-
-  const commit = () => {
-    const result = parseStockInput(text);
-    if (!result.ok) {
-      setError(result.message);
-      return;
-    }
-    setError("");
-    onCommit(result.qty);
-  };
-
-  return (
-    <div className="flex flex-col gap-1 md:w-32">
-      <label htmlFor={id} className="text-tinta-suave text-sm font-semibold">
-        Stock
-      </label>
-      <input
-        id={id}
-        inputMode="numeric"
-        placeholder="Sin límite"
-        value={text}
-        aria-invalid={error !== ""}
-        aria-describedby={error ? `${id}-error` : undefined}
-        onChange={(e) => setText(e.target.value)}
-        onBlur={commit}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") e.currentTarget.blur();
-        }}
-        className={`min-h-tactil bg-superficie rounded-sm border px-3 text-base tabular-nums ${error ? "border-rocoto-texto" : "border-borde hover:border-marino-600"}`}
-      />
-      {error ? (
-        <p id={`${id}-error`} role="alert" className="text-rocoto-texto text-sm font-semibold">
-          {error}
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
 /** Interruptor accesible (role=switch). El estado se dice con texto, no solo con color. */
 function AvailabilitySwitch({
   name,
   checked,
-  disabled,
   onChange,
 }: {
   name: string;
   checked: boolean;
-  disabled: boolean;
   onChange: (checked: boolean) => void;
 }) {
   return (
@@ -447,10 +438,8 @@ function AvailabilitySwitch({
       role="switch"
       aria-checked={checked}
       aria-label={`${name}: disponible`}
-      disabled={disabled}
-      title={disabled ? "Sin stock: repón unidades para volver a venderlo" : undefined}
       onClick={() => onChange(!checked)}
-      className="min-h-tactil rounded-pill inline-flex items-center gap-3 pr-1 disabled:cursor-not-allowed disabled:opacity-60"
+      className="min-h-tactil rounded-pill inline-flex items-center gap-3 pr-1"
     >
       <span
         aria-hidden="true"
@@ -464,94 +453,6 @@ function AvailabilitySwitch({
         {checked ? "Disponible" : "Agotado"}
       </span>
     </button>
-  );
-}
-
-function AddDishDialog({
-  open,
-  onClose,
-  onAdd,
-}: {
-  open: boolean;
-  onClose: () => void;
-  onAdd: (form: ReturnType<typeof newDishFormSchema.parse>) => void;
-}) {
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const formId = useId();
-
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const input: NewDishFormInput = {
-      name: String(data.get("name") ?? ""),
-      description: String(data.get("description") ?? ""),
-      category: String(data.get("category") ?? "") as NewDishFormInput["category"],
-      price: String(data.get("price") ?? ""),
-      stock: String(data.get("stock") ?? ""),
-    };
-    const parsed = newDishFormSchema.safeParse(input);
-    if (!parsed.success) {
-      const next: Record<string, string> = {};
-      for (const issue of parsed.error.issues) {
-        const key = String(issue.path[0] ?? "form");
-        next[key] ??= issue.message;
-      }
-      setErrors(next);
-      return;
-    }
-    setErrors({});
-    onAdd(parsed.data);
-  };
-
-  return (
-    <Dialog
-      open={open}
-      onClose={() => {
-        setErrors({});
-        onClose();
-      }}
-      variant="modal"
-      title="Añadir plato"
-      description="Aparece en la carta al guardar."
-      footer={
-        <div className="flex flex-wrap justify-end gap-2">
-          <Button variant="fantasma" onClick={onClose}>
-            Cancelar
-          </Button>
-          <Button type="submit" form={formId}>
-            Guardar plato
-          </Button>
-        </div>
-      }
-    >
-      <form id={formId} onSubmit={submit} noValidate className="flex flex-col gap-4">
-        <Input label="Nombre" name="name" required error={errors.name} autoComplete="off" />
-        <Select
-          label="Categoría"
-          name="category"
-          required
-          placeholder="Elige una categoría"
-          options={DISH_CATEGORIES.map((name) => ({ value: name, label: name }))}
-          error={errors.category}
-        />
-        <Input
-          label="Precio (S/)"
-          name="price"
-          required
-          inputMode="decimal"
-          hint="Por ejemplo 38 o 38.50"
-          error={errors.price}
-        />
-        <Input
-          label="Stock"
-          name="stock"
-          inputMode="numeric"
-          hint="Déjalo vacío si no controlas la cantidad."
-          error={errors.stock}
-        />
-        <Input label="Descripción" name="description" error={errors.description} />
-      </form>
-    </Dialog>
   );
 }
 

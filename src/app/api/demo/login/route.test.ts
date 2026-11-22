@@ -24,10 +24,10 @@ describe("POST /api/demo/login", () => {
   });
 
   it("con credenciales de ejemplo guarda el rol en una cookie httpOnly", async () => {
-    const res = await post({ email: "cocina@demo.berypez.pe", password: "demo1234" });
+    const res = await post({ email: "recepcion@demo.berypez.pe", password: "demo1234" });
     expect(res.status).toBe(200);
     const cookie = res.headers.get("set-cookie") ?? "";
-    expect(cookie).toContain("berypez_demo_role=cocina");
+    expect(cookie).toContain("berypez_demo_role=salon");
     expect(cookie.toLowerCase()).toContain("httponly");
   });
 

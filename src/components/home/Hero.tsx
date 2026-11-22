@@ -14,6 +14,7 @@ function FeaturedDish({ product }: { product: Product }) {
   return (
     <Link
       href={`/carta/marina#${product.slug}`}
+      prefetch={false}
       className="group border-borde bg-superficie text-tinta hover:border-marino-600 flex w-full max-w-xs items-center gap-3 rounded-md border p-2 pr-4 shadow-lg transition-colors"
     >
       {product.image ? (

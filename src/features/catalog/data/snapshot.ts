@@ -3,16 +3,25 @@
  * Misma interfaz que el de Supabase. Se usa SOLO cuando `CATALOG_SOURCE=snapshot`:
  * CI (build sin red ni Supabase) y demos offline. En Vercel la fuente es Supabase.
  */
-import type { Catalog, Menu, MenuPage, MenuSlug, Product } from "@/types/catalog";
+import { byRelevance } from "@/features/promotions/pricing";
+import type { Catalog, Menu, MenuPage, MenuSlug, Product, ProductPromotion } from "@/types/catalog";
 
 import type { CatalogRepository } from "./repository";
 
 const byName = (a: Product, b: Product) => a.name.localeCompare(b.name, "es");
 
-export function createSnapshotCatalogRepository(catalog: Catalog): CatalogRepository {
+/**
+ * @param promotions Promociones por slug (solo las pruebas E2E las usan: el snapshot no las trae).
+ */
+export function createSnapshotCatalogRepository(
+  catalog: Catalog,
+  promotions: Readonly<Record<string, ProductPromotion>> = {},
+): CatalogRepository {
   const menus: Menu[] = [...catalog.menus].sort((a, b) => a.sortOrder - b.sortOrder);
   const categories = [...catalog.categories].sort((a, b) => a.sortOrder - b.sortOrder);
-  const products = catalog.products;
+  const products = catalog.products.map((p) =>
+    promotions[p.slug] ? { ...p, promotion: promotions[p.slug] } : p,
+  );
 
   async function getMenus(): Promise<Menu[]> {
     return menus;
@@ -47,7 +56,22 @@ export function createSnapshotCatalogRepository(catalog: Catalog): CatalogReposi
     return new Map(products.filter((p) => wanted.has(p.id)).map((p) => [p.id, p]));
   }
 
-  return { getMenus, getMenu, getProduct, getProductsBySlugs, getProductsByIds };
+  async function getPromotedProducts(): Promise<Product[]> {
+    return products
+      .filter((p) => p.promotion)
+      .sort((a, b) =>
+        byRelevance({ ...a.promotion!, isActive: true }, { ...b.promotion!, isActive: true }),
+      );
+  }
+
+  return {
+    getMenus,
+    getMenu,
+    getProduct,
+    getProductsBySlugs,
+    getProductsByIds,
+    getPromotedProducts,
+  };
 }
 
 /** `CATALOG_SOURCE=snapshot` activa el snapshot; cualquier otro valor usa Supabase. */

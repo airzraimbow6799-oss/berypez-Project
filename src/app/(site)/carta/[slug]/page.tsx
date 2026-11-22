@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { MenuBrowser } from "@/components/catalog/MenuBrowser";
-import { getMenuCached } from "@/features/catalog/data/cached";
+import { getMenuCached, getPromotedProductsCached } from "@/features/catalog/data/cached";
 import { MENU_SLUGS, type MenuPage, type MenuSlug } from "@/types/catalog";
 
 export const revalidate = 600;
@@ -60,7 +60,7 @@ function menuJsonLd(page: MenuPage): string {
 export default async function MenuRoute({ params }: Params) {
   const { slug } = await params;
   if (!isMenuSlug(slug)) notFound();
-  const page = await getMenuCached(slug);
+  const [page, promoted] = await Promise.all([getMenuCached(slug), getPromotedProductsCached()]);
   if (!page) notFound();
 
   return (
@@ -95,7 +95,7 @@ export default async function MenuRoute({ params }: Params) {
         <p className="text-tinta-suave mt-2 max-w-xl text-lg">{page.menu.description}</p>
       </header>
 
-      <MenuBrowser page={page} />
+      <MenuBrowser page={page} promoted={promoted} />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import type { PanelReservation } from "@/components/panel/ReservationsBoard";
 import type { Dish } from "@/features/carta/schema";
+import type { Promotion } from "@/features/promotions/schema";
 import type { PanelOrder } from "@/features/orders/panel";
 import type { ReservationSource } from "@/features/reservations/staff-form";
 import type { Member } from "@/features/staff/members";
@@ -11,6 +12,7 @@ import type { Member } from "@/features/staff/members";
 
 export type DemoData = {
   dishes: Dish[];
+  promotions: Promotion[];
   orders: PanelOrder[];
   reservations: PanelReservation[];
   staff: Member[];
@@ -20,70 +22,212 @@ export type DemoData = {
 
 const MINUTE = 60_000;
 
-const dish = (
-  id: number,
-  name: string,
-  category: Dish["category"],
-  priceCents: number,
-  description: string,
-  extra: Partial<Pick<Dish, "stockQty" | "isAvailable">> = {},
-): Dish => ({
-  id,
-  name,
-  category,
-  priceCents,
-  description,
-  stockQty: null,
-  isAvailable: true,
-  ...extra,
-});
+type DishSeed = Omit<
+  Dish,
+  "id" | "image" | "tags" | "isAvailable" | "priceGroup" | "choiceGroups"
+> &
+  Partial<Pick<Dish, "tags" | "isAvailable" | "choiceGroups">> & {
+    slug: string;
+    /** Apartado con precio: [título, [opción, céntimos]...]. */
+    prices?: [string, Array<[string, number]>];
+  };
+
+/** Platos reales de la carta (nombre, foto, precio y apartados), para que el demo se parezca a la web. */
+const DISHES: DishSeed[] = [
+  {
+    slug: "ceviche-berypez",
+    name: "Ceviche Berypez",
+    menus: ["marina"],
+    section: "Ceviches",
+    priceCents: 4800,
+    description: "Ceviche mixto, champiñones, crema de ají amarillo, cebolla en pluma.",
+    tags: ["favorito"],
+  },
+  {
+    slug: "ceviche-mixto",
+    name: "Ceviche mixto",
+    menus: ["marina"],
+    section: "Ceviches",
+    priceCents: 4500,
+    description: "Pescado, caracol, pulpo, langostino y conchas de abanico.",
+  },
+  {
+    slug: "ceviche-de-champinones",
+    name: "Ceviche de champiñones",
+    menus: ["marina", "vegetariana"],
+    section: "Ceviches",
+    priceCents: 3500,
+    description: "Ceviche de champiñones.",
+    tags: ["vegetariano"],
+  },
+  {
+    slug: "sudados",
+    name: "Sudados",
+    menus: ["marina"],
+    section: "Sudados",
+    priceCents: 4000,
+    description:
+      "Filete de pescado 200 GR o entero de 550 GR, chicha de jora, tomate, cebolla. Yuca perfumada con culantro, acompañado de arroz.",
+    prices: [
+      "Elige tu pescado",
+      [
+        ["Pesca del día", 4000],
+        ["Cabrilla", 4800],
+        ["Tramboyo", 5000],
+        ["Chita", 6800],
+      ],
+    ],
+    choiceGroups: [
+      { label: "Elige el tipo", options: ["Filete de pescado 200 GR", "Pescado entero de 550 GR"] },
+    ],
+  },
+  {
+    slug: "chicharrones",
+    name: "Chicharrones",
+    menus: ["marina"],
+    section: "Chicharrones",
+    priceCents: 4000,
+    description: "Acompañado de yuca frita y salsa tártara.",
+    prices: [
+      "Elige tu chicharrón",
+      [
+        ["Pesca del día", 4000],
+        ["Mixto", 4200],
+        ["Calamar", 4800],
+      ],
+    ],
+  },
+  {
+    slug: "parihuelas",
+    name: "Parihuelas",
+    menus: ["marina"],
+    section: "Parihuelas",
+    priceCents: 4200,
+    description: "Concentrado de pescado (filete o entero), mariscos y pulpa de cangrejo.",
+    prices: [
+      "Elige tu pescado",
+      [
+        ["Pesca del día (filete)", 4200],
+        ["Cabrilla", 5800],
+        ["Tramboyo", 6000],
+        ["Chita", 7800],
+      ],
+    ],
+    isAvailable: false,
+  },
+  {
+    slug: "jaleas",
+    name: "Jaleas",
+    menus: ["marina"],
+    section: "Jaleas",
+    priceCents: 4800,
+    description: "Acompañado de yuca frita, filete de pescado, salsa criolla y salsa tártara.",
+    prices: [
+      "Elige tu jalea",
+      [
+        ["Calamar", 4800],
+        ["Mixta", 4800],
+        ["Pescado", 4800],
+      ],
+    ],
+    tags: ["compartir"],
+  },
+  {
+    slug: "arroz-con-mariscos",
+    name: "Arroz con mariscos",
+    menus: ["marina"],
+    section: "Arroces",
+    priceCents: 4200,
+    description:
+      "Arroz con mixtura de mariscos, salsa madre y queso parmesano perfumado con culantro.",
+  },
+  {
+    slug: "chaufa-de-mariscos",
+    name: "Chaufa de mariscos",
+    menus: ["marina", "criolla"],
+    section: "Fuentes",
+    priceCents: 8000,
+    description: "Chaufa de mariscos.",
+    tags: ["compartir"],
+    prices: [
+      "Elige el tamaño",
+      [
+        ["1/2 fuente (2 porc)", 8000],
+        ["1 fuente (4 porc)", 15500],
+      ],
+    ],
+  },
+  {
+    slug: "causa-acevichada",
+    name: "Causa acevichada",
+    menus: ["piqueos"],
+    section: "Causas",
+    priceCents: 4500,
+    description: "Causa de pulpa de cangrejo + ceviche al rojo vivo.",
+  },
+  {
+    slug: "leche-de-tigre",
+    name: "Leche de tigre 12 oz",
+    menus: ["piqueos"],
+    section: "Piqueos",
+    priceCents: 2000,
+    description: "Delicioso concentrado de ceviche.",
+    tags: ["picante"],
+  },
+  {
+    slug: "tequenos-de-langostinos-6-unid",
+    name: "Tequeños de langostinos (6 unid)",
+    menus: ["piqueos"],
+    section: "Piqueos",
+    priceCents: 2200,
+    description: "Acompañado con salsa de la casa.",
+    isAvailable: false,
+  },
+  {
+    slug: "lomo-saltado",
+    name: "Lomo saltado",
+    menus: ["criolla"],
+    section: "Fondos",
+    priceCents: 4800,
+    description:
+      "Dados de lomo fino salteado al wok, cebolla, tomate en gajos, arroz y papa frita.",
+  },
+  {
+    slug: "pisco-sour",
+    name: "Pisco Sour",
+    menus: ["el-bar"],
+    section: "Cócteles",
+    priceCents: 2500,
+    description: "Tradicional o de maracuyá.",
+    prices: [
+      "Elige el sabor",
+      [
+        ["Tradicional", 2500],
+        ["Maracuyá", 2500],
+      ],
+    ],
+  },
+];
 
 export function seedDishes(): Dish[] {
-  return [
-    dish(1, "Ceviche clásico", "Ceviches", 3800, "Pescado del día, limón, ají limo y camote."),
-    dish(2, "Ceviche mixto", "Ceviches", 4600, "Pescado, pulpo, calamar y langostinos."),
-    dish(3, "Ceviche carretillero", "Ceviches", 4400, "Con chicharrón de pescado encima."),
-    dish(
-      4,
-      "Leche de tigre",
-      "Entradas",
-      1800,
-      "El jugo del ceviche en vaso, con trozos de pescado.",
-    ),
-    dish(5, "Causa de verduras", "Entradas", 2200, "Papa amarilla, palta y verduras salteadas."),
-    dish(6, "Tiradito al ají amarillo", "Entradas", 3600, "Láminas de pescado con crema de ají.", {
-      isAvailable: false,
-    }),
-    dish(
-      7,
-      "Parihuelas",
-      "Parihuelas",
-      4200,
-      "Concentrado de pescado, mariscos y pulpa de cangrejo.",
-      {
-        stockQty: 8,
-      },
-    ),
-    dish(8, "Arroz con mariscos", "Fondos", 4400, "Arroz al ají panca con mariscos mixtos."),
-    dish(9, "Chaufa de mariscos", "Fondos", 4200, "Arroz frito al wok con mariscos.", {
-      stockQty: 3,
-    }),
-    dish(10, "Milanesa de pescado", "Fondos", 3200, "Filete apanado con ensalada y papas."),
-    dish(
-      11,
-      "Jalea mixta",
-      "Piqueos",
-      5800,
-      "Pescado y mariscos fritos con yuca y salsa criolla.",
-      {
-        stockQty: 0,
-        isAvailable: false,
-      },
-    ),
-    dish(12, "Chicharrón de pescado", "Piqueos", 3600, "Trozos de pescado fritos con tartara."),
-    dish(13, "Chicha morada (jarra)", "Bebidas", 1600, "Jarra de un litro."),
-    dish(14, "Limonada frozen", "Bebidas", 1200, "Vaso grande."),
-  ];
+  return DISHES.map(({ slug, prices, ...rest }, index) => ({
+    ...rest,
+    id: index + 1,
+    image: { url: `/catalog/${slug}.webp`, alt: rest.name },
+    tags: rest.tags ?? [],
+    isAvailable: rest.isAvailable ?? true,
+    priceGroup: prices
+      ? {
+          label: prices[0],
+          options: prices[1].map(([label, priceCents], i) => ({
+            id: (index + 1) * 100 + i,
+            label,
+            priceCents,
+          })),
+        }
+      : null,
+    choiceGroups: rest.choiceGroups ?? [],
+  }));
 }
 
 type OrderSeed = Omit<PanelOrder, "createdAt"> & { minutesAgo: number };
@@ -318,9 +462,9 @@ export function seedStaff(): Member[] {
   });
   return [
     person(1, "Marta Rojas", "admin", null, { email: "admin@demo.berypez.pe" }),
-    person(2, "Luis Paredes", "cocina", "Lince"),
+    person(2, "Luis Paredes", "salon", "Lince"),
     person(3, "Camila Torres", "salon", "Lince"),
-    person(4, "Jorge Mamani", "cocina", "Jesús María"),
+    person(4, "Jorge Mamani", "salon", "Jesús María"),
     person(5, "Ana Vilca", "salon", "Jesús María", { isActive: false, isPending: true }),
   ];
 }
@@ -328,9 +472,56 @@ export function seedStaff(): Member[] {
 /** Ventas de ejemplo de los 6 días anteriores (de S/ 874 a S/ 1,568). */
 export const SALES_HISTORY_CENTS = [112000, 98400, 134600, 87400, 156800, 143300];
 
+/** Promociones de ejemplo: una destacada vigente, otra vigente y una pausada. */
+export function seedPromotions(dishes: readonly Dish[], now: number): Promotion[] {
+  const idOf = (name: string) => dishes.find((d) => d.name === name)?.id ?? 1;
+  const at = (days: number) => new Date(now + days * 24 * 60 * MINUTE).toISOString();
+  const promo = (
+    over: Partial<Promotion> & Pick<Promotion, "id" | "dishId" | "kind" | "title">,
+  ) => ({
+    percentOff: null,
+    priceCents: null,
+    variantId: null,
+    image: null,
+    startsAt: null,
+    endsAt: null,
+    isActive: true,
+    isFeatured: false,
+    createdAt: at(-2),
+    ...over,
+  });
+  return [
+    promo({
+      id: 1,
+      dishId: idOf("Chicharrones"),
+      kind: "two_for_one",
+      title: "Chicharrones 2×1",
+      isFeatured: true,
+      endsAt: at(5),
+    }),
+    promo({
+      id: 2,
+      dishId: idOf("Ceviche Berypez"),
+      kind: "percent",
+      percentOff: 20,
+      title: "Martes de ceviche",
+    }),
+    promo({
+      id: 3,
+      dishId: idOf("Lomo saltado"),
+      kind: "fixed_price",
+      priceCents: 3900,
+      title: "Lomo saltado a S/ 39",
+      isActive: false,
+    }),
+  ];
+}
+
 export function createDemoData(now: number): DemoData {
+  const dishes = seedDishes();
   return {
-    dishes: seedDishes(),
+    dishes,
+    promotions: seedPromotions(dishes, now),
     orders: seedOrders(now),
     reservations: seedReservations(now),
     staff: seedStaff(),
