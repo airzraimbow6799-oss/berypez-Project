@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { DEMO_COOKIE, demoAccountForRole, isDemoPanel } from "@/features/demo/config";
 import { createClient } from "@/lib/supabase/server";
 
-import { canAccess, type PanelSectionKey, type StaffRole } from "./roles";
+import { canAccess, isStaffRole, type PanelSectionKey, type StaffRole } from "./roles";
 
 export type StaffSession = {
   email: string;
@@ -38,7 +38,8 @@ export async function getStaffSession(): Promise<StaffSession | null> {
     .select("role, branch_id")
     .eq("user_id", data.user.id)
     .maybeSingle();
-  if (!role) return null;
+  // Un rol que el panel ya no usa (p. ej. `cocina`, que sigue en el enum hasta B-R1) no entra.
+  if (!role || !isStaffRole(role.role)) return null;
   return {
     email: data.user.email ?? "",
     role: role.role,

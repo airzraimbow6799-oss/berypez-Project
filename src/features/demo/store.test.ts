@@ -113,7 +113,7 @@ describe("personal", () => {
   it("no deja desactivar ni bajar de rol a la única administración activa", () => {
     const admin = state().staff.find((m) => m.role === "admin");
     expect(state().setMemberActive(admin!.id, false).ok).toBe(false);
-    expect(state().setMemberRole(admin!.id, "cocina").ok).toBe(false);
+    expect(state().setMemberRole(admin!.id, "salon").ok).toBe(false);
     expect(state().staff.find((m) => m.id === admin!.id)).toMatchObject({
       role: "admin",
       isActive: true,
@@ -121,8 +121,8 @@ describe("personal", () => {
   });
 
   it("con una segunda administración sí se puede, y desactivar no borra a la persona", () => {
-    const cook = state().staff.find((m) => m.role === "cocina")!;
-    expect(state().setMemberRole(cook.id, "admin").ok).toBe(true);
+    const recepcion = state().staff.find((m) => m.role === "salon" && m.isActive)!;
+    expect(state().setMemberRole(recepcion.id, "admin").ok).toBe(true);
     const admin = state().staff.find((m) => m.email === "admin@demo.berypez.pe")!;
     expect(state().setMemberActive(admin.id, false).ok).toBe(true);
     expect(state().staff.find((m) => m.id === admin.id)?.isActive).toBe(false);

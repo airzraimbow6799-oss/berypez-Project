@@ -165,18 +165,3 @@ describe("CartaManager · administración", () => {
     expect(screen.getByText("No hay platos con ese filtro")).toBeInTheDocument();
   });
 });
-
-describe("CartaManager · cocina", () => {
-  it("puede marcar agotados y ajustar stock, pero no cambiar precios, añadir ni eliminar", async () => {
-    const user = userEvent.setup({ delay: null });
-    render(<CartaManager role="cocina" />);
-    await screen.findByRole("heading", { name: "Ceviche clásico" });
-    const row = within(dishItem("Ceviche clásico"));
-    expect(row.queryByLabelText("Precio (S/)")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Añadir plato/ })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /^Eliminar / })).not.toBeInTheDocument();
-
-    await user.click(row.getByRole("switch"));
-    expect(dishState("Ceviche clásico")?.isAvailable).toBe(false);
-  });
-});

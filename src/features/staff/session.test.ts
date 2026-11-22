@@ -55,13 +55,19 @@ describe("getStaffSession", () => {
 
   it("con rol devuelve correo, rol y sede", async () => {
     db.user = { id: "u1", email: "ana@berypez.pe" };
-    db.role = { role: "cocina", branch_id: 2 };
+    db.role = { role: "salon", branch_id: 2 };
     expect(await getStaffSession()).toEqual({
       email: "ana@berypez.pe",
-      role: "cocina",
+      role: "salon",
       branchId: 2,
       isDemo: false,
     });
+  });
+
+  it("un rol que el panel ya no usa (cocina) no entra", async () => {
+    db.user = { id: "u1", email: "cocina@berypez.pe" };
+    db.role = { role: "cocina", branch_id: 1 };
+    expect(await getStaffSession()).toBeNull();
   });
 });
 
@@ -79,15 +85,15 @@ describe("requireStaff", () => {
   });
 
   it("con sesión pero sin permiso manda a «sin acceso»", async () => {
-    db.user = { id: "u1", email: "cocina@berypez.pe" };
-    db.role = { role: "cocina", branch_id: 1 };
-    await expect(requireStaff("reservas")).rejects.toThrow("REDIRECT:/panel/sin-acceso");
+    db.user = { id: "u1", email: "recepcion@berypez.pe" };
+    db.role = { role: "salon", branch_id: 1 };
+    await expect(requireStaff("pedidos")).rejects.toThrow("REDIRECT:/panel/sin-acceso");
   });
 
   it("sin indicar sección basta con ser personal", async () => {
-    db.user = { id: "u1", email: "cocina@berypez.pe" };
-    db.role = { role: "cocina", branch_id: 1 };
-    await expect(requireStaff()).resolves.toMatchObject({ role: "cocina" });
+    db.user = { id: "u1", email: "recepcion@berypez.pe" };
+    db.role = { role: "salon", branch_id: 1 };
+    await expect(requireStaff()).resolves.toMatchObject({ role: "salon" });
   });
 });
 
@@ -99,10 +105,10 @@ describe("sesión del modo demostración", () => {
 
   it("con el modo activo y una cookie válida entra con el rol simulado, sin Supabase", async () => {
     vi.stubEnv("DEMO_PANEL", "1");
-    demoCookie.value = "cocina";
+    demoCookie.value = "salon";
     expect(await getStaffSession()).toEqual({
-      email: "cocina@demo.berypez.pe",
-      role: "cocina",
+      email: "recepcion@demo.berypez.pe",
+      role: "salon",
       branchId: null,
       isDemo: true,
     });

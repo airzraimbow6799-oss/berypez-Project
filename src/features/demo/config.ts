@@ -43,21 +43,15 @@ export const DEMO_ACCOUNTS: readonly DemoAccount[] = [
     email: "admin@demo.berypez.pe",
     password: "demo1234",
     title: "Administración",
-    description: "Ve todo: pedidos, reservas, carta con precios y dashboard.",
-  },
-  {
-    role: "cocina",
-    email: "cocina@demo.berypez.pe",
-    password: "demo1234",
-    title: "Cocina",
-    description: "Ve los pedidos y marca platos agotados. No cambia precios.",
+    description: "Entra a su resumen y ve todo: pedidos, reservas, carta y personal.",
   },
   {
     role: "salon",
-    email: "salon@demo.berypez.pe",
+    email: "recepcion@demo.berypez.pe",
     password: "demo1234",
-    title: "Salón",
-    description: "Ve los pedidos y las reservas. No ve la carta ni las ventas.",
+    title: "Recepción",
+    description:
+      "Lleva las reservas de la web, las llamadas y WhatsApp. No ve la carta ni las ventas.",
   },
 ];
 

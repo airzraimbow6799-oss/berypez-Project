@@ -30,7 +30,7 @@ describe("isDemoPanel", () => {
 
 describe("cuentas de demostración", () => {
   it("hay una por rol y los correos son de ejemplo", () => {
-    expect(DEMO_ACCOUNTS.map((a) => a.role)).toEqual(["admin", "cocina", "salon"]);
+    expect(DEMO_ACCOUNTS.map((a) => a.role)).toEqual(["admin", "salon"]);
     for (const account of DEMO_ACCOUNTS)
       expect(account.email.endsWith("@demo.berypez.pe")).toBe(true);
   });
@@ -40,7 +40,9 @@ describe("cuentas de demostración", () => {
     expect(demoAccountForCredentials("alguien@correo.pe", "demo1234")).toBeUndefined();
   });
   it("solo reconoce roles conocidos", () => {
-    expect(demoAccountForRole("cocina")?.title).toBe("Cocina");
+    expect(demoAccountForRole("salon")?.title).toBe("Recepción");
+    // Ya no hay cuenta de cocina: la cocina trabaja con la ticketera de su sistema.
+    expect(demoAccountForRole("cocina")).toBeUndefined();
     expect(demoAccountForRole("superadmin")).toBeUndefined();
   });
 });

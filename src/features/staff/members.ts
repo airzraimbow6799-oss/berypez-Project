@@ -23,8 +23,7 @@ export type Member = {
 
 export const ROLE_OPTIONS: ReadonlyArray<{ value: StaffRole; label: string }> = [
   { value: "admin", label: "Administración" },
-  { value: "cocina", label: "Cocina" },
-  { value: "salon", label: "Salón" },
+  { value: "salon", label: "Recepción" },
 ];
 
 const isActiveAdmin = (m: Member) => m.role === "admin" && m.isActive;
@@ -55,7 +54,7 @@ export const inviteSchema = z
   .object({
     name: z.string().trim().min(2, "Escribe el nombre.").max(80, "El nombre es muy largo."),
     email: z.email("El correo no es válido.").max(254, "El correo es muy largo."),
-    role: z.enum(["admin", "cocina", "salon"], { error: "Elige el rol." }),
+    role: z.enum(["admin", "salon"], { error: "Elige el rol." }),
     branch: z.enum(["", "Lince", "Jesús María"]),
   })
   .refine((v) => v.role === "admin" || v.branch !== "", {

@@ -5,7 +5,7 @@ import { canChange, emailTaken, inviteSchema, type Member } from "./members";
 const member = (over: Partial<Member> & { id: number }): Member => ({
   name: "Persona",
   email: `p${over.id}@demo.berypez.pe`,
-  role: "cocina",
+  role: "salon",
   branch: "Lince",
   isActive: true,
   isPending: false,
@@ -18,7 +18,7 @@ describe("canChange", () => {
 
   it("no deja quitar el rol ni desactivar a la última administración activa", () => {
     const list = [admin, cook];
-    expect(canChange(list, 1, { role: "cocina" }).ok).toBe(false);
+    expect(canChange(list, 1, { role: "salon" }).ok).toBe(false);
     expect(canChange(list, 1, { isActive: false }).ok).toBe(false);
   });
 
@@ -33,7 +33,7 @@ describe("canChange", () => {
     expect(canChange(list, 1, { isActive: false }).ok).toBe(false);
   });
 
-  it("cambiar a cocina o salón es libre y subir a administración también", () => {
+  it("cambiar a recepción es libre y subir a administración también", () => {
     expect(canChange([admin, cook], 2, { role: "admin" }).ok).toBe(true);
     expect(canChange([admin, cook], 2, { isActive: false }).ok).toBe(true);
   });
@@ -59,11 +59,12 @@ describe("inviteSchema", () => {
     expect(inviteSchema.safeParse({ ...valid, role: "admin", branch: "" }).success).toBe(true);
   });
 
-  it("cocina y salón necesitan una sede", () => {
-    for (const role of ["cocina", "salon"]) {
-      const result = inviteSchema.safeParse({ ...valid, role, branch: "" });
-      expect(result.success, role).toBe(false);
-    }
+  it("recepción necesita una sede", () => {
+    expect(inviteSchema.safeParse({ ...valid, role: "salon", branch: "" }).success).toBe(false);
+  });
+
+  it("ya no se puede invitar a alguien de cocina (no hay rol de cocina)", () => {
+    expect(inviteSchema.safeParse({ ...valid, role: "cocina" }).success).toBe(false);
   });
 
   it("rechaza correo inválido, nombre corto y rol desconocido", () => {
