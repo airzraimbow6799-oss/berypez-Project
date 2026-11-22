@@ -75,19 +75,21 @@ test.describe("Panel en modo demostración", () => {
     await expect(tarjeta.getByText("En cocina")).toBeVisible();
   });
 
-  test("administración cambia un precio, marca un agotado y añade un plato", async ({ page }) => {
+  test("administración cambia un precio, marca un agotado, añade y edita un plato", async ({
+    page,
+  }) => {
     await entrarComo(page, "Administración");
     await menu(page).getByRole("link", { name: "Carta" }).click();
     await expect(page.getByRole("heading", { name: "Carta", level: 1 })).toBeVisible();
 
     const fila = page
       .getByRole("listitem")
-      .filter({ has: page.getByRole("heading", { name: "Ceviche clásico" }) });
+      .filter({ has: page.getByRole("heading", { name: "Ceviche Berypez" }) });
     const precio = fila.getByLabel("Precio (S/)");
-    await expect(precio).toHaveValue("38.00");
-    await precio.fill("41.50");
+    await expect(precio).toHaveValue("48.00");
+    await precio.fill("51.50");
     await precio.press("Enter");
-    await expect(precio).toHaveValue("41.50");
+    await expect(precio).toHaveValue("51.50");
 
     const interruptor = fila.getByRole("switch");
     await interruptor.click();
@@ -96,11 +98,34 @@ test.describe("Panel en modo demostración", () => {
 
     await page.getByRole("button", { name: /Añadir plato/ }).click();
     const dialogo = page.getByRole("dialog", { name: "Añadir plato" });
+    await dialogo.getByLabel("Subir foto").setInputFiles({
+      name: "tiradito.png",
+      mimeType: "image/png",
+      // PNG de 1×1 px.
+      buffer: Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+        "base64",
+      ),
+    });
+    await expect(dialogo.getByText("Cambiar foto")).toBeVisible();
     await dialogo.getByLabel(/Nombre/).fill("Tiradito nikkei");
-    await dialogo.getByLabel(/Categoría/).selectOption("Entradas");
+    await dialogo.getByLabel(/Sección/).fill("Tiraditos");
     await dialogo.getByLabel(/Precio/).fill("34.50");
+    await dialogo.getByRole("button", { name: "Nuevo" }).click();
     await dialogo.getByRole("button", { name: "Guardar plato" }).click();
     await expect(page.getByRole("heading", { name: "Tiradito nikkei" })).toBeVisible();
+
+    await page.getByRole("button", { name: "Editar Chicharrones" }).click();
+    const edicion = page.getByRole("dialog", { name: "Editar «Chicharrones»" });
+    await expect(edicion.getByLabel("Título del apartado")).toHaveValue("Elige tu chicharrón");
+    await edicion.getByLabel("Precio (S/)").first().fill("38");
+    await edicion.getByRole("button", { name: "Guardar cambios" }).click();
+    await expect(
+      page
+        .getByRole("listitem")
+        .filter({ has: page.getByRole("heading", { name: "Chicharrones" }) })
+        .getByText(/Desde\s*S\/ 38.00/),
+    ).toBeVisible();
   });
 
   test("«Cambiar de rol» cierra la sesión de ejemplo y vuelve al ingreso", async ({ page }) => {

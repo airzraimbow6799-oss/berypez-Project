@@ -44,7 +44,7 @@ describe("avisos de pedidos", () => {
     }
     const soldOut = new Set(
       state()
-        .dishes.filter((d) => !d.isAvailable || d.stockQty === 0)
+        .dishes.filter((d) => !d.isAvailable)
         .map((d) => d.name),
     );
     const names = state()

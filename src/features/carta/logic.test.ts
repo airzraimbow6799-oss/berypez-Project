@@ -1,37 +1,48 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  canMarkAvailable,
   filterDishes,
+  hasPriceOptions,
   isSoldOut,
   parsePriceInput,
-  parseStockInput,
   priceChangeNeedsConfirm,
   summarize,
-  withStock,
 } from "./logic";
-import { type Dish, newDishFormSchema } from "./schema";
+import { type Dish, type DishFormInput, dishFormSchema, dishToForm, emptyDishForm } from "./schema";
 
 const dish = (over: Partial<Dish> = {}): Dish => ({
   id: 1,
-  name: "Ceviche clásico",
-  description: "Pescado del día",
-  category: "Ceviches",
-  priceCents: 3800,
-  stockQty: null,
+  name: "Ceviche Berypez",
+  description: "Plato de la casa",
+  menus: ["marina"],
+  section: "Ceviches",
+  priceCents: 4800,
+  image: { url: "/catalog/ceviche-berypez.webp", alt: "Ceviche Berypez" },
+  tags: [],
   isAvailable: true,
+  priceGroup: null,
+  choiceGroups: [],
   ...over,
 });
 
+const chicharrones = dish({
+  id: 2,
+  name: "Chicharrones",
+  section: "Chicharrones",
+  priceCents: 4000,
+  priceGroup: {
+    label: "Elige tu chicharrón",
+    options: [
+      { label: "Pesca del día", priceCents: 4000 },
+      { label: "Calamar", priceCents: 4800 },
+    ],
+  },
+});
+
 describe("isSoldOut", () => {
-  it("disponible y sin control de stock no está agotado", () => {
+  it("sin stock: solo está agotado cuando se marca así", () => {
     expect(isSoldOut(dish())).toBe(false);
-  });
-  it("agotado a mano", () => {
     expect(isSoldOut(dish({ isAvailable: false }))).toBe(true);
-  });
-  it("stock 0 cuenta como agotado aunque el interruptor diga disponible", () => {
-    expect(isSoldOut(dish({ stockQty: 0 }))).toBe(true);
   });
 });
 
@@ -61,110 +72,118 @@ describe("parsePriceInput", () => {
   });
 });
 
-describe("parseStockInput", () => {
-  it("vacío significa sin control de cantidad", () => {
-    expect(parseStockInput("")).toEqual({ ok: true, qty: null });
+describe("filterDishes", () => {
+  const list = [
+    dish({ description: "Ceviche mixto con champiñones" }),
+    chicharrones,
+    dish({
+      id: 3,
+      name: "Lomo saltado",
+      menus: ["criolla"],
+      section: "Fondos",
+      isAvailable: false,
+    }),
+    dish({ id: 4, name: "Leche de tigre", tags: ["picante"], menus: ["piqueos"] }),
+  ];
+  const names = (filters: Parameters<typeof filterDishes>[1]) =>
+    filterDishes(list, filters).map((d) => d.name);
+
+  it("busca sin tildes en nombre, sección, etiquetas y opciones de los apartados", () => {
+    const base = { menu: null, onlySoldOut: false };
+    expect(names({ ...base, query: "CHAMPINONES" })).toEqual(["Ceviche Berypez"]);
+    expect(names({ ...base, query: "calamar" })).toEqual(["Chicharrones"]);
+    expect(names({ ...base, query: "picante" })).toEqual(["Leche de tigre"]);
+    expect(names({ ...base, query: "fondos" })).toEqual(["Lomo saltado"]);
   });
-  it("acepta enteros desde 0", () => {
-    expect(parseStockInput("0")).toEqual({ ok: true, qty: 0 });
-    expect(parseStockInput("12")).toEqual({ ok: true, qty: 12 });
-  });
-  it("rechaza decimales, negativos y textos", () => {
-    for (const text of ["2.5", "-1", "mucho", "5000"]) {
-      expect(parseStockInput(text).ok, text).toBe(false);
-    }
+  it("filtra por carta y por «solo agotados»", () => {
+    expect(names({ query: "", menu: "criolla", onlySoldOut: false })).toEqual(["Lomo saltado"]);
+    expect(names({ query: "", menu: null, onlySoldOut: true })).toEqual(["Lomo saltado"]);
   });
 });
 
-describe("withStock", () => {
-  it("al llegar a 0 el plato queda agotado", () => {
-    expect(withStock(dish({ stockQty: 3 }), 0)).toMatchObject({ stockQty: 0, isAvailable: false });
+describe("summarize y hasPriceOptions", () => {
+  it("cuenta platos, agotados y platos con apartados", () => {
+    const list = [
+      dish(),
+      chicharrones,
+      dish({ id: 3, isAvailable: false, choiceGroups: [{ label: "Tipo", options: ["A", "B"] }] }),
+    ];
+    expect(summarize(list)).toEqual({ total: 3, soldOut: 1, withOptions: 2 });
+    expect(hasPriceOptions(chicharrones)).toBe(true);
+    expect(hasPriceOptions(dish())).toBe(false);
   });
-  it("al reponer desde 0 vuelve a estar disponible", () => {
-    const empty = dish({ stockQty: 0, isAvailable: false });
-    expect(withStock(empty, 5)).toMatchObject({ stockQty: 5, isAvailable: true });
-  });
-  it("cambiar el stock de un plato agotado a mano no lo reactiva", () => {
-    const manual = dish({ stockQty: 4, isAvailable: false });
-    expect(withStock(manual, 6)).toMatchObject({ stockQty: 6, isAvailable: false });
-  });
-  it("quitar el control de stock deja el resto igual", () => {
-    expect(withStock(dish({ stockQty: 3 }), null)).toMatchObject({
-      stockQty: null,
-      isAvailable: true,
+});
+
+describe("dishFormSchema", () => {
+  const valid: DishFormInput = {
+    ...emptyDishForm("marina"),
+    name: "Tiradito nikkei",
+    section: "Tiraditos",
+    price: "34,5",
+    tags: ["nuevo"],
+  };
+
+  it("convierte el precio a céntimos y describe la foto con el nombre", () => {
+    const out = dishFormSchema.parse({ ...valid, image: { url: "blob:x", alt: "" } });
+    expect(out).toMatchObject({
+      priceCents: 3450,
+      image: { url: "blob:x", alt: "Tiradito nikkei" },
     });
   });
-});
 
-describe("canMarkAvailable", () => {
-  it("con stock 0 no se puede marcar disponible", () => {
-    expect(canMarkAvailable({ stockQty: 0 })).toBe(false);
-    expect(canMarkAvailable({ stockQty: 2 })).toBe(true);
-    expect(canMarkAvailable({ stockQty: null })).toBe(true);
-  });
-});
-
-describe("filterDishes", () => {
-  const all = [
-    dish({ id: 1, name: "Ceviche clásico" }),
-    dish({ id: 2, name: "Jalea mixta", category: "Piqueos", isAvailable: false }),
-    dish({ id: 3, name: "Chaufa de mariscos", category: "Fondos", stockQty: 0 }),
-  ];
-  it("busca sin importar tildes ni mayúsculas", () => {
-    expect(
-      filterDishes(all, { query: "CLASICO", category: null, onlySoldOut: false }),
-    ).toHaveLength(1);
-  });
-  it("filtra por categoría", () => {
-    expect(filterDishes(all, { query: "", category: "Piqueos", onlySoldOut: false })).toHaveLength(
-      1,
-    );
-  });
-  it("solo agotados incluye los de stock cero", () => {
-    const ids = filterDishes(all, { query: "", category: null, onlySoldOut: true }).map(
-      (d) => d.id,
-    );
-    expect(ids).toEqual([2, 3]);
-  });
-});
-
-describe("summarize", () => {
-  it("cuenta platos, agotados y poco stock", () => {
-    const list = [
-      dish({ id: 1 }),
-      dish({ id: 2, isAvailable: false }),
-      dish({ id: 3, stockQty: 0 }),
-      dish({ id: 4, stockQty: 3 }),
-      dish({ id: 5, stockQty: 40 }),
+  it("rechaza nombre corto, «(Copiar)», sin carta, sin sección o sin precio", () => {
+    const bad: Array<Partial<DishFormInput>> = [
+      { name: "A" },
+      { name: "Ceviche (Copiar)" },
+      { menus: [] },
+      { section: "" },
+      { price: "" },
+      { price: "0" },
+      { price: "abc" },
     ];
-    expect(summarize(list)).toEqual({ total: 5, soldOut: 2, lowStock: 1 });
+    for (const over of bad) {
+      expect(dishFormSchema.safeParse({ ...valid, ...over }).success, JSON.stringify(over)).toBe(
+        false,
+      );
+    }
   });
-});
 
-describe("newDishFormSchema", () => {
-  const valid = {
-    name: "Tiradito nikkei",
-    description: "",
-    category: "Entradas",
-    price: "34.5",
-    stock: "",
-  };
-  it("convierte precio a céntimos y stock vacío a null", () => {
-    const result = newDishFormSchema.parse(valid);
-    expect(result.price).toBe(3450);
-    expect(result.stock).toBeNull();
+  it("con apartado con precio no pide precio normal y usa la opción más barata", () => {
+    const out = dishFormSchema.parse({
+      ...valid,
+      price: "",
+      priceGroup: {
+        label: "Elige tu pescado",
+        options: [
+          { label: "Cabrilla", price: "48" },
+          { label: "Pesca del día", price: "40" },
+        ],
+      },
+    });
+    expect(out.priceCents).toBe(4000);
+    expect(out.priceGroup?.options[1]).toEqual({ label: "Pesca del día", priceCents: 4000 });
   });
-  it("acepta stock numérico", () => {
-    expect(newDishFormSchema.parse({ ...valid, stock: "10" }).stock).toBe(10);
+
+  it("los apartados piden título y 2 opciones distintas", () => {
+    const issues = (over: Partial<DishFormInput>) =>
+      dishFormSchema.safeParse({ ...valid, ...over }).error?.issues.map((i) => i.path.join("."));
+    expect(
+      issues({ choiceGroups: [{ label: "Elige el tipo", options: ["Filete", "filete "] }] }),
+    ).toContain("choiceGroups.0.options");
+    expect(issues({ choiceGroups: [{ label: "", options: ["A"] }] })).toEqual(
+      expect.arrayContaining(["choiceGroups.0.label", "choiceGroups.0.options"]),
+    );
+    expect(
+      issues({ priceGroup: { label: "Tamaño", options: [{ label: "Grande", price: "" }] } }),
+    ).toEqual(expect.arrayContaining(["priceGroup.options", "priceGroup.options.0.price"]));
   });
-  it("rechaza nombres cortos y duplicados «(Copiar)»", () => {
-    expect(newDishFormSchema.safeParse({ ...valid, name: "A" }).success).toBe(false);
-    expect(newDishFormSchema.safeParse({ ...valid, name: "Ceviche (Copiar)" }).success).toBe(false);
-  });
-  it("rechaza categoría desconocida, precio inválido y stock negativo", () => {
-    expect(newDishFormSchema.safeParse({ ...valid, category: "Postres" }).success).toBe(false);
-    expect(newDishFormSchema.safeParse({ ...valid, price: "0" }).success).toBe(false);
-    expect(newDishFormSchema.safeParse({ ...valid, price: "abc" }).success).toBe(false);
-    expect(newDishFormSchema.safeParse({ ...valid, stock: "-2" }).success).toBe(false);
+
+  it("un plato guardado vuelve al formulario y se guarda igual", () => {
+    const sudados = dish({
+      ...chicharrones,
+      choiceGroups: [{ label: "Elige el tipo", options: ["Filete 200 GR", "Entero 550 GR"] }],
+    });
+    const { id: _id, ...expected } = sudados;
+    expect(dishFormSchema.parse(dishToForm(sudados))).toEqual(expected);
   });
 });
