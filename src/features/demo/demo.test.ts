@@ -61,11 +61,10 @@ describe("datos de ejemplo", () => {
       expect(new Set(ids).size).toBe(ids.length);
     }
   });
-  it("incluye platos agotados y con poco stock para poder enseñarlos", () => {
+  it("usa platos reales con foto e incluye agotados y apartados para poder enseñarlos", () => {
+    expect(data.dishes.every((d) => d.image?.url.startsWith("/catalog/"))).toBe(true);
     expect(data.dishes.some((d) => !d.isAvailable)).toBe(true);
-    expect(data.dishes.some((d) => d.stockQty !== null && d.stockQty > 0 && d.stockQty <= 5)).toBe(
-      true,
-    );
+    expect(data.dishes.some((d) => d.priceGroup !== null && d.choiceGroups.length > 0)).toBe(true);
   });
   it("los pedidos recientes quedan antes de ahora y hay uno por estado activo", () => {
     for (const order of data.orders) {

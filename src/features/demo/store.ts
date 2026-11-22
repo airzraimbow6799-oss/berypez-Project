@@ -3,8 +3,8 @@
 import { create } from "zustand";
 
 import type { PanelReservation } from "@/components/panel/ReservationsBoard";
-import { isSoldOut, withStock } from "@/features/carta/logic";
-import type { Dish, NewDishForm } from "@/features/carta/schema";
+import { isSoldOut } from "@/features/carta/logic";
+import type { Dish, DishFormOutput } from "@/features/carta/schema";
 import type { PanelOrder } from "@/features/orders/panel";
 import { canTransition, type OrderStatus } from "@/features/orders/status";
 import { checkSlot, dateKeyLima, slotStart, slotTimes } from "@/features/reservations/capacity";
@@ -36,8 +36,8 @@ type DemoState = DemoData & {
 
   setDishPrice: (id: number, priceCents: number) => void;
   setDishAvailable: (id: number, isAvailable: boolean) => void;
-  setDishStock: (id: number, qty: number | null) => void;
-  addDish: (form: NewDishForm) => Dish;
+  addDish: (data: DishFormOutput) => Dish;
+  updateDish: (id: number, data: DishFormOutput) => void;
   removeDish: (id: number) => void;
 
   advanceOrder: (id: number, status: OrderStatus) => void;
@@ -110,22 +110,14 @@ export const useDemoStore = create<DemoState>((set, get) => ({
   setDishAvailable: (id, isAvailable) =>
     set((state) => ({ dishes: mapDish(state.dishes, id, (d) => ({ ...d, isAvailable })) })),
 
-  setDishStock: (id, qty) =>
-    set((state) => ({ dishes: mapDish(state.dishes, id, (d) => withStock(d, qty)) })),
-
-  addDish: (form) => {
-    const dish: Dish = {
-      id: nextId(get().dishes),
-      name: form.name,
-      description: form.description,
-      category: form.category,
-      priceCents: form.price,
-      stockQty: form.stock,
-      isAvailable: form.stock !== 0,
-    };
+  addDish: (data) => {
+    const dish: Dish = { ...data, id: nextId(get().dishes) };
     set((state) => ({ dishes: [...state.dishes, dish] }));
     return dish;
   },
+
+  updateDish: (id, data) =>
+    set((state) => ({ dishes: mapDish(state.dishes, id, () => ({ ...data, id })) })),
 
   removeDish: (id) => set((state) => ({ dishes: state.dishes.filter((d) => d.id !== id) })),
 
