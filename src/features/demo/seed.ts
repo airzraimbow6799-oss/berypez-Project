@@ -213,6 +213,7 @@ export function seedDishes(): Dish[] {
   return DISHES.map(({ slug, prices, ...rest }, index) => ({
     ...rest,
     id: index + 1,
+    slug,
     image: { url: `/catalog/${slug}.webp`, alt: rest.name },
     tags: rest.tags ?? [],
     isAvailable: rest.isAvailable ?? true,

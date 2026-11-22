@@ -35,6 +35,8 @@ export type ChoiceGroupDraft = { label: string; options: string[] };
 
 export type Dish = {
   id: number;
+  /** Slug del plato en la web (los de ejemplo lo traen para enlazar con la carta real). */
+  slug?: string;
   name: string;
   description: string;
   /** Cartas donde aparece (un plato puede estar en Marina y en Criolla). */

@@ -11,6 +11,7 @@ import { canTransition, type OrderStatus } from "@/features/orders/status";
 import { checkSlot, dateKeyLima, slotStart, slotTimes } from "@/features/reservations/capacity";
 import { SOURCE_LABELS } from "@/features/reservations/staff-form";
 import { canChange, type ChangeResult, type Invite, type Member } from "@/features/staff/members";
+import { clearDemoPromos, loadDemoPromos, saveDemoPromos } from "./promo-storage";
 import { createDemoData, type DemoData } from "./seed";
 
 /**
@@ -117,9 +118,20 @@ export const useDemoStore = create<DemoState>((set, get) => ({
   notifications: [],
   isReady: false,
 
-  reset: () => set({ ...createDemoData(Date.now()), notifications: [], isReady: true }),
+  // «Reiniciar datos»: vuelve a los ejemplos, también las promociones guardadas.
+  reset: () => {
+    clearDemoPromos();
+    set({ ...createDemoData(Date.now()), notifications: [], isReady: true });
+  },
+  // Al abrir el panel: datos de ejemplo + la carta y promociones que se guardaron antes.
   ensureReady: () => {
-    if (!get().isReady) get().reset();
+    if (get().isReady) return;
+    set({
+      ...createDemoData(Date.now()),
+      ...(loadDemoPromos() ?? {}),
+      notifications: [],
+      isReady: true,
+    });
   },
 
   setDishPrice: (id, priceCents) =>
@@ -135,7 +147,9 @@ export const useDemoStore = create<DemoState>((set, get) => ({
   },
 
   updateDish: (id, data) =>
-    set((state) => ({ dishes: mapDish(state.dishes, id, () => withOptionIds({ ...data, id })) })),
+    set((state) => ({
+      dishes: mapDish(state.dishes, id, (d) => withOptionIds({ ...data, id, slug: d.slug })),
+    })),
 
   removeDish: (id) =>
     set((state) => ({
@@ -313,3 +327,11 @@ export const useDemoStore = create<DemoState>((set, get) => ({
   markAllRead: () =>
     set((state) => ({ notifications: state.notifications.map((n) => ({ ...n, isRead: true })) })),
 }));
+
+// La carta y las promociones de la demostración se guardan en el navegador al cambiar, para que
+// la web (Inicio y carta) las muestre y no se pierdan al recargar.
+useDemoStore.subscribe((state, prev) => {
+  if (!state.isReady) return;
+  if (state.promotions === prev.promotions && state.dishes === prev.dishes) return;
+  saveDemoPromos({ promotions: state.promotions, dishes: state.dishes });
+});
