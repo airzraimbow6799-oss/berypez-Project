@@ -9,7 +9,7 @@ import { Dialog } from "@/components/ui/Dialog";
 import { IconButton } from "@/components/ui/IconButton";
 import { trackPromotion } from "@/features/analytics/promotions";
 import { promoHref } from "@/features/promotions/links";
-import { cardPrices, promoBadge } from "@/features/promotions/pricing";
+import { promoBadge, promoSummary } from "@/features/promotions/pricing";
 import { formatPrice } from "@/lib/format";
 import type { Product } from "@/types/catalog";
 
@@ -17,19 +17,15 @@ import type { Product } from "@/types/catalog";
 export const SLIDE_MS = 6000;
 const SWIPE_PX = 40;
 
-function prefersReducedMotion(): boolean {
-  return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
-}
-
 /**
- * Carrusel de promociones dentro de la ventana emergente. Pasa solo cada 6 s (salvo con
- * «reducir movimiento»), se detiene al tocarlo o pasar el mouse, tiene botón de pausa (WCAG
- * 2.2.2) y se desliza con el dedo. «Ver promo» lleva a la carta y abre el plato.
+ * Carrusel de promociones dentro de la ventana emergente. Pasa solo cada 6 s, tiene botón de
+ * pausa (WCAG 2.2.2) y se desliza con el dedo; al cambiar a mano, el conteo vuelve a empezar. «Ver promo» lleva a la carta y abre el plato.
  */
 export function PromoCarousel({ products, onClose }: { products: Product[]; onClose: () => void }) {
   const [index, setIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(() => products.length > 1 && !prefersReducedMotion());
-  const [isHeld, setIsHeld] = useState(false);
+  // Pasa sola siempre (también con «reducir movimiento», sin animación); se detiene solo con
+  // el botón de pausa (WCAG 2.2.2). Antes se detenía con el mouse encima y nunca avanzaba.
+  const [isPlaying, setIsPlaying] = useState(() => products.length > 1);
   const seen = useRef(new Set<number>());
   const swipeStart = useRef<number | null>(null);
   const count = products.length;
@@ -43,14 +39,15 @@ export function PromoCarousel({ products, onClose }: { products: Product[]; onCl
   }, [product]);
 
   useEffect(() => {
-    if (!isPlaying || isHeld || count < 2) return;
+    if (!isPlaying || count < 2) return;
     const timer = window.setTimeout(() => setIndex((i) => (i + 1) % count), SLIDE_MS);
     return () => window.clearTimeout(timer);
-  }, [isPlaying, isHeld, count, index]);
+  }, [isPlaying, count, index]);
 
   if (!product?.promotion) return null;
   const promo = product.promotion;
-  const prices = cardPrices(product);
+  const summary = promoSummary(product);
+  const from = summary.isFrom ? "desde " : "";
   const image = promo.imageUrl ?? product.image?.url ?? null;
   const go = (next: number) => setIndex(((next % count) + count) % count);
 
@@ -64,10 +61,6 @@ export function PromoCarousel({ products, onClose }: { products: Product[]; onCl
       <section
         aria-roledescription="carrusel"
         aria-label="Promociones"
-        onPointerEnter={() => setIsHeld(true)}
-        onPointerLeave={() => setIsHeld(false)}
-        onFocus={() => setIsHeld(true)}
-        onBlur={() => setIsHeld(false)}
         onPointerDown={(e) => {
           swipeStart.current = e.clientX;
         }}
@@ -112,23 +105,20 @@ export function PromoCarousel({ products, onClose }: { products: Product[]; onCl
           <div className="flex flex-col gap-1 px-5 pt-4">
             <p className="font-display text-2xl leading-tight font-semibold">{promo.title}</p>
             <p className="text-tinta-suave">{product.name}</p>
-            <p className="mt-1 text-lg font-semibold tabular-nums">
-              {prices.promoCents < prices.regularCents ? (
-                <>
-                  <span className="sr-only">Precio normal: </span>
-                  <s className="text-tinta-suave text-base font-medium">
-                    {formatPrice(prices.regularCents)}
-                  </s>{" "}
-                  <span className="text-rocoto-texto">
-                    <span className="sr-only">Ahora: </span>
-                    {prices.isFrom ? "desde " : ""}
-                    {formatPrice(prices.promoCents)}
-                  </span>
-                </>
-              ) : (
-                <span className="text-rocoto-texto">Lleva 2 y paga 1</span>
-              )}
+            {/* Mismo formato para toda promoción: antes → ahora, y para cuántos platos. */}
+            <p className="mt-2 flex flex-wrap items-baseline gap-x-2 tabular-nums">
+              <span className="sr-only">Antes: </span>
+              <s className="text-tinta-suave text-base font-medium">
+                {from}
+                {formatPrice(summary.beforeCents)}
+              </s>
+              <span className="sr-only">Ahora: </span>
+              <span className="text-rocoto-texto text-2xl font-semibold">
+                {from}
+                {formatPrice(summary.nowCents)}
+              </span>
             </p>
+            <p className="text-tinta-suave text-sm">{summary.detail}</p>
           </div>
         </div>
 
