@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Plus, Star, Trash2 } from "lucide-react";
+import { Eye, Info, Pencil, Plus, Star, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 
@@ -15,6 +15,7 @@ import { Switch } from "@/components/ui/Switch";
 import { toast } from "@/components/ui/Toaster";
 import { emptyDishForm } from "@/features/carta/schema";
 import { promoBadge } from "@/features/promotions/pricing";
+import { previewProducts } from "@/features/promotions/preview";
 import {
   emptyPromotionForm,
   type Promotion,
@@ -25,6 +26,7 @@ import {
   STATUS_LABELS,
 } from "@/features/promotions/schema";
 import { formatPrice } from "@/lib/format";
+import { PromoCarousel } from "@/components/promotions/PromoCarousel";
 
 import type { PromotionsBackend } from "./backend";
 import { PromotionEditor } from "./PromotionEditor";
@@ -59,6 +61,7 @@ export function PromotionsManager({ backend }: { backend: PromotionsBackend }) {
   const [editor, setEditor] = useState<EditorState | null>(null);
   const [editorKey, setEditorKey] = useState(0);
   const [toDelete, setToDelete] = useState<Promotion | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   // Se calcula una vez por render de la lista: el estado depende de la hora.
   const [now] = useState(() => Date.now());
 
@@ -68,6 +71,11 @@ export function PromotionsManager({ backend }: { backend: PromotionsBackend }) {
     for (const p of promotions) byStatus[promotionStatus(p, now)] += 1;
     return byStatus;
   }, [promotions, now]);
+
+  const preview = useMemo(
+    () => previewProducts(promotions, dishes, now),
+    [promotions, dishes, now],
+  );
 
   if (!isReady) {
     return (
@@ -100,14 +108,37 @@ export function PromotionsManager({ backend }: { backend: PromotionsBackend }) {
             {backend.isLive ? " Los cambios se ven en la web al guardar." : ""}
           </p>
         </div>
-        <Button
-          onClick={() =>
-            open({ kind: "promo", mode: "crear", id: null, initial: emptyPromotionForm() })
-          }
-        >
-          <Plus aria-hidden="true" className="size-5" /> Nueva promoción
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="secundario"
+            disabled={preview.length === 0}
+            onClick={() => setIsPreviewOpen(true)}
+          >
+            <Eye aria-hidden="true" className="size-5" /> Ver ventana emergente
+          </Button>
+          <Button
+            onClick={() =>
+              open({ kind: "promo", mode: "crear", id: null, initial: emptyPromotionForm() })
+            }
+          >
+            <Plus aria-hidden="true" className="size-5" /> Nueva promoción
+          </Button>
+        </div>
       </div>
+
+      {backend.isLive ? null : (
+        <p
+          role="note"
+          className="bg-crema-200 border-borde mt-5 flex max-w-3xl gap-3 rounded-md border p-4 text-sm"
+        >
+          <Info aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
+          <span>
+            <strong>Modo demostración:</strong> estas promociones son de ejemplo y no se publican en
+            la web. Usa «Ver ventana emergente» para ver cómo saldrían. Para publicarlas de verdad,
+            entra con tu cuenta de Administración.
+          </span>
+        </p>
+      )}
 
       <dl className="mt-5 grid grid-cols-3 gap-3 sm:max-w-xl" aria-live="polite">
         <Tile label="Activas" value={counts.activa} />
@@ -275,6 +306,10 @@ export function PromotionsManager({ backend }: { backend: PromotionsBackend }) {
             return { ok: true };
           }}
         />
+      ) : null}
+
+      {isPreviewOpen && preview.length > 0 ? (
+        <PromoCarousel products={preview} onClose={() => setIsPreviewOpen(false)} />
       ) : null}
 
       <Dialog

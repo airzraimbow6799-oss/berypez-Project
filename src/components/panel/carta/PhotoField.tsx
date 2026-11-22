@@ -29,6 +29,7 @@ export function PhotoField({
   onChange,
   onUpload,
   onBusyChange,
+  fallback = null,
   label = "Foto del plato",
   hint = "JPG, PNG o WEBP, hasta 5 MB. Mejor horizontal y con el plato al centro.",
 }: {
@@ -37,6 +38,8 @@ export function PhotoField({
   onChange: (next: DishImage | null) => void;
   onUpload?: (file: File) => Promise<DishImage>;
   onBusyChange?: (busy: boolean) => void;
+  /** Foto que se usa si no se sube otra (p. ej. la del plato en una promoción). */
+  fallback?: DishImage | null;
   label?: string;
   hint?: string;
 }) {
@@ -84,6 +87,20 @@ export function PhotoField({
               unoptimized={value.url.startsWith("blob:")}
               className="object-cover"
             />
+          ) : fallback ? (
+            <>
+              <Image
+                src={fallback.url}
+                alt={fallback.alt || dishName || "Foto del plato"}
+                fill
+                sizes="160px"
+                unoptimized={fallback.url.startsWith("blob:")}
+                className="object-cover"
+              />
+              <span className="bg-marino/80 absolute inset-x-0 bottom-0 px-2 py-1 text-center text-xs font-semibold text-white">
+                Foto del plato
+              </span>
+            </>
           ) : (
             <span className="text-tinta-suave absolute inset-0 grid place-items-center text-sm">
               Sin foto
