@@ -69,3 +69,36 @@ export function byRelevance(a: Dated, b: Dated): number {
   if (endA !== endB) return endA - endB;
   return Date.parse(b.createdAt ?? "0") - Date.parse(a.createdAt ?? "0");
 }
+
+type Priced = {
+  priceCents: number;
+  variants: ReadonlyArray<{ id: number; priceCents: number; isAvailable?: boolean }>;
+  promotion?: ProductPromotion | null;
+};
+
+/**
+ * Lo que muestra la tarjeta: precio normal y precio con promoción («desde» si hay opciones).
+ * En 2×1 el precio no cambia (la etiqueta lo dice).
+ */
+export function cardPrices(product: Priced): {
+  regularCents: number;
+  promoCents: number;
+  isFrom: boolean;
+} {
+  const options =
+    product.variants.length > 0
+      ? product.variants.map((v) => ({ id: v.id as number | null, price: v.priceCents }))
+      : [{ id: null, price: product.priceCents }];
+  const promo = product.promotion ?? null;
+  // Precio fijo de UNA opción: se muestra esa opción (es la que está en oferta).
+  const shown =
+    promo?.kind === "fixed_price" && promo.variantId !== null
+      ? options.filter((o) => o.id === promo.variantId)
+      : options;
+  const list = shown.length > 0 ? shown : options;
+  return {
+    regularCents: Math.min(...list.map((o) => o.price)),
+    promoCents: Math.min(...list.map((o) => promoUnitPrice(o.price, promo, o.id))),
+    isFrom: list.length > 1,
+  };
+}

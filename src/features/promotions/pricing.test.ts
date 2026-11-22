@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { byRelevance, isPromotionLive, paidQuantity, promoBadge, promoUnitPrice } from "./pricing";
+import {
+  byRelevance,
+  cardPrices,
+  isPromotionLive,
+  paidQuantity,
+  promoBadge,
+  promoUnitPrice,
+} from "./pricing";
 
 const rule = (over = {}) => ({
   kind: "percent" as const,
@@ -77,5 +84,46 @@ describe("vigencia y relevancia", () => {
       "nueva",
       "vieja",
     ]);
+  });
+});
+
+describe("cardPrices", () => {
+  const promo = (over = {}) => ({
+    id: 1,
+    kind: "percent" as const,
+    percentOff: 20,
+    priceCents: null,
+    variantId: null,
+    title: "P",
+    imageUrl: null,
+    isFeatured: false,
+    startsAt: null,
+    endsAt: null,
+    ...over,
+  });
+  const variants = [
+    { id: 7, priceCents: 4000 },
+    { id: 8, priceCents: 4800 },
+  ];
+
+  it("porcentaje: «desde» con el descuento sobre la opción más barata", () => {
+    expect(cardPrices({ priceCents: 4000, variants, promotion: promo() })).toEqual({
+      regularCents: 4000,
+      promoCents: 3200,
+      isFrom: true,
+    });
+  });
+  it("precio fijo de una opción: muestra esa opción", () => {
+    const fixed = promo({ kind: "fixed_price", percentOff: null, priceCents: 3900, variantId: 8 });
+    expect(cardPrices({ priceCents: 4000, variants, promotion: fixed })).toEqual({
+      regularCents: 4800,
+      promoCents: 3900,
+      isFrom: false,
+    });
+  });
+  it("2×1 no cambia el precio", () => {
+    const twoForOne = promo({ kind: "two_for_one", percentOff: null });
+    const prices = cardPrices({ priceCents: 4500, variants: [], promotion: twoForOne });
+    expect(prices.promoCents).toBe(prices.regularCents);
   });
 });

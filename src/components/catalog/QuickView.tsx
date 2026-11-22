@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { type MouseEvent, useState } from "react";
 
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { Stepper } from "@/components/ui/Stepper";
@@ -13,12 +14,15 @@ import { useCart } from "@/features/cart/store";
 import {
   canAddToCart,
   defaultSelection,
+  isTwoForOne,
   missingChoices,
+  regularUnitPriceCents,
   type Selection,
   toCartInput,
   unitPriceCents,
   visibleChoiceGroups,
 } from "@/features/catalog/selection";
+import { promoBadge } from "@/features/promotions/pricing";
 import { formatPrice } from "@/lib/format";
 import type { Product } from "@/types/catalog";
 
@@ -74,6 +78,10 @@ function QuickViewBody({
   const groups = visibleChoiceGroups(product, selection.variantId);
   const missing = missingChoices(product, selection.variantId, selection.choices);
   const unit = unitPriceCents(product, selection.variantId);
+  const regular = regularUnitPriceCents(product, selection.variantId);
+  const twoForOne = isTwoForOne(product, selection.variantId);
+  const total = unit * (twoForOne ? Math.ceil(quantity / 2) : quantity);
+  const promo = product.promotion ?? null;
   const isAddable = canAddToCart(product, selection);
   const hasVariants = product.variants.length > 1;
 
@@ -119,6 +127,14 @@ function QuickViewBody({
 
       {product.description ? <p className="text-tinta-suave">{product.description}</p> : null}
 
+      {promo ? (
+        <p className="bg-rocoto/10 text-rocoto-texto flex flex-wrap items-center gap-2 rounded-md px-4 py-3 font-semibold">
+          <Badge tone="promo">{promoBadge(promo, formatPrice)}</Badge>
+          {promo.title}
+          {twoForOne ? <span className="font-normal">· Lleva 2 y paga 1</span> : null}
+        </p>
+      ) : null}
+
       {hasVariants ? (
         <fieldset className="flex flex-col gap-2">
           <legend className="mb-2 text-lg font-semibold">
@@ -130,7 +146,7 @@ function QuickViewBody({
               name={`variante-${product.id}`}
               value={String(variant.id)}
               label={variant.label}
-              hint={variant.isAvailable ? formatPrice(variant.priceCents) : "Agotado"}
+              hint={variant.isAvailable ? optionPrice(product, variant) : "Agotado"}
               checked={selection.variantId === variant.id}
               disabled={!variant.isAvailable}
               onSelect={() => setSelection((s) => ({ ...s, variantId: variant.id }))}
@@ -183,12 +199,35 @@ function QuickViewBody({
             Falta: {missing.join(", ").toLowerCase()}
           </p>
         ) : null}
+        {unit < regular ? (
+          <p className="mb-2 text-sm">
+            <span className="sr-only">Precio normal: </span>
+            <s className="text-tinta-suave">{formatPrice(regular)}</s>{" "}
+            <span className="text-rocoto-texto font-semibold">
+              <span className="sr-only">Ahora: </span>
+              {formatPrice(unit)} c/u
+            </span>
+          </p>
+        ) : null}
+        {twoForOne && quantity % 2 === 1 ? (
+          <p className="text-rocoto-texto mb-2 text-sm font-semibold" aria-live="polite">
+            Agrega {quantity === 1 ? "otro" : "uno más"}: el segundo es gratis.
+          </p>
+        ) : null}
         <Button className="w-full" size="lg" disabled={!isAddable} onClick={handleAdd}>
-          {product.isAvailable ? `Agregar · ${formatPrice(unit * quantity)}` : "Agotado"}
+          {product.isAvailable ? `Agregar · ${formatPrice(total)}` : "Agotado"}
         </Button>
       </div>
     </div>
   );
+}
+
+/** Precio de una opción en la lista: con promoción, «S/ 38.40 · antes S/ 48.00». */
+function optionPrice(product: Product, variant: Product["variants"][number]): string {
+  const now = unitPriceCents(product, variant.id);
+  return now < variant.priceCents
+    ? `${formatPrice(now)} · antes ${formatPrice(variant.priceCents)}`
+    : formatPrice(variant.priceCents);
 }
 
 /** F1-10 · Vista rápida: hoja inferior en celular, ventana en escritorio. */

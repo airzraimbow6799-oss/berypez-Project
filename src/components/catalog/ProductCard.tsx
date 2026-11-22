@@ -5,7 +5,8 @@ import type { CSSProperties, ReactNode } from "react";
 
 import { Badge } from "@/components/ui/Badge";
 import { cx } from "@/components/ui/cx";
-import { formatPriceFrom } from "@/lib/format";
+import { cardPrices, promoBadge } from "@/features/promotions/pricing";
+import { formatPrice, formatPriceFrom } from "@/lib/format";
 import type { Product, ProductTag } from "@/types/catalog";
 
 const TAG_BADGES: Partial<
@@ -81,6 +82,9 @@ export function ProductCard({
     product.variants.map((v) => v.priceCents),
   );
   const badges = product.tags.flatMap((tag) => TAG_BADGES[tag] ?? []);
+  const promo = product.promotion ?? null;
+  const promoPrices = promo ? cardPrices(product) : null;
+  const isDiscounted = promoPrices !== null && promoPrices.promoCents < promoPrices.regularCents;
 
   return (
     <Root
@@ -110,10 +114,16 @@ export function ProductCard({
             Foto próximamente
           </div>
         )}
-        {!product.isAvailable ? (
-          <Badge tone="agotado" className="absolute top-2 left-2">
-            Agotado
-          </Badge>
+        {!product.isAvailable || promo ? (
+          // Solo si hay algo que mostrar: un nodo menos en cada tarjeta (M-03, < 1000 nodos).
+          <div className="absolute top-2 left-2 flex flex-col items-start gap-1">
+            {!product.isAvailable ? <Badge tone="agotado">Agotado</Badge> : null}
+            {promo && product.isAvailable ? (
+              <Badge tone="promo" className="text-sm shadow-sm">
+                {promoBadge(promo, formatPrice)}
+              </Badge>
+            ) : null}
+          </div>
         ) : null}
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-3 sm:p-4">
@@ -145,16 +155,27 @@ export function ProductCard({
           </ul>
         ) : null}
         <div className="mt-auto flex items-end justify-between gap-2 pt-2 [&>*:last-child]:relative [&>*:last-child]:z-10">
-          <p className="font-semibold whitespace-nowrap tabular-nums">
-            {price.startsWith("Desde ") ? (
-              <>
-                <span className="text-tinta-suave block text-xs font-medium">Desde</span>
-                {price.slice("Desde ".length)}
-              </>
-            ) : (
-              price
-            )}
-          </p>
+          {isDiscounted && promoPrices ? (
+            // Marcado mínimo (M-03): el precio normal tachado arriba y el de ahora debajo.
+            <p className="text-rocoto-texto font-semibold whitespace-nowrap tabular-nums">
+              <s className="text-tinta-suave block text-xs font-medium">
+                {promoPrices.isFrom ? "Desde " : ""}
+                {formatPrice(promoPrices.regularCents)}
+              </s>
+              {formatPrice(promoPrices.promoCents)}
+            </p>
+          ) : (
+            <p className="font-semibold whitespace-nowrap tabular-nums">
+              {price.startsWith("Desde ") ? (
+                <>
+                  <span className="text-tinta-suave block text-xs font-medium">Desde</span>
+                  {price.slice("Desde ".length)}
+                </>
+              ) : (
+                price
+              )}
+            </p>
+          )}
           {action}
         </div>
       </div>

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Stepper } from "@/components/ui/Stepper";
-import { cartSubtotalCents } from "@/features/cart/cart";
+import { cartSubtotalCents, lineTotalCents, paidUnits } from "@/features/cart/cart";
 import { useCart } from "@/features/cart/store";
 import { useQuote } from "@/features/cart/use-quote";
 import { useOrderMode } from "@/features/order-mode/use-order-mode";
@@ -88,6 +88,12 @@ export function CartView() {
                   </p>
                 ) : null}
                 {line.note ? <p className="text-tinta-suave text-sm">Nota: {line.note}</p> : null}
+                {line.twoForOne ? (
+                  <p className="text-rocoto-texto text-sm font-semibold">
+                    Promoción 2×1: pagas {paidUnits(line)} de {line.quantity}
+                    {line.quantity === 1 ? " (agrega otro, el segundo es gratis)" : ""}
+                  </p>
+                ) : null}
                 {issue ? (
                   <p
                     role="alert"
@@ -104,7 +110,7 @@ export function CartView() {
                     itemName={line.name}
                   />
                   <span className="font-semibold tabular-nums">
-                    {formatPrice(line.unitPriceCents * line.quantity)}
+                    {formatPrice(lineTotalCents(line))}
                   </span>
                 </div>
               </div>

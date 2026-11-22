@@ -1,4 +1,4 @@
-import { expect, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 /**
  * Agrega «Sudados» al carrito desde la carta Marina, eligiendo variante y tipo.
@@ -36,4 +36,22 @@ export async function esperarHidratacion(page: Page, selector: string) {
     const el = document.querySelector(s);
     return !!el && Object.keys(el).some((k) => k.startsWith("__reactProps"));
   }, selector);
+}
+
+/**
+ * Lleva el botón a la vista y espera a que la página deje de moverse: al desplazarse aparece la
+ * barra fija de secciones y el contenido se acomoda; un clic en medio cae en otra parte.
+ */
+export async function llevarALaVista(page: Page, boton: Locator) {
+  // Al centro de la pantalla: en el borde, la tarjeta todavía está entrando (revelado al hacer scroll).
+  await boton.evaluate((el) => el.scrollIntoView({ block: "center" }));
+  let anterior = "";
+  await expect
+    .poll(async () => {
+      const caja = JSON.stringify(await boton.boundingBox());
+      const quieto = caja === anterior;
+      anterior = caja;
+      return quieto;
+    })
+    .toBe(true);
 }
