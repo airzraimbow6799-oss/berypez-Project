@@ -112,3 +112,28 @@ describe("parseStoredLines", () => {
     expect(parseStoredLines(null)).toEqual([]);
   });
 });
+
+describe("2×1 en el carrito", () => {
+  it("cobra la mitad redondeada hacia arriba y lo conserva al guardar", async () => {
+    const { cartSubtotalCents, lineTotalCents, parseStoredLines, paidUnits } =
+      await import("./cart");
+    const line = {
+      key: "k",
+      productId: 1,
+      productSlug: "chicharrones",
+      name: "Chicharrones",
+      variantId: null,
+      variantLabel: null,
+      choices: {},
+      note: "",
+      unitPriceCents: 4000,
+      imageUrl: null,
+      quantity: 3,
+      twoForOne: true,
+    };
+    expect(paidUnits(line)).toBe(2);
+    expect(lineTotalCents(line)).toBe(8000);
+    expect(cartSubtotalCents([line, { ...line, key: "x", twoForOne: undefined }])).toBe(20000);
+    expect(parseStoredLines([line])[0]?.twoForOne).toBe(true);
+  });
+});

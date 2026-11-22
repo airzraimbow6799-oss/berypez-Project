@@ -1,11 +1,11 @@
 ﻿"use client";
 
 import { Search, X } from "lucide-react";
-import { type CSSProperties, useMemo, useState } from "react";
+import { type CSSProperties, useEffect, useMemo, useState } from "react";
 
 import { Chip } from "@/components/ui/Chip";
 import { IconButton } from "@/components/ui/IconButton";
-import { toast } from "@/components/ui/Toaster";
+import { notifySuccess } from "@/components/ui/notify";
 import { flyToCart } from "@/features/cart/fly-to-cart";
 import { morphTo } from "@/features/motion/view-transition";
 import { useCart } from "@/features/cart/store";
@@ -17,6 +17,8 @@ import {
 } from "@/features/catalog/search";
 import { canAddToCart, defaultSelection, toCartInput } from "@/features/catalog/selection";
 import type { MenuPage, Product, ProductTag } from "@/types/catalog";
+
+import { PromotionsStrip } from "@/components/promotions/PromotionsStrip";
 
 import { ProductCard } from "./ProductCard";
 import { SectionNav } from "./SectionNav";
@@ -36,7 +38,14 @@ function needsQuickView(product: Product): boolean {
 }
 
 /** F1-08 / F1-11 · Carta navegable: filtros, búsqueda, secciones y vista rápida. */
-export function MenuBrowser({ page }: { page: MenuPage }) {
+export function MenuBrowser({
+  page,
+  promoted = [],
+}: {
+  page: MenuPage;
+  /** Platos con promoción vigente (de todas las cartas) para la franja «Promociones». */
+  promoted?: Product[];
+}) {
   const add = useCart((state) => state.add);
   const [filters, setFilters] = useState<MenuFilters>(NO_FILTERS);
   const [selected, setSelected] = useState<Product | null>(null);
@@ -51,6 +60,20 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
       setSelected(product);
     });
   };
+
+  // Enlace directo a un plato (ventana emergente de promociones, franja): ?plato=<slug>.
+  // Se lleva a la tarjeta y se abre su vista rápida una sola vez; luego se limpia la URL.
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const slug = url.searchParams.get("plato");
+    if (!slug) return;
+    const product = page.sections.flatMap((s) => s.products).find((p) => p.slug === slug);
+    url.searchParams.delete("plato");
+    window.history.replaceState(window.history.state, "", url);
+    if (!product) return;
+    document.getElementById(product.slug)?.scrollIntoView({ block: "center" });
+    setSelected(product);
+  }, [page.sections]);
 
   const sections = useMemo(
     () =>
@@ -83,7 +106,7 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
     add(toCartInput(product, selection, ""), 1);
     navigator.vibrate?.(20);
     flyToCart(origin, product.image?.url);
-    toast.success(`Agregaste ${product.name}`, {
+    notifySuccess(`Agregaste ${product.name}`, {
       action: { label: "Ver carrito", onClick: () => window.location.assign("/carrito") },
     });
   };
@@ -93,6 +116,7 @@ export function MenuBrowser({ page }: { page: MenuPage }) {
 
   return (
     <>
+      <PromotionsStrip products={promoted} onOpen={openQuickView} />
       <div className="mt-6 flex flex-col gap-3">
         <div className="relative max-w-md">
           <label htmlFor="buscar-carta" className="sr-only">

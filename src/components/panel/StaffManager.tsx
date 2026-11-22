@@ -216,7 +216,7 @@ function InviteDialog({
             { value: "Lince", label: "Lince" },
             { value: "Jesús María", label: "Jesús María" },
           ]}
-          hint="Administración puede ver todas las sedes; cocina y salón trabajan en una."
+          hint="Administración ve todas las sedes; recepción trabaja en una."
           error={errors.branch}
         />
       </form>

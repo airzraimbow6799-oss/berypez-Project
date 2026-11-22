@@ -4,18 +4,22 @@ import { esperarHidratacion } from "./ayudas";
 
 // Panel del restaurante en modo demostración (DEMO_PANEL=1 en el servidor de pruebas):
 // entrada con una cuenta de ejemplo por rol, menú según el rol y carta administrable.
+// Dos roles (22/11): Administración (entra a su Resumen) y Recepción (entra a Reservas).
+// No hay rol de cocina: la cocina trabaja con la ticketera de su sistema.
 // No usa Supabase ni datos reales.
 
 const menu = (page: Page) => page.getByRole("navigation", { name: "Panel" });
 
-async function entrarComo(page: Page, titulo: "Administración" | "Cocina" | "Salón") {
+const INICIO = { Administración: /\/panel\/dashboard$/, Recepción: /\/panel\/reservas$/ };
+
+async function entrarComo(page: Page, titulo: keyof typeof INICIO) {
   await page.goto("/panel/ingresar", { waitUntil: "domcontentloaded" });
   const boton = page.getByRole("button", { name: new RegExp(`Entrar como ${titulo}`) });
   await expect(boton).toBeVisible();
   // El formulario debe estar hidratado para que el clic haga la petición.
   await esperarHidratacion(page, "form input[name=email]");
   await boton.click();
-  await expect(page).toHaveURL(/\/panel$/);
+  await expect(page).toHaveURL(INICIO[titulo]);
 }
 
 test.describe("Panel en modo demostración", () => {
@@ -24,11 +28,12 @@ test.describe("Panel en modo demostración", () => {
   }) => {
     await page.goto("/panel/ingresar", { waitUntil: "domcontentloaded" });
     await expect(page.getByRole("heading", { name: "Modo demostración" })).toBeVisible();
-    for (const titulo of ["Administración", "Cocina", "Salón"]) {
+    for (const titulo of ["Administración", "Recepción"]) {
       await expect(
         page.getByRole("button", { name: new RegExp(`Entrar como ${titulo}`) }),
       ).toBeVisible();
     }
+    await expect(page.getByRole("button", { name: /Entrar como Cocina/ })).toHaveCount(0);
     await expect(page.getByText("admin@demo.berypez.pe · demo1234")).toBeVisible();
   });
 
@@ -37,54 +42,59 @@ test.describe("Panel en modo demostración", () => {
   }) => {
     await page.goto("/panel/ingresar", { waitUntil: "domcontentloaded" });
     await esperarHidratacion(page, "form input[name=email]");
-    await page.getByLabel("Correo").fill("cocina@demo.berypez.pe");
+    await page.getByLabel("Correo").fill("recepcion@demo.berypez.pe");
     await page.getByLabel("Contraseña").fill("demo1234");
     await page.getByRole("button", { name: "Ingresar" }).click();
-    await expect(page).toHaveURL(/\/panel$/);
-    await expect(page.getByText("Cocina", { exact: true }).first()).toBeVisible();
+    await expect(page).toHaveURL(/\/panel\/reservas$/);
+    await expect(page.getByText("Recepción", { exact: true }).first()).toBeVisible();
   });
 
-  test("cocina ve solo Pedidos y Carta, y Reservas la manda a «sin acceso»", async ({ page }) => {
-    await entrarComo(page, "Cocina");
+  test("recepción solo lleva las reservas: Pedidos, Carta y Resumen la mandan a «sin acceso»", async ({
+    page,
+  }) => {
+    await entrarComo(page, "Recepción");
     await expect(page.getByRole("region", { name: "Modo demostración" })).toBeVisible();
-    await expect(menu(page).getByRole("link", { name: "Pedidos" })).toBeVisible();
-    await expect(menu(page).getByRole("link", { name: "Carta" })).toBeVisible();
-    await expect(menu(page).getByRole("link", { name: "Reservas" })).toHaveCount(0);
-
-    await page.goto("/panel/reservas", { waitUntil: "domcontentloaded" });
-    await expect(page).toHaveURL(/\/panel\/sin-acceso/);
-    await expect(page.getByRole("heading", { name: /No tienes acceso/ })).toBeVisible();
-  });
-
-  test("salón ve Pedidos y Reservas, pero no la Carta", async ({ page }) => {
-    await entrarComo(page, "Salón");
     await expect(menu(page).getByRole("link", { name: "Reservas" })).toBeVisible();
-    await expect(menu(page).getByRole("link", { name: "Carta" })).toHaveCount(0);
-    await page.goto("/panel/carta", { waitUntil: "domcontentloaded" });
-    await expect(page).toHaveURL(/\/panel\/sin-acceso/);
+    for (const nombre of ["Pedidos", "Carta", "Promociones", "Resumen", "Personal"]) {
+      await expect(menu(page).getByRole("link", { name: nombre })).toHaveCount(0);
+    }
+    for (const ruta of [
+      "/panel/pedidos",
+      "/panel/carta",
+      "/panel/promociones",
+      "/panel/dashboard",
+    ]) {
+      await page.goto(ruta, { waitUntil: "domcontentloaded" });
+      await expect(page).toHaveURL(/\/panel\/sin-acceso/);
+    }
+    await expect(page.getByRole("heading", { name: /No tienes acceso/ })).toBeVisible();
   });
 
   test("los pedidos de ejemplo avanzan de estado", async ({ page }) => {
     await entrarComo(page, "Administración");
+    await menu(page).getByRole("link", { name: "Pedidos" }).click();
+    await expect(page).toHaveURL(/\/panel\/pedidos$/);
     const tarjeta = page.getByRole("listitem").filter({ hasText: "Lucía Paredes" });
     await expect(tarjeta).toBeVisible();
     await tarjeta.getByRole("button", { name: "Pasar a cocina" }).click();
     await expect(tarjeta.getByText("En cocina")).toBeVisible();
   });
 
-  test("administración cambia un precio, marca un agotado y añade un plato", async ({ page }) => {
+  test("administración cambia un precio, marca un agotado, añade y edita un plato", async ({
+    page,
+  }) => {
     await entrarComo(page, "Administración");
     await menu(page).getByRole("link", { name: "Carta" }).click();
     await expect(page.getByRole("heading", { name: "Carta", level: 1 })).toBeVisible();
 
     const fila = page
       .getByRole("listitem")
-      .filter({ has: page.getByRole("heading", { name: "Ceviche clásico" }) });
+      .filter({ has: page.getByRole("heading", { name: "Ceviche Berypez" }) });
     const precio = fila.getByLabel("Precio (S/)");
-    await expect(precio).toHaveValue("38.00");
-    await precio.fill("41.50");
+    await expect(precio).toHaveValue("48.00");
+    await precio.fill("51.50");
     await precio.press("Enter");
-    await expect(precio).toHaveValue("41.50");
+    await expect(precio).toHaveValue("51.50");
 
     const interruptor = fila.getByRole("switch");
     await interruptor.click();
@@ -93,11 +103,55 @@ test.describe("Panel en modo demostración", () => {
 
     await page.getByRole("button", { name: /Añadir plato/ }).click();
     const dialogo = page.getByRole("dialog", { name: "Añadir plato" });
+    await dialogo.getByLabel("Subir foto").setInputFiles({
+      name: "tiradito.png",
+      mimeType: "image/png",
+      // PNG de 1×1 px.
+      buffer: Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+        "base64",
+      ),
+    });
+    await expect(dialogo.getByText("Cambiar foto")).toBeVisible();
     await dialogo.getByLabel(/Nombre/).fill("Tiradito nikkei");
-    await dialogo.getByLabel(/Categoría/).selectOption("Entradas");
+    await dialogo.getByLabel(/Sección/).fill("Tiraditos");
     await dialogo.getByLabel(/Precio/).fill("34.50");
+    await dialogo.getByRole("button", { name: "Nuevo" }).click();
     await dialogo.getByRole("button", { name: "Guardar plato" }).click();
     await expect(page.getByRole("heading", { name: "Tiradito nikkei" })).toBeVisible();
+
+    await page.getByRole("button", { name: "Editar Chicharrones" }).click();
+    const edicion = page.getByRole("dialog", { name: "Editar «Chicharrones»" });
+    await expect(edicion.getByLabel("Título del apartado")).toHaveValue("Elige tu chicharrón");
+    await edicion.getByLabel("Precio (S/)").first().fill("38");
+    await edicion.getByRole("button", { name: "Guardar cambios" }).click();
+    await expect(
+      page
+        .getByRole("listitem")
+        .filter({ has: page.getByRole("heading", { name: "Chicharrones" }) })
+        .getByText(/Desde\s*S\/ 38.00/),
+    ).toBeVisible();
+  });
+
+  test("administración crea una promoción 2×1 y la pausa", async ({ page }) => {
+    await entrarComo(page, "Administración");
+    await menu(page).getByRole("link", { name: "Promociones" }).click();
+    await expect(page.getByRole("heading", { name: "Promociones", level: 1 })).toBeVisible();
+
+    await page.getByRole("button", { name: /Nueva promoción/ }).click();
+    const dialogo = page.getByRole("dialog", { name: "Nueva promoción" });
+    await dialogo.getByLabel("Plato").selectOption({ label: "Jaleas" });
+    await dialogo.getByText("2×1", { exact: true }).click();
+    await dialogo.getByRole("button", { name: "Guardar promoción" }).click();
+
+    const fila = page
+      .getByRole("listitem")
+      .filter({ has: page.getByRole("heading", { name: "Jaleas 2×1" }) });
+    await expect(fila).toBeVisible();
+    const interruptor = fila.getByRole("switch");
+    await expect(interruptor).toHaveAttribute("aria-checked", "true");
+    await interruptor.click();
+    await expect(interruptor).toHaveAttribute("aria-checked", "false");
   });
 
   test("«Cambiar de rol» cierra la sesión de ejemplo y vuelve al ingreso", async ({ page }) => {
@@ -108,19 +162,10 @@ test.describe("Panel en modo demostración", () => {
     await expect(page).toHaveURL(/\/panel\/ingresar/);
   });
 
-  test("cocina no ve el Resumen ni el Personal; administración ve las cinco secciones", async ({
-    page,
-  }) => {
-    await entrarComo(page, "Cocina");
-    await expect(menu(page).getByRole("link", { name: "Resumen" })).toHaveCount(0);
-    await expect(menu(page).getByRole("link", { name: "Personal" })).toHaveCount(0);
-    await page.goto("/panel/dashboard", { waitUntil: "domcontentloaded" });
-    await expect(page).toHaveURL(/\/panel\/sin-acceso/);
-
-    await page.getByRole("button", { name: "Cambiar de rol" }).click();
-    await expect(page).toHaveURL(/\/panel\/ingresar/);
+  test("administración entra directo a su Resumen y ve las seis secciones", async ({ page }) => {
     await entrarComo(page, "Administración");
-    for (const nombre of ["Pedidos", "Reservas", "Carta", "Resumen", "Personal"]) {
+    await expect(page.getByRole("heading", { name: "Resumen", level: 1 })).toBeVisible();
+    for (const nombre of ["Resumen", "Pedidos", "Reservas", "Carta", "Promociones", "Personal"]) {
       await expect(menu(page).getByRole("link", { name: nombre })).toBeVisible();
     }
   });

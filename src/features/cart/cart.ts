@@ -3,7 +3,6 @@
  * El precio guardado aquí es solo para mostrar: el servidor recalcula todo con
  * POST /api/cart/quote (F2-01) y nunca confía en lo que envía el navegador.
  */
-import { z } from "zod";
 
 export const MAX_QUANTITY = 50;
 export const MAX_NOTE_LENGTH = 200;
@@ -19,23 +18,70 @@ export type CartLineInput = {
   note: string;
   unitPriceCents: number;
   imageUrl: string | null;
+  /** Promoción 2×1: de cada 2 iguales se cobra 1 (el servidor lo vuelve a calcular). */
+  twoForOne?: boolean;
 };
 
 export type CartLine = CartLineInput & { key: string; quantity: number };
 
-const lineSchema = z.object({
-  key: z.string(),
-  productId: z.number().int().positive(),
-  productSlug: z.string(),
-  name: z.string(),
-  variantId: z.number().int().positive().nullable(),
-  variantLabel: z.string().nullable(),
-  choices: z.record(z.string(), z.string()),
-  note: z.string().max(MAX_NOTE_LENGTH),
-  unitPriceCents: z.number().int().nonnegative(),
-  imageUrl: z.string().nullable(),
-  quantity: z.number().int().min(1).max(MAX_QUANTITY),
-});
+/*
+ * Validación a mano, sin Zod (#58): el carrito se carga en la cabecera de todas las páginas y
+ * Zod sumaba ~19–28 KB comprimidos de JavaScript a cada una solo para revisar localStorage.
+ */
+const isInt = (v: unknown): v is number => Number.isInteger(v);
+const isString = (v: unknown): v is string => typeof v === "string";
+const isNullableString = (v: unknown): v is string | null => v === null || isString(v);
+
+function isStringRecord(v: unknown): v is Record<string, string> {
+  return (
+    typeof v === "object" &&
+    v !== null &&
+    !Array.isArray(v) &&
+    Object.values(v as Record<string, unknown>).every(isString)
+  );
+}
+
+/** Una línea guardada válida, con solo los campos conocidos (como hacía el esquema). */
+function toCartLine(value: unknown): CartLine | null {
+  if (typeof value !== "object" || value === null) {
+    return null;
+  }
+  const v = value as Record<string, unknown>;
+  const ok =
+    isString(v.key) &&
+    isInt(v.productId) &&
+    v.productId > 0 &&
+    isString(v.productSlug) &&
+    isString(v.name) &&
+    (v.variantId === null || (isInt(v.variantId) && v.variantId > 0)) &&
+    isNullableString(v.variantLabel) &&
+    isStringRecord(v.choices) &&
+    isString(v.note) &&
+    v.note.length <= MAX_NOTE_LENGTH &&
+    isInt(v.unitPriceCents) &&
+    v.unitPriceCents >= 0 &&
+    isNullableString(v.imageUrl) &&
+    isInt(v.quantity) &&
+    v.quantity >= 1 &&
+    v.quantity <= MAX_QUANTITY;
+  if (!ok) {
+    return null;
+  }
+  return {
+    key: v.key as string,
+    productId: v.productId as number,
+    productSlug: v.productSlug as string,
+    name: v.name as string,
+    variantId: v.variantId as number | null,
+    variantLabel: v.variantLabel as string | null,
+    choices: { ...(v.choices as Record<string, string>) },
+    note: v.note as string,
+    unitPriceCents: v.unitPriceCents as number,
+    imageUrl: v.imageUrl as string | null,
+    quantity: v.quantity as number,
+    ...(v.twoForOne === true ? { twoForOne: true } : {}),
+  };
+}
 
 function cleanNote(note: string): string {
   return note.trim().slice(0, MAX_NOTE_LENGTH);
@@ -85,12 +131,25 @@ export function cartCount(lines: readonly CartLine[]): number {
   return lines.reduce((sum, line) => sum + line.quantity, 0);
 }
 
+/** Unidades que se pagan en la línea: en 2×1, la mitad redondeada hacia arriba. */
+export function paidUnits(line: Pick<CartLine, "quantity" | "twoForOne">): number {
+  return line.twoForOne ? Math.ceil(line.quantity / 2) : line.quantity;
+}
+
+export function lineTotalCents(line: Pick<CartLine, "quantity" | "twoForOne" | "unitPriceCents">) {
+  return line.unitPriceCents * paidUnits(line);
+}
+
 export function cartSubtotalCents(lines: readonly CartLine[]): number {
-  return lines.reduce((sum, line) => sum + line.unitPriceCents * line.quantity, 0);
+  return lines.reduce((sum, line) => sum + lineTotalCents(line), 0);
 }
 
 /** Valida lo guardado en el navegador; si algo está corrupto, empieza vacío. */
 export function parseStoredLines(value: unknown): CartLine[] {
-  const result = z.array(lineSchema).safeParse(value);
-  return result.success ? result.data : [];
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  const lines = value.map(toCartLine);
+  // Como antes: si una sola línea está corrupta, se descarta todo y se empieza vacío.
+  return lines.every((line): line is CartLine => line !== null) ? lines : [];
 }

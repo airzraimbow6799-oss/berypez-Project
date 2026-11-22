@@ -90,7 +90,7 @@ export type Database = {
           sort_order: number
         }
         Insert: {
-          id: number
+          id?: number
           name: string
           slug: string
           sort_order: number
@@ -532,7 +532,7 @@ export type Database = {
           choice_groups?: Json
           created_at?: string
           description?: string
-          id: number
+          id?: number
           image_alt?: string | null
           image_path?: string | null
           is_available?: boolean
@@ -570,6 +570,72 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      promotions: {
+        Row: {
+          created_at: string
+          ends_at: string | null
+          id: number
+          image_path: string | null
+          is_active: boolean
+          is_featured: boolean
+          kind: Database["public"]["Enums"]["promotion_kind"]
+          percent_off: number | null
+          price_cents: number | null
+          product_id: number
+          starts_at: string | null
+          title: string
+          updated_at: string
+          variant_id: number | null
+        }
+        Insert: {
+          created_at?: string
+          ends_at?: string | null
+          id?: never
+          image_path?: string | null
+          is_active?: boolean
+          is_featured?: boolean
+          kind: Database["public"]["Enums"]["promotion_kind"]
+          percent_off?: number | null
+          price_cents?: number | null
+          product_id: number
+          starts_at?: string | null
+          title: string
+          updated_at?: string
+          variant_id?: number | null
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string | null
+          id?: never
+          image_path?: string | null
+          is_active?: boolean
+          is_featured?: boolean
+          kind?: Database["public"]["Enums"]["promotion_kind"]
+          percent_off?: number | null
+          price_cents?: number | null
+          product_id?: number
+          starts_at?: string | null
+          title?: string
+          updated_at?: string
+          variant_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promotions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "promotions_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "variants"
             referencedColumns: ["id"]
           },
         ]
@@ -677,6 +743,7 @@ export type Database = {
       variants: {
         Row: {
           id: number
+          is_archived: boolean
           is_available: boolean
           label: string
           price_cents: number
@@ -685,7 +752,8 @@ export type Database = {
           sort_order: number
         }
         Insert: {
-          id: number
+          id?: number
+          is_archived?: boolean
           is_available?: boolean
           label: string
           price_cents: number
@@ -695,6 +763,7 @@ export type Database = {
         }
         Update: {
           id?: number
+          is_archived?: boolean
           is_available?: boolean
           label?: string
           price_cents?: number
@@ -717,6 +786,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_save_product: { Args: { p: Json }; Returns: number }
+      admin_set_product_available: {
+        Args: { p_available: boolean; p_id: number }
+        Returns: undefined
+      }
+      admin_set_product_price: {
+        Args: { p_id: number; p_price_cents: number }
+        Returns: undefined
+      }
+      admin_unpublish_product: { Args: { p_id: number }; Returns: undefined }
       checkout_create_order: {
         Args: { p_items: Json; p_order: Json }
         Returns: {
@@ -762,8 +841,9 @@ export type Database = {
         | "cancelled"
       payment_method: "yape" | "plin" | "card" | "cash"
       payment_status: "unpaid" | "pending" | "paid" | "failed" | "refunded"
+      promotion_kind: "percent" | "fixed_price" | "two_for_one"
       reservation_status: "confirmed" | "arrived" | "no_show" | "cancelled"
-      staff_role: "admin" | "cocina"
+      staff_role: "admin" | "cocina" | "salon"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -911,8 +991,9 @@ export const Constants = {
       ],
       payment_method: ["yape", "plin", "card", "cash"],
       payment_status: ["unpaid", "pending", "paid", "failed", "refunded"],
+      promotion_kind: ["percent", "fixed_price", "two_for_one"],
       reservation_status: ["confirmed", "arrived", "no_show", "cancelled"],
-      staff_role: ["admin", "cocina"],
+      staff_role: ["admin", "cocina", "salon"],
     },
   },
 } as const

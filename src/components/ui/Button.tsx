@@ -48,8 +48,10 @@ export function Button(props: ButtonProps) {
   const classes = cx(BASE, VARIANTS[variant], SIZES[size], className);
 
   if (props.href !== undefined) {
+    // prefetch={false} (#58): los botones de la portada («Pedir ahora», «Reservar mesa») están a
+    // la vista al cargar y precargar sus páginas competía con la carga en celulares.
     return (
-      <Link href={props.href} className={classes}>
+      <Link href={props.href} prefetch={false} className={classes}>
         {children}
       </Link>
     );

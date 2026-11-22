@@ -1,5 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
+import { llevarALaVista } from "./ayudas";
+
 // F1-14 · E2E de la carta: abrir carta → filtrar → buscar «seviche» → vista rápida → elegir variante.
 // Corre con el catálogo del snapshot (sin Supabase). La carta Marina tiene 52 platos.
 
@@ -137,6 +139,7 @@ test.describe("Carta Marina", () => {
     const etiqueta = (await boton.getAttribute("aria-label")) ?? (await boton.textContent()) ?? "";
     const plato = etiqueta.replace(/^Agregar /, "");
 
+    await llevarALaVista(page, boton);
     await boton.click();
     await expect(page.getByText(`Agregaste ${plato}`)).toBeVisible();
   });

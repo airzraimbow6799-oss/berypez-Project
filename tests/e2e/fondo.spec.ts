@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 // Fondo de mariscos de las páginas públicas (.fondo-mar). Reglas que se protegen:
 //  1. Existe, es decorativo (aria-hidden), no intercepta clics y queda detrás de todo.
 //  2. Usa el dibujo de public/fondo/mariscos.webp y ese archivo pesa poco (presupuesto: 150 KB).
+//     Se pide cuando la página ya cargó (html[data-cargado], #58): no compite con lo principal.
 //  3. Solo está en el sitio público: el panel del restaurante no lo lleva.
 //  4. No toca el diseño (sin scroll horizontal) y los botones siguen recibiendo los clics.
 
@@ -14,6 +15,8 @@ test.describe("Fondo de mariscos", () => {
     const fondo = page.locator(".fondo-mar");
     await expect(fondo).toHaveCount(1);
     await expect(fondo).toHaveAttribute("aria-hidden", "true");
+    // El dibujo llega después de la carga (no antes de la foto principal).
+    await expect(page.locator("html[data-cargado]")).toHaveCount(1, { timeout: 10_000 });
 
     const estilo = await fondo.evaluate((el) => {
       const s = getComputedStyle(el);

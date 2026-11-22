@@ -131,7 +131,12 @@ describe("MobileNav", () => {
       within(nav)
         .getAllByRole("link")
         .map((l) => l.textContent),
-    ).toEqual(["Carta", "Buscar", "Carrito", "Reservar"]);
+    ).toEqual(["Carta", "Buscar", "Carrito", "Reservar", "Nosotros"]);
+    // En celular no hay menú principal: «Nosotros» se llega desde aquí.
+    expect(within(nav).getByRole("link", { name: "Nosotros" })).toHaveAttribute(
+      "href",
+      "/nosotros",
+    );
     expect(within(nav).getByRole("link", { name: "Carta" })).toHaveAttribute(
       "aria-current",
       "page",

@@ -1,7 +1,7 @@
 import { act, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { canPlayMotion, HeroVideo } from "./HeroVideo";
+import { canPlayMotion, HeroVideo, VIDEO_FALLBACK_DELAY_MS } from "./HeroVideo";
 
 function fakeWindow({ reduced = false, saveData = false, effectiveType = "4g" } = {}) {
   return {
@@ -31,6 +31,22 @@ describe("HeroVideo", () => {
     vi.unstubAllGlobals();
   });
 
+  it("#58: no pide el video mientras la página aún carga (no compite con la foto principal)", () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("matchMedia", () => ({ matches: false }));
+    const { container } = render(<HeroVideo />);
+    act(() => {
+      vi.advanceTimersByTime(VIDEO_FALLBACK_DELAY_MS - 100);
+    });
+    expect(container.querySelector("video")).toBeNull();
+    act(() => {
+      vi.advanceTimersByTime(200);
+    });
+    expect(container.querySelector("video")).not.toBeNull();
+    // Sin atributo poster: la foto ya la muestra next/image (antes se descargaba dos veces).
+    expect(container.querySelector("video")).not.toHaveAttribute("poster");
+  });
+
   it("muestra el póster con texto alternativo y carga el video después", () => {
     vi.useFakeTimers();
     vi.stubGlobal("matchMedia", () => ({ matches: false }));
@@ -40,7 +56,7 @@ describe("HeroVideo", () => {
     expect(container.querySelector("video")).toBeNull();
 
     act(() => {
-      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(VIDEO_FALLBACK_DELAY_MS + 100);
     });
     expect(container.querySelector("video source")).not.toBeNull();
     expect(screen.getByRole("button", { name: "Reproducir video" })).toBeInTheDocument();
@@ -51,7 +67,7 @@ describe("HeroVideo", () => {
     vi.stubGlobal("matchMedia", () => ({ matches: false }));
     const { container } = render(<HeroVideo />);
     act(() => {
-      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(VIDEO_FALLBACK_DELAY_MS + 100);
     });
     const video = container.querySelector("video");
     expect(video).toHaveAttribute("disablepictureinpicture");
@@ -63,7 +79,7 @@ describe("HeroVideo", () => {
     vi.stubGlobal("matchMedia", () => ({ matches: false }));
     render(<HeroVideo />);
     act(() => {
-      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(VIDEO_FALLBACK_DELAY_MS + 100);
     });
     const boton = screen.getByRole("button", { name: /video/ });
     // Oculto solo en dispositivos con mouse; aparece al pasar sobre el video o con el foco.
@@ -79,7 +95,7 @@ describe("HeroVideo", () => {
       <HeroVideo variant="fondo" overlayClassName="bg-gradient-to-t from-marino" />,
     );
     act(() => {
-      vi.advanceTimersByTime(500);
+      vi.advanceTimersByTime(VIDEO_FALLBACK_DELAY_MS + 100);
     });
     expect(container.firstElementChild).toHaveClass("absolute", "inset-0");
     expect(container.querySelector(".from-marino")).toHaveAttribute("aria-hidden", "true");

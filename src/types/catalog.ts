@@ -85,6 +85,27 @@ export interface Variant {
   selections: Record<string, string | null>;
 }
 
+export const PROMOTION_KINDS = ["percent", "fixed_price", "two_for_one"] as const;
+export type PromotionKind = (typeof PROMOTION_KINDS)[number];
+
+/** Promoción vigente de un plato. El precio final lo recalcula el servidor al cotizar. */
+export interface ProductPromotion {
+  id: number;
+  kind: PromotionKind;
+  /** Solo en `percent`: 5–90. */
+  percentOff: number | null;
+  /** Solo en `fixed_price`: precio promocional en céntimos. */
+  priceCents: number | null;
+  /** Precio fijo en un plato con opciones: la opción a la que aplica (null = al plato). */
+  variantId: number | null;
+  title: string;
+  /** Imagen de la ventana emergente; si falta, se usa la foto del plato. */
+  imageUrl: string | null;
+  isFeatured: boolean;
+  startsAt: string | null;
+  endsAt: string | null;
+}
+
 export interface Product {
   id: number;
   slug: string;
@@ -104,6 +125,8 @@ export interface Product {
   isAvailable: boolean;
   variants: Variant[];
   choiceGroups: ChoiceGroup[];
+  /** Promoción vigente (la más relevante si hay varias). */
+  promotion?: ProductPromotion | null;
 }
 
 /** Sección de una carta con sus productos, en orden. */
