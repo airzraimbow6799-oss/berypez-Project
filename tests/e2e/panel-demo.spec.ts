@@ -154,6 +154,24 @@ test.describe("Panel en modo demostración", () => {
     await expect(interruptor).toHaveAttribute("aria-checked", "false");
   });
 
+  test("en demostración avisa que no se publica, muestra la vista previa y la foto del plato", async ({
+    page,
+  }) => {
+    await entrarComo(page, "Administración");
+    await menu(page).getByRole("link", { name: "Promociones" }).click();
+    await expect(page.getByRole("note")).toContainText("no se publican en la web");
+
+    await page.getByRole("button", { name: "Ver ventana emergente" }).click();
+    const ventana = page.getByRole("dialog", { name: /Promociones de hoy/ });
+    await expect(ventana.getByText("Chicharrones 2×1")).toBeVisible();
+    await ventana.getByRole("button", { name: "Cerrar" }).click();
+
+    await page.getByRole("button", { name: "Editar Chicharrones 2×1" }).click();
+    const editor = page.getByRole("dialog", { name: /Editar «Chicharrones 2×1»/ });
+    await expect(editor.getByText("Foto del plato", { exact: true })).toBeVisible();
+    await expect(editor.getByLabel("Empieza (opcional)")).not.toHaveValue("");
+  });
+
   test("«Cambiar de rol» cierra la sesión de ejemplo y vuelve al ingreso", async ({ page }) => {
     await entrarComo(page, "Administración");
     await page.getByRole("button", { name: "Cambiar de rol" }).click();

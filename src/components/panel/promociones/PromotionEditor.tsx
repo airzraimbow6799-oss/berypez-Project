@@ -231,6 +231,7 @@ export function PromotionEditor({
           label="Imagen de la ventana emergente (opcional)"
           hint="Si no subes una, se usa la foto del plato. Mejor horizontal."
           value={form.image}
+          fallback={dish?.image ?? null}
           dishName={form.title || dish?.name || ""}
           onChange={(v) => set("image", v)}
           onUpload={onUpload}
