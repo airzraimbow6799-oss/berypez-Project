@@ -106,7 +106,8 @@ export function promotionToForm(p: Promotion): PromotionFormInput {
     variantId: p.variantId === null ? "" : String(p.variantId),
     title: p.title,
     image: p.image ? { ...p.image } : null,
-    startsAt: isoToLimaInput(p.startsAt),
+    // Sin fecha de inicio empezó al crearla: se muestra esa fecha para que el formulario esté completo.
+    startsAt: isoToLimaInput(p.startsAt ?? p.createdAt),
     endsAt: isoToLimaInput(p.endsAt),
     isActive: p.isActive,
     isFeatured: p.isFeatured,

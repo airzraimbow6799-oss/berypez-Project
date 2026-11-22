@@ -118,7 +118,18 @@ describe("estado y formulario", () => {
   it("una promoción guardada vuelve al formulario y se guarda igual", () => {
     const parsed = parsePromotionForm(promotionToForm(promo), dishes);
     const { id: _id, createdAt: _c, ...data } = promo;
-    expect(parsed).toEqual({ ok: true, data });
+    // Sin inicio, el formulario muestra la fecha en que se creó (ya empezó entonces).
+    expect(parsed).toEqual({
+      ok: true,
+      data: { ...data, startsAt: promo.createdAt.replace("Z", ".000Z") },
+    });
+  });
+
+  it("al editar, el inicio vacío se completa con la fecha de creación", () => {
+    expect(promotionToForm(promo).startsAt).not.toBe("");
+    expect(promotionToForm({ ...promo, startsAt: "2026-11-21T15:00:00Z" }).startsAt).toBe(
+      "2026-11-21T10:00",
+    );
   });
 
   it("sugiere títulos por tipo", () => {
