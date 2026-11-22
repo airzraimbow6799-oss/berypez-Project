@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 
+import type { ProductPromotion } from "@/types/catalog";
+
 import {
   byRelevance,
   cardPrices,
   isPromotionLive,
   paidQuantity,
   promoBadge,
+  promoSummary,
   promoUnitPrice,
 } from "./pricing";
 
@@ -125,5 +128,42 @@ describe("cardPrices", () => {
     const twoForOne = promo({ kind: "two_for_one", percentOff: null });
     const prices = cardPrices({ priceCents: 4500, variants: [], promotion: twoForOne });
     expect(prices.promoCents).toBe(prices.regularCents);
+  });
+});
+
+describe("promoSummary", () => {
+  const base = { priceCents: 4000, variants: [] as { id: number; priceCents: number }[] };
+  const promo = (over: Partial<ProductPromotion>): ProductPromotion => ({
+    id: 1,
+    kind: "percent",
+    percentOff: null,
+    priceCents: null,
+    variantId: null,
+    title: "x",
+    imageUrl: null,
+    isFeatured: false,
+    startsAt: null,
+    endsAt: null,
+    ...over,
+  });
+
+  it("todas las promociones dicen antes, ahora y para cuántos platos", () => {
+    expect(
+      promoSummary({ ...base, promotion: promo({ kind: "percent", percentOff: 20 }) }),
+    ).toEqual({
+      beforeCents: 4000,
+      nowCents: 3200,
+      isFrom: false,
+      detail: "por plato · 20 % menos",
+    });
+    expect(
+      promoSummary({ ...base, promotion: promo({ kind: "fixed_price", priceCents: 3500 }) }),
+    ).toMatchObject({ beforeCents: 4000, nowCents: 3500, detail: "por plato · precio especial" });
+    expect(promoSummary({ ...base, promotion: promo({ kind: "two_for_one" }) })).toEqual({
+      beforeCents: 8000,
+      nowCents: 4000,
+      isFrom: false,
+      detail: "por 2 platos · pagas solo 1",
+    });
   });
 });

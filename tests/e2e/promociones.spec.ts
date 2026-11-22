@@ -31,7 +31,8 @@ test.describe("Promociones", () => {
     await expect(ventana.getByText("Lomo saltado a S/ 39")).toBeVisible();
     await ventana.getByRole("button", { name: "Promoción siguiente" }).click();
     await expect(ventana.getByText("Chicharrones 2×1")).toBeVisible();
-    await expect(ventana.getByText("Lleva 2 y paga 1")).toBeVisible();
+    // Mismo formato para toda promoción: antes → ahora y para cuántos platos.
+    await expect(ventana.getByText("por 2 platos · pagas solo 1")).toBeVisible();
 
     await ventana.getByRole("link", { name: "Ver promo" }).click();
     await expect(page).toHaveURL(/\/carta\/marina/);
@@ -44,8 +45,8 @@ test.describe("Promociones", () => {
     await page.goto("/");
     const ventana = page.getByRole("dialog", { name: "Promociones de hoy" });
     await expect(ventana.getByText("Martes de ceviche")).toBeVisible({ timeout: 15_000 });
-    // Sin el mouse encima (el puntero queda fuera de la ventana).
-    await page.mouse.move(0, 0);
+    // Con el mouse encima de la ventana también pasa (antes se quedaba detenido).
+    await ventana.getByRole("link", { name: "Ver promo" }).hover();
     await expect(ventana.getByText("Lomo saltado a S/ 39")).toBeVisible({ timeout: 9_000 });
   });
 

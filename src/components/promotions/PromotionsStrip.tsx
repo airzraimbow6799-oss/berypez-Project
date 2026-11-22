@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { cardPrices, promoBadge } from "@/features/promotions/pricing";
+import { promoBadge, promoSummary } from "@/features/promotions/pricing";
 import { formatPrice } from "@/lib/format";
 import type { Product } from "@/types/catalog";
 
@@ -26,7 +26,8 @@ export function PromotionsStrip({
         {products.map((product) => {
           const promo = product.promotion;
           if (!promo) return null;
-          const prices = cardPrices(product);
+          const summary = promoSummary(product);
+          const from = summary.isFrom ? "desde " : "";
           const image = product.image?.url ?? promo.imageUrl;
           return (
             <li
@@ -51,14 +52,16 @@ export function PromotionsStrip({
                 {promo.title}
               </button>
               <p className="text-tinta-suave px-3 text-sm">{product.name}</p>
-              {prices.promoCents < prices.regularCents ? (
-                <p className="text-rocoto-texto px-3 text-sm font-semibold tabular-nums">
-                  <s className="text-tinta-suave font-medium">{formatPrice(prices.regularCents)}</s>{" "}
-                  ahora {formatPrice(prices.promoCents)}
-                </p>
-              ) : (
-                <p className="text-rocoto-texto px-3 text-sm font-semibold">Lleva 2 y paga 1</p>
-              )}
+              {/* Mismo formato que la ventana emergente: antes → ahora · para cuántos platos.
+                  El detalle va en la misma línea de texto (salto con pre-line): sin nodos extra (M-03). */}
+              <p className="text-rocoto-texto px-3 text-sm font-semibold whitespace-pre-line tabular-nums">
+                <s className="text-tinta-suave font-medium">
+                  {from}
+                  {formatPrice(summary.beforeCents)}
+                </s>
+                {` ahora ${from}${formatPrice(summary.nowCents)}
+${summary.detail}`}
+              </p>
             </li>
           );
         })}
