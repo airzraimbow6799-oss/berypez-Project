@@ -28,7 +28,8 @@ export const TAG_LABELS: Record<ProductTag, string> = {
 };
 
 export type DishImage = { url: string; alt: string };
-export type PriceOption = { label: string; priceCents: number };
+/** `id`: la variante en la base (solo en platos reales), para conservar su historial. */
+export type PriceOption = { id?: number; label: string; priceCents: number };
 export type PriceGroup = { label: string; options: PriceOption[] };
 export type ChoiceGroupDraft = { label: string; options: string[] };
 

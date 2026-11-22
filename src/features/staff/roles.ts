@@ -52,7 +52,6 @@ export const PANEL_SECTIONS: readonly PanelSection[] = [
     href: "/panel/carta",
     label: "Carta",
     roles: ["admin"],
-    demoOnly: true,
   },
   {
     key: "personal",

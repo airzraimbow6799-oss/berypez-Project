@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useDemoStore } from "@/features/demo/store";
 
-import { CartaManager } from "./CartaManager";
+import { DemoCartaManager as CartaManager } from "./carta/DemoCartaManager";
 
 vi.mock("@/components/ui/Toaster", () => ({
   toast: { success: vi.fn(), error: vi.fn() },

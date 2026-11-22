@@ -59,8 +59,9 @@ describe("roles del personal", () => {
     }
   });
 
-  it("la carta solo existe en modo demostración y solo para administración", () => {
-    expect(canAccess("admin", "carta")).toBe(false);
+  it("la carta es solo de administración (real y demostración)", () => {
+    expect(canAccess("admin", "carta")).toBe(true);
+    expect(canAccess("salon", "carta")).toBe(false);
     expect(canAccess("admin", "carta", true)).toBe(true);
     expect(canAccess("salon", "carta", true)).toBe(false);
   });

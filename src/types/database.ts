@@ -90,7 +90,7 @@ export type Database = {
           sort_order: number
         }
         Insert: {
-          id: number
+          id?: number
           name: string
           slug: string
           sort_order: number
@@ -532,7 +532,7 @@ export type Database = {
           choice_groups?: Json
           created_at?: string
           description?: string
-          id: number
+          id?: number
           image_alt?: string | null
           image_path?: string | null
           is_available?: boolean
@@ -677,6 +677,7 @@ export type Database = {
       variants: {
         Row: {
           id: number
+          is_archived: boolean
           is_available: boolean
           label: string
           price_cents: number
@@ -685,7 +686,8 @@ export type Database = {
           sort_order: number
         }
         Insert: {
-          id: number
+          id?: number
+          is_archived?: boolean
           is_available?: boolean
           label: string
           price_cents: number
@@ -695,6 +697,7 @@ export type Database = {
         }
         Update: {
           id?: number
+          is_archived?: boolean
           is_available?: boolean
           label?: string
           price_cents?: number
@@ -717,6 +720,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_save_product: { Args: { p: Json }; Returns: number }
+      admin_set_product_available: {
+        Args: { p_available: boolean; p_id: number }
+        Returns: undefined
+      }
+      admin_set_product_price: {
+        Args: { p_id: number; p_price_cents: number }
+        Returns: undefined
+      }
+      admin_unpublish_product: { Args: { p_id: number }; Returns: undefined }
       checkout_create_order: {
         Args: { p_items: Json; p_order: Json }
         Returns: {
@@ -763,7 +776,7 @@ export type Database = {
       payment_method: "yape" | "plin" | "card" | "cash"
       payment_status: "unpaid" | "pending" | "paid" | "failed" | "refunded"
       reservation_status: "confirmed" | "arrived" | "no_show" | "cancelled"
-      staff_role: "admin" | "cocina"
+      staff_role: "admin" | "cocina" | "salon"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -912,7 +925,7 @@ export const Constants = {
       payment_method: ["yape", "plin", "card", "cash"],
       payment_status: ["unpaid", "pending", "paid", "failed", "refunded"],
       reservation_status: ["confirmed", "arrived", "no_show", "cancelled"],
-      staff_role: ["admin", "cocina"],
+      staff_role: ["admin", "cocina", "salon"],
     },
   },
 } as const
