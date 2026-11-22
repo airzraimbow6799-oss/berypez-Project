@@ -25,11 +25,16 @@ async function getDemoSession(): Promise<StaffSession | null> {
   return { email: account.email, role: account.role, branchId: null, isDemo: true };
 }
 
-/** Personal con sesión válida, o null. getUser() valida el token con Supabase. */
+/**
+ * Personal con sesión válida, o null. La sesión REAL manda: si en el navegador quedó la cookie
+ * de demostración y la persona entra con su cuenta, se trabaja con datos reales.
+ */
 export async function getStaffSession(): Promise<StaffSession | null> {
-  const demo = await getDemoSession();
-  if (demo) return demo;
+  return (await getRealSession()) ?? (await getDemoSession());
+}
 
+/** Sesión de Supabase con rol de personal. getUser() valida el token con Supabase. */
+async function getRealSession(): Promise<StaffSession | null> {
   const supabase = await createClient();
   const { data } = await supabase.auth.getUser();
   if (!data.user) return null;

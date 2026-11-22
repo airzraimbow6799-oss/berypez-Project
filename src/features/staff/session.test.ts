@@ -114,6 +114,14 @@ describe("sesión del modo demostración", () => {
     });
   });
 
+  it("si también hay sesión real, manda la real (la cookie de demo no la tapa)", async () => {
+    vi.stubEnv("DEMO_PANEL", "1");
+    demoCookie.value = "admin";
+    db.user = { id: "u1", email: "dueña@berypez.pe" };
+    db.role = { role: "admin", branch_id: null };
+    expect(await getStaffSession()).toMatchObject({ email: "dueña@berypez.pe", isDemo: false });
+  });
+
   it("una cookie con un rol inventado no sirve", async () => {
     vi.stubEnv("DEMO_PANEL", "1");
     demoCookie.value = "superadmin";
