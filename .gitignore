@@ -51,3 +51,6 @@ assets-src/*.mp4
 
 # Propuesta comercial para la dueña: se queda en local, no se sube al repositorio.
 docs/propuesta/Propuesta_Comercial_*.pptx
+
+# Archivos locales de la CLI de Supabase
+supabase/.temp/
