@@ -37,6 +37,7 @@ export function SiteHeader() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
+                    prefetch={false}
                     className="hover:bg-crema-200 min-h-tactil rounded-pill inline-flex items-center px-4 font-medium transition-colors"
                   >
                     {item.label}

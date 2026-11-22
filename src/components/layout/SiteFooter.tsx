@@ -80,6 +80,7 @@ export function SiteFooter() {
                 <li key={menu.slug}>
                   <Link
                     href={`/carta/${menu.slug}`}
+                    prefetch={false}
                     className="inline-flex min-h-10 items-center hover:underline"
                   >
                     {menu.label}
@@ -98,6 +99,7 @@ export function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
+                    prefetch={false}
                     className="inline-flex min-h-10 items-center hover:underline"
                   >
                     {link.label}

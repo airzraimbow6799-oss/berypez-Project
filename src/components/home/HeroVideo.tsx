@@ -14,6 +14,11 @@ export const HERO_SOURCES = [
 
 type NetworkInformation = { saveData?: boolean; effectiveType?: string };
 
+/** Sin requestIdleCallback (Safari), se espera esto tras la carga antes de pedir el video. */
+export const VIDEO_FALLBACK_DELAY_MS = 1200;
+/** Tope de espera a que el navegador quede libre (requestIdleCallback). */
+const VIDEO_IDLE_TIMEOUT_MS = 2500;
+
 /** El video solo se carga si la persona no pidió menos movimiento ni ahorro de datos. */
 export function canPlayMotion(win: Window): boolean {
   const reduced = win.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
@@ -52,9 +57,31 @@ export function HeroVideo({
     if (!canPlayMotion(window)) {
       return;
     }
-    // Se pide después de que la página ya es interactiva para no competir con el LCP.
-    const id = window.setTimeout(() => setShouldLoad(true), 400);
-    return () => window.clearTimeout(id);
+    // #58: el video (1.5 MB) se pide recién cuando la página terminó de cargar y el navegador
+    // está libre. Antes salía a los 400 ms y competía en 4G con la foto principal y las fuentes.
+    let idleId: number | undefined;
+    let timeoutId: number | undefined;
+    const pedirVideo = () => {
+      if (typeof window.requestIdleCallback === "function") {
+        idleId = window.requestIdleCallback(() => setShouldLoad(true), {
+          timeout: VIDEO_IDLE_TIMEOUT_MS,
+        });
+      } else {
+        timeoutId = window.setTimeout(() => setShouldLoad(true), VIDEO_FALLBACK_DELAY_MS);
+      }
+    };
+    if (document.readyState === "complete") {
+      pedirVideo();
+    } else {
+      window.addEventListener("load", pedirVideo, { once: true });
+    }
+    return () => {
+      window.removeEventListener("load", pedirVideo);
+      if (idleId !== undefined) {
+        window.cancelIdleCallback(idleId);
+      }
+      window.clearTimeout(timeoutId);
+    };
   }, []);
 
   const toggle = () => {
@@ -84,6 +111,9 @@ export function HeroVideo({
         alt="Ilustración de Berypez: ceviche, chicharrón de calamar y arroz con mariscos frente al mar"
         fill
         priority
+        // #58: `priority` solo precarga; sin fetchPriority el navegador la pedía con prioridad
+        // baja, detrás de las fuentes y el JS, y la portada tardaba en verse en celular.
+        fetchPriority="high"
         sizes={isBackground ? "100vw" : "(min-width: 1024px) 560px, 100vw"}
         className="object-cover"
       />
@@ -100,7 +130,6 @@ export function HeroVideo({
           disablePictureInPicture
           disableRemotePlayback
           preload="auto"
-          poster={HERO_POSTER}
           onPlaying={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${

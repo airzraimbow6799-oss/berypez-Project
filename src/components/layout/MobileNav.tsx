@@ -1,6 +1,13 @@
 "use client";
 
-import { CalendarDays, MessageCircle, Search, ShoppingBag, UtensilsCrossed } from "lucide-react";
+import {
+  CalendarDays,
+  HeartHandshake,
+  MessageCircle,
+  Search,
+  ShoppingBag,
+  UtensilsCrossed,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ComponentType, SVGProps } from "react";
@@ -20,6 +27,8 @@ function buildItems(whatsapp: string | null): Item[] {
     { href: "/buscar", label: "Buscar", Icon: Search },
     { href: "/carrito", label: "Carrito", Icon: ShoppingBag },
     { href: "/reservas", label: "Reservar", Icon: CalendarDays },
+    // En celular el menú principal no se ve (solo desde lg): «Nosotros» tiene que estar aquí.
+    { href: "/nosotros", label: "Nosotros", Icon: HeartHandshake },
   ];
   if (whatsapp) {
     items.push({
@@ -61,7 +70,14 @@ export function MobileNav({ whatsapp = primaryWhatsapp() }: { whatsapp?: string 
                   {content}
                 </a>
               ) : (
-                <Link href={href} aria-current={current ? "page" : undefined} className={className}>
+                // prefetch={false}: la barra siempre está a la vista y precargar sus 5 páginas al abrir
+                // cualquier página competía con la carga en celulares (#58). Se cargan al tocar.
+                <Link
+                  href={href}
+                  prefetch={false}
+                  aria-current={current ? "page" : undefined}
+                  className={className}
+                >
                   {content}
                 </Link>
               )}

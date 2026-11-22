@@ -6,7 +6,7 @@ import { type MouseEvent, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { Stepper } from "@/components/ui/Stepper";
-import { toast } from "@/components/ui/Toaster";
+import { notifySuccess } from "@/components/ui/notify";
 import { flyToCart } from "@/features/cart/fly-to-cart";
 import { PLATO_FOTO } from "@/features/motion/view-transition";
 import { useCart } from "@/features/cart/store";
@@ -80,7 +80,7 @@ function QuickViewBody({
   const handleAdd = (event: MouseEvent<HTMLButtonElement>) => {
     add(toCartInput(product, selection, note), quantity);
     flyToCart(event.currentTarget, product.image?.url);
-    toast.success(`Agregaste ${quantity} × ${product.name}`, {
+    notifySuccess(`Agregaste ${quantity} × ${product.name}`, {
       action: { label: "Ver carrito", onClick: () => window.location.assign("/carrito") },
     });
     onAdded();

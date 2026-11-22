@@ -102,6 +102,7 @@ export function ProductCard({
             fill
             sizes={sizes}
             priority={priority}
+            fetchPriority={priority ? "high" : undefined}
             className="object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:group-hover:scale-100"
           />
         ) : (
@@ -122,7 +123,7 @@ export function ProductCard({
               {product.name}
             </button>
           ) : href ? (
-            <Link href={href} className={STRETCHED}>
+            <Link href={href} prefetch={false} className={STRETCHED}>
               {product.name}
             </Link>
           ) : (
