@@ -250,7 +250,7 @@ describe("CartaManager · añadir y editar platos", () => {
     await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
 
     const sudados = dishState("Sudados");
-    expect(sudados?.priceGroup?.options.slice(3)).toEqual([
+    expect(sudados?.priceGroup?.options.slice(3)).toMatchObject([
       { label: "Chita", priceCents: 7000 },
       { label: "Corvina", priceCents: 7500 },
     ]);

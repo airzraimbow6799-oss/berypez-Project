@@ -29,12 +29,16 @@ export function PhotoField({
   onChange,
   onUpload,
   onBusyChange,
+  label = "Foto del plato",
+  hint = "JPG, PNG o WEBP, hasta 5 MB. Mejor horizontal y con el plato al centro.",
 }: {
   value: DishImage | null;
   dishName: string;
   onChange: (next: DishImage | null) => void;
   onUpload?: (file: File) => Promise<DishImage>;
   onBusyChange?: (busy: boolean) => void;
+  label?: string;
+  hint?: string;
 }) {
   const id = useId();
   const [error, setError] = useState("");
@@ -67,7 +71,7 @@ export function PhotoField({
   return (
     <div className="flex flex-col gap-2">
       <span className="font-semibold" id={`${id}-titulo`}>
-        Foto del plato
+        {label}
       </span>
       <div className="flex flex-wrap items-center gap-4">
         <div className="bg-crema-200 relative aspect-[4/3] w-40 overflow-hidden rounded-md">
@@ -115,7 +119,7 @@ export function PhotoField({
         </div>
       </div>
       <p id={`${id}-ayuda`} className="text-tinta-suave text-sm">
-        JPG, PNG o WEBP, hasta 5 MB. Mejor horizontal y con el plato al centro.
+        {hint}
       </p>
       {error ? (
         <p id={`${id}-error`} role="alert" className="text-rocoto-texto text-sm font-semibold">

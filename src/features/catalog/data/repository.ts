@@ -8,6 +8,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Menu, MenuPage, MenuSlug, Product } from "@/types/catalog";
 import type { Database } from "@/types/database";
 
+import { byRelevance } from "@/features/promotions/pricing";
+
 import { type ProductRowWithRelations, toCategory, toMenu, toProduct } from "./mappers";
 
 export type CatalogClient = SupabaseClient<Database>;
@@ -19,7 +21,9 @@ export class CatalogError extends Error {
   }
 }
 
-const PRODUCT_COLUMNS = "*, variants(*), product_menus(menu_slug)";
+const PROMOTION_COLUMNS =
+  "promotions(id, kind, percent_off, price_cents, variant_id, title, image_path, starts_at, ends_at, is_active, is_featured, created_at)";
+const PRODUCT_COLUMNS = `*, variants(*), product_menus(menu_slug), ${PROMOTION_COLUMNS}`;
 // Alias del mismo join filtrado con !inner: filtra por carta sin perder la lista completa de cartas.
 const PRODUCT_IN_MENU_COLUMNS = `${PRODUCT_COLUMNS}, en_carta:product_menus!inner(menu_slug)`;
 
@@ -116,7 +120,30 @@ export function createCatalogRepository(client: CatalogClient, supabaseUrl: stri
     return new Map(rows.map((row) => [row.id, toProduct(row, supabaseUrl)]));
   }
 
-  return { getMenus, getMenu, getProduct, getProductsBySlugs, getProductsByIds };
+  /** Platos con una promoción vigente, del más relevante al menos (ventana emergente y franja). */
+  async function getPromotedProducts(): Promise<Product[]> {
+    const result = await client
+      .from("products")
+      .select(`${PRODUCT_COLUMNS}, con_promo:promotions!inner(id)`)
+      .eq("is_published", true);
+    const rows = unwrap(result as QueryResult<ProductRowWithRelations[]>, "leer las promociones");
+    const now = Date.now();
+    return rows
+      .map((row) => toProduct(row, supabaseUrl, now))
+      .filter((p) => p.promotion)
+      .sort((a, b) =>
+        byRelevance({ ...a.promotion!, isActive: true }, { ...b.promotion!, isActive: true }),
+      );
+  }
+
+  return {
+    getMenus,
+    getMenu,
+    getProduct,
+    getProductsBySlugs,
+    getProductsByIds,
+    getPromotedProducts,
+  };
 }
 
 export type CatalogRepository = ReturnType<typeof createCatalogRepository>;

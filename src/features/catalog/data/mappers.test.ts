@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { CAUSA_VERDURAS_ROW, MILANESA_ROW, PARIHUELA_ROW } from "./fixtures";
-import { imageUrl, toProduct } from "./mappers";
+import { imageUrl, type PromotionRow, toProduct, toPromotion } from "./mappers";
 
 const STORAGE = "https://abcd.supabase.co";
 
@@ -68,5 +68,48 @@ describe("toProduct", () => {
   it("usa el nombre del plato como texto alternativo si falta image_alt", () => {
     const product = toProduct({ ...PARIHUELA_ROW, image_alt: null }, STORAGE);
     expect(product.image?.alt).toBe("Parihuelas");
+  });
+});
+
+describe("toPromotion", () => {
+  const now = Date.parse("2026-11-22T12:00:00Z");
+  const row = (over: Partial<PromotionRow>): PromotionRow => ({
+    id: 1,
+    kind: "percent",
+    percent_off: 20,
+    price_cents: null,
+    variant_id: null,
+    title: "Promo",
+    image_path: null,
+    starts_at: null,
+    ends_at: null,
+    is_active: true,
+    is_featured: false,
+    created_at: "2026-11-20T00:00:00Z",
+    ...over,
+  });
+
+  it("elige la vigente más relevante y arma la URL de su imagen", () => {
+    const promo = toPromotion(
+      [
+        row({ id: 1, is_active: false, is_featured: true }),
+        row({ id: 2, ends_at: "2026-11-21T00:00:00Z" }),
+        row({ id: 3, image_path: "promos/a.webp" }),
+        row({ id: 4, is_featured: true, kind: "two_for_one", percent_off: null }),
+      ],
+      "https://x.supabase.co",
+      now,
+    );
+    expect(promo).toMatchObject({ id: 4, kind: "two_for_one" });
+    expect(
+      toPromotion([row({ id: 3, image_path: "promos/a.webp" })], "https://x.supabase.co", now),
+    ).toMatchObject({
+      imageUrl: "https://x.supabase.co/storage/v1/object/public/catalog/promos/a.webp",
+    });
+  });
+
+  it("sin promociones vigentes devuelve null", () => {
+    expect(toPromotion(undefined, "https://x", now)).toBeNull();
+    expect(toPromotion([row({ starts_at: "2026-12-01T00:00:00Z" })], "https://x", now)).toBeNull();
   });
 });

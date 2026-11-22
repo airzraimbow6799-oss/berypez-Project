@@ -125,3 +125,65 @@ describe("quoteCart", () => {
     expect(quote.missingForMinimumCents).toBe(1500);
   });
 });
+
+describe("quoteCart con promociones", () => {
+  const promo = (over: Partial<NonNullable<Product["promotion"]>>) => ({
+    id: 1,
+    kind: "percent" as const,
+    percentOff: null,
+    priceCents: null,
+    variantId: null,
+    title: "Promo",
+    imageUrl: null,
+    isFeatured: false,
+    startsAt: null,
+    endsAt: null,
+    ...over,
+  });
+
+  it("porcentaje: cobra el precio con descuento redondeado a 10 céntimos", () => {
+    const withPromo = { ...base, priceCents: 4790, promotion: promo({ percentOff: 20 }) };
+    const quote = quoteCart([item({ quantity: 2 })], new Map([[1, withPromo]]), null);
+    expect(quote.lines[0]).toMatchObject({
+      unitPriceCents: 3830,
+      lineTotalCents: 7660,
+      regularUnitPriceCents: 4790,
+    });
+  });
+
+  it("precio fijo de una opción: solo esa opción baja de precio", () => {
+    const withPromo = {
+      ...parihuela,
+      variants: parihuela.variants.map((v) => ({ ...v, isAvailable: true })),
+      promotion: promo({ kind: "fixed_price", priceCents: 4500, variantId: 302 }),
+    };
+    const products = new Map([[300, withPromo]]);
+    const quote = quoteCart(
+      [item({ productId: 300, variantId: 302 }), item({ productId: 300, variantId: 301 })],
+      products,
+      null,
+    );
+    expect(quote.lines.map((l) => l.unitPriceCents)).toEqual([4500, 4200]);
+  });
+
+  it("2×1: de cada 2 se cobra 1 y el regalo va en otra línea a S/ 0", () => {
+    const withPromo = { ...base, promotion: promo({ kind: "two_for_one" }) };
+    const quote = quoteCart([item({ quantity: 3 })], new Map([[1, withPromo]]), null);
+    expect(quote.lines).toMatchObject([
+      { quantity: 2, unitPriceCents: 4500, lineTotalCents: 9000 },
+      { quantity: 1, unitPriceCents: 0, lineTotalCents: 0, variantLabel: "Promoción 2×1 (gratis)" },
+    ]);
+    expect(quote.subtotalCents).toBe(9000);
+    // Cada línea cumple la regla de la base: total = unitario × cantidad.
+    for (const line of quote.lines) {
+      expect(line.lineTotalCents).toBe(line.unitPriceCents * line.quantity);
+    }
+  });
+
+  it("2×1 con una sola unidad no regala nada", () => {
+    const withPromo = { ...base, promotion: promo({ kind: "two_for_one" }) };
+    const quote = quoteCart([item({ quantity: 1 })], new Map([[1, withPromo]]), null);
+    expect(quote.lines).toHaveLength(1);
+    expect(quote.subtotalCents).toBe(4500);
+  });
+});

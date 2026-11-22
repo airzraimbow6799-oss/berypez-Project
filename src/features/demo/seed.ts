@@ -1,5 +1,6 @@
 import type { PanelReservation } from "@/components/panel/ReservationsBoard";
 import type { Dish } from "@/features/carta/schema";
+import type { Promotion } from "@/features/promotions/schema";
 import type { PanelOrder } from "@/features/orders/panel";
 import type { ReservationSource } from "@/features/reservations/staff-form";
 import type { Member } from "@/features/staff/members";
@@ -11,6 +12,7 @@ import type { Member } from "@/features/staff/members";
 
 export type DemoData = {
   dishes: Dish[];
+  promotions: Promotion[];
   orders: PanelOrder[];
   reservations: PanelReservation[];
   staff: Member[];
@@ -217,7 +219,11 @@ export function seedDishes(): Dish[] {
     priceGroup: prices
       ? {
           label: prices[0],
-          options: prices[1].map(([label, priceCents]) => ({ label, priceCents })),
+          options: prices[1].map(([label, priceCents], i) => ({
+            id: (index + 1) * 100 + i,
+            label,
+            priceCents,
+          })),
         }
       : null,
     choiceGroups: rest.choiceGroups ?? [],
@@ -466,9 +472,56 @@ export function seedStaff(): Member[] {
 /** Ventas de ejemplo de los 6 días anteriores (de S/ 874 a S/ 1,568). */
 export const SALES_HISTORY_CENTS = [112000, 98400, 134600, 87400, 156800, 143300];
 
+/** Promociones de ejemplo: una destacada vigente, otra vigente y una pausada. */
+export function seedPromotions(dishes: readonly Dish[], now: number): Promotion[] {
+  const idOf = (name: string) => dishes.find((d) => d.name === name)?.id ?? 1;
+  const at = (days: number) => new Date(now + days * 24 * 60 * MINUTE).toISOString();
+  const promo = (
+    over: Partial<Promotion> & Pick<Promotion, "id" | "dishId" | "kind" | "title">,
+  ) => ({
+    percentOff: null,
+    priceCents: null,
+    variantId: null,
+    image: null,
+    startsAt: null,
+    endsAt: null,
+    isActive: true,
+    isFeatured: false,
+    createdAt: at(-2),
+    ...over,
+  });
+  return [
+    promo({
+      id: 1,
+      dishId: idOf("Chicharrones"),
+      kind: "two_for_one",
+      title: "Chicharrones 2×1",
+      isFeatured: true,
+      endsAt: at(5),
+    }),
+    promo({
+      id: 2,
+      dishId: idOf("Ceviche Berypez"),
+      kind: "percent",
+      percentOff: 20,
+      title: "Martes de ceviche",
+    }),
+    promo({
+      id: 3,
+      dishId: idOf("Lomo saltado"),
+      kind: "fixed_price",
+      priceCents: 3900,
+      title: "Lomo saltado a S/ 39",
+      isActive: false,
+    }),
+  ];
+}
+
 export function createDemoData(now: number): DemoData {
+  const dishes = seedDishes();
   return {
-    dishes: seedDishes(),
+    dishes,
+    promotions: seedPromotions(dishes, now),
     orders: seedOrders(now),
     reservations: seedReservations(now),
     staff: seedStaff(),
