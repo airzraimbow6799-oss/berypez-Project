@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { MenuBrowser } from "@/components/catalog/MenuBrowser";
 import { getMenuCached, getPromotedProductsCached } from "@/features/catalog/data/cached";
+import { isDemoPanel } from "@/features/demo/config";
 import { MENU_SLUGS, type MenuPage, type MenuSlug } from "@/types/catalog";
 
 export const revalidate = 600;
@@ -95,7 +96,7 @@ export default async function MenuRoute({ params }: Params) {
         <p className="text-tinta-suave mt-2 max-w-xl text-lg">{page.menu.description}</p>
       </header>
 
-      <MenuBrowser page={page} promoted={promoted} />
+      <MenuBrowser page={page} promoted={promoted} demo={isDemoPanel()} />
     </div>
   );
 }

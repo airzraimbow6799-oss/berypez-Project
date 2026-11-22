@@ -1,6 +1,7 @@
 "use client";
 
 import type { Outcome } from "@/components/panel/carta/backend";
+import { demoPhoto } from "@/components/panel/carta/demo-photo";
 import { useDemoReady } from "@/components/panel/useDemoReady";
 import { useDemoStore } from "@/features/demo/store";
 
@@ -28,6 +29,7 @@ export function DemoPromotionsManager() {
     setFlag: async (promo, flag, value) => (setPromotionFlag(promo.id, flag, value), OK),
     remove: async (promo) => (removePromotion(promo.id), OK),
     createDish: async (_input, data) => ({ ok: true, dish: addDish(data) }),
+    uploadPhoto: demoPhoto,
   };
 
   return <PromotionsManager backend={backend} />;

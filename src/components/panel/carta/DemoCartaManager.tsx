@@ -6,6 +6,7 @@ import { useDemoStore } from "@/features/demo/store";
 import type { StaffRole } from "@/features/staff/roles";
 
 import type { CartaBackend, Outcome } from "./backend";
+import { demoPhoto } from "./demo-photo";
 
 const OK: Outcome = { ok: true };
 
@@ -31,6 +32,7 @@ export function DemoCartaManager({ role }: { role: StaffRole }) {
       return OK;
     },
     remove: async (dish) => (removeDish(dish.id), OK),
+    uploadPhoto: demoPhoto,
   };
 
   return <CartaManager role={role} backend={backend} />;
