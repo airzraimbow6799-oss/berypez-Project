@@ -4,8 +4,8 @@ import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useId, useMemo, useState } from "react";
 
+import type { CartaBackend, Outcome } from "@/components/panel/carta/backend";
 import { DishEditor } from "@/components/panel/carta/DishEditor";
-import { useDemoReady } from "@/components/panel/useDemoReady";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
@@ -23,7 +23,6 @@ import {
   summarize,
 } from "@/features/carta/logic";
 import { type Dish, dishToForm, emptyDishForm, TAG_LABELS } from "@/features/carta/schema";
-import { useDemoStore } from "@/features/demo/store";
 import type { StaffRole } from "@/features/staff/roles";
 import { formatPrice } from "@/lib/format";
 import type { MenuSlug } from "@/types/catalog";
@@ -39,19 +38,13 @@ const MENU_LABEL = Object.fromEntries(MENU_LINKS.map((m) => [m.slug, m.label])) 
 type EditorState = { mode: "crear" } | { mode: "editar"; dish: Dish };
 
 /**
- * Módulo 2 · Carta administrable (con datos de ejemplo).
+ * Módulo 2 · Carta administrable.
  * Administración crea y edita platos (foto, descripción, precio, etiquetas y apartados),
  * cambia precios al vuelo, marca agotados y elimina. Sin stock: un plato está disponible o
- * agotado. Cada cambio se ve al instante y avisa con un mensaje.
+ * agotado. Los datos vienen del `backend`: el real (Supabase) o el del modo demostración.
  */
-export function CartaManager({ role }: { role: StaffRole }) {
-  const isReady = useDemoReady();
-  const dishes = useDemoStore((s) => s.dishes);
-  const setDishPrice = useDemoStore((s) => s.setDishPrice);
-  const setDishAvailable = useDemoStore((s) => s.setDishAvailable);
-  const addDish = useDemoStore((s) => s.addDish);
-  const updateDish = useDemoStore((s) => s.updateDish);
-  const removeDish = useDemoStore((s) => s.removeDish);
+export function CartaManager({ role, backend }: { role: StaffRole; backend: CartaBackend }) {
+  const { isReady, dishes } = backend;
 
   const canEditCarta = role === "admin";
   const [query, setQuery] = useState("");
@@ -80,10 +73,16 @@ export function CartaManager({ role }: { role: StaffRole }) {
     setEditor(state);
   };
 
-  const commitPrice = (dish: Dish, cents: number) => {
-    setDishPrice(dish.id, cents);
-    toast.success(`${dish.name}: ahora cuesta ${formatPrice(cents)}`);
+  /** Avisa el resultado de un cambio: éxito con `message`, o el error que dio el servidor. */
+  const report = async (pending: Promise<Outcome>, message: string) => {
+    const outcome = await pending;
+    if (outcome.ok) toast.success(message);
+    else toast.error(outcome.message);
+    return outcome;
   };
+
+  const commitPrice = (dish: Dish, cents: number) =>
+    void report(backend.setPrice(dish, cents), `${dish.name}: ahora cuesta ${formatPrice(cents)}`);
 
   const requestPrice = (dish: Dish, cents: number) => {
     if (cents === dish.priceCents) return;
@@ -94,10 +93,11 @@ export function CartaManager({ role }: { role: StaffRole }) {
     commitPrice(dish, cents);
   };
 
-  const toggleAvailable = (dish: Dish, isAvailable: boolean) => {
-    setDishAvailable(dish.id, isAvailable);
-    toast.success(isAvailable ? `${dish.name}: disponible` : `${dish.name}: marcado como agotado`);
-  };
+  const toggleAvailable = (dish: Dish, isAvailable: boolean) =>
+    void report(
+      backend.setAvailable(dish, isAvailable),
+      isAvailable ? `${dish.name}: disponible` : `${dish.name}: marcado como agotado`,
+    );
 
   return (
     <div className="mt-6">
@@ -108,6 +108,7 @@ export function CartaManager({ role }: { role: StaffRole }) {
             {canEditCarta
               ? "Crea y edita platos con su foto, etiquetas y apartados. Marca agotado lo que se acabe."
               : "Marca los platos agotados. Los precios y los platos los cambia la administración."}
+            {backend.isLive ? " Los cambios se ven en la web al guardar." : ""}
           </p>
         </div>
         {canEditCarta ? (
@@ -177,15 +178,19 @@ export function CartaManager({ role }: { role: StaffRole }) {
           }
           sections={sections}
           onClose={() => setEditor(null)}
-          onSave={(data) => {
-            if (editor.mode === "editar") {
-              updateDish(editor.dish.id, data);
-              toast.success(`Guardaste los cambios de «${data.name}»`);
-            } else {
-              const dish = addDish(data);
-              toast.success(`Añadiste «${dish.name}» a la carta`);
+          onUpload={backend.uploadPhoto}
+          onSave={async (input, data) => {
+            const id = editor.mode === "editar" ? editor.dish.id : null;
+            const outcome = await backend.save(id, input, data);
+            if (outcome.ok) {
+              toast.success(
+                id === null
+                  ? `Añadiste «${data.name}» a la carta`
+                  : `Guardaste los cambios de «${data.name}»`,
+              );
+              setEditor(null);
             }
-            setEditor(null);
+            return outcome;
           }}
         />
       ) : null}
@@ -202,10 +207,7 @@ export function CartaManager({ role }: { role: StaffRole }) {
         tone="peligro"
         onClose={() => setToDelete(null)}
         onConfirm={() => {
-          if (toDelete) {
-            removeDish(toDelete.id);
-            toast.success(`Eliminaste «${toDelete.name}»`);
-          }
+          if (toDelete) void report(backend.remove(toDelete), `Eliminaste «${toDelete.name}»`);
           setToDelete(null);
         }}
       />

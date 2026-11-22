@@ -13,11 +13,13 @@ import {
   type DishFormInput,
   type DishFormOutput,
   dishFormSchema,
+  type DishImage,
   formErrors,
   TAG_LABELS,
 } from "@/features/carta/schema";
 import { PRODUCT_TAGS } from "@/types/catalog";
 
+import type { Outcome } from "./backend";
 import { ChoiceGroupsEditor, PriceGroupEditor } from "./OptionGroupsEditor";
 import { PhotoField } from "./PhotoField";
 
@@ -36,6 +38,7 @@ export function DishEditor({
   sections,
   onClose,
   onSave,
+  onUpload,
 }: {
   open: boolean;
   mode: "crear" | "editar";
@@ -43,25 +46,39 @@ export function DishEditor({
   /** Secciones que ya existen, para sugerirlas al escribir. */
   sections: readonly string[];
   onClose: () => void;
-  onSave: (data: DishFormOutput) => void;
+  /** Guarda el plato ya validado; el servidor vuelve a validar y puede devolver errores. */
+  onSave: (input: DishFormInput, data: DishFormOutput) => Promise<Outcome>;
+  /** Carta real: sube la foto al almacenamiento. Sin esto la foto queda en el navegador. */
+  onUpload?: (file: File) => Promise<DishImage>;
 }) {
   const formId = useId();
   const sectionListId = useId();
   const [form, setForm] = useState<DishFormInput>(initial);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [serverMessage, setServerMessage] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const set = <K extends keyof DishFormInput>(key: K, value: DishFormInput[K]) =>
     setForm((current) => ({ ...current, [key]: value }));
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSaving || isUploading) return;
     const parsed = dishFormSchema.safeParse(form);
     if (!parsed.success) {
       setErrors(formErrors(parsed.error.issues));
       return;
     }
     setErrors({});
-    onSave(parsed.data);
+    setServerMessage("");
+    setIsSaving(true);
+    const outcome = await onSave(form, parsed.data);
+    setIsSaving(false);
+    if (!outcome.ok) {
+      setErrors(outcome.errors ?? {});
+      setServerMessage(outcome.message);
+    }
   };
 
   const hasPriceGroup = form.priceGroup !== null;
@@ -80,22 +97,30 @@ export function DishEditor({
       }
       footer={
         <div className="flex flex-wrap items-center justify-end gap-2">
-          {errorCount > 0 ? (
+          {errorCount > 0 || serverMessage ? (
             <p role="status" className="text-rocoto-texto mr-auto text-sm font-semibold">
-              Revisa {errorCount === 1 ? "el campo marcado" : `los ${errorCount} campos marcados`}.
+              {errorCount > 0
+                ? `Revisa ${errorCount === 1 ? "el campo marcado" : `los ${errorCount} campos marcados`}.`
+                : serverMessage}
             </p>
           ) : null}
           <Button variant="fantasma" onClick={onClose}>
             Cancelar
           </Button>
-          <Button type="submit" form={formId}>
+          <Button type="submit" form={formId} isLoading={isSaving} disabled={isUploading}>
             {mode === "crear" ? "Guardar plato" : "Guardar cambios"}
           </Button>
         </div>
       }
     >
-      <form id={formId} onSubmit={submit} noValidate className="flex flex-col gap-5">
-        <PhotoField value={form.image} dishName={form.name} onChange={(v) => set("image", v)} />
+      <form id={formId} onSubmit={(e) => void submit(e)} noValidate className="flex flex-col gap-5">
+        <PhotoField
+          value={form.image}
+          dishName={form.name}
+          onChange={(v) => set("image", v)}
+          onUpload={onUpload}
+          onBusyChange={setIsUploading}
+        />
 
         <Input
           label="Nombre"

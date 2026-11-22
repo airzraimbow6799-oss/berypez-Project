@@ -123,12 +123,12 @@ describe("sesión del modo demostración", () => {
   it("las secciones de solo demostración se abren únicamente en modo demo", async () => {
     vi.stubEnv("DEMO_PANEL", "1");
     demoCookie.value = "admin";
-    await expect(requireStaff("carta")).resolves.toMatchObject({ isDemo: true });
+    await expect(requireStaff("personal")).resolves.toMatchObject({ isDemo: true });
 
     vi.stubEnv("DEMO_PANEL", "0");
     demoCookie.value = undefined;
     db.user = { id: "u1", email: "dueña@berypez.pe" };
     db.role = { role: "admin", branch_id: null };
-    await expect(requireStaff("carta")).rejects.toThrow("REDIRECT:/panel/sin-acceso");
+    await expect(requireStaff("personal")).rejects.toThrow("REDIRECT:/panel/sin-acceso");
   });
 });

@@ -59,7 +59,9 @@ function toVariant(row: VariantRow, productName: string): Variant {
 }
 
 export function toProduct(row: ProductRowWithRelations, supabaseUrl: string): Product {
-  const variants = [...row.variants]
+  // Opciones quitadas desde el panel que ya tenían pedidos: siguen en la base pero no se ofrecen.
+  const variants = row.variants
+    .filter((v) => !v.is_archived)
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((v) => toVariant(v, row.name));
 

@@ -20,22 +20,27 @@ export function photoError(file: Pick<File, "type" | "size">): string | null {
 }
 
 /**
- * Foto del plato: subir o cambiar, con vista previa. En el modo demostración la foto vive solo
- * en este navegador (URL temporal); con el backend real se subirá al almacenamiento.
+ * Foto del plato: subir o cambiar, con vista previa. Con `onUpload` (carta real) la foto se
+ * achica y se sube al almacenamiento; sin él (modo demostración) vive solo en este navegador.
  */
 export function PhotoField({
   value,
   dishName,
   onChange,
+  onUpload,
+  onBusyChange,
 }: {
   value: DishImage | null;
   dishName: string;
   onChange: (next: DishImage | null) => void;
+  onUpload?: (file: File) => Promise<DishImage>;
+  onBusyChange?: (busy: boolean) => void;
 }) {
   const id = useId();
   const [error, setError] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
-  const pick = (file: File | undefined) => {
+  const pick = async (file: File | undefined) => {
     if (!file) return;
     const problem = photoError(file);
     if (problem) {
@@ -43,7 +48,20 @@ export function PhotoField({
       return;
     }
     setError("");
-    onChange({ url: URL.createObjectURL(file), alt: dishName });
+    if (!onUpload) {
+      onChange({ url: URL.createObjectURL(file), alt: dishName });
+      return;
+    }
+    setIsUploading(true);
+    onBusyChange?.(true);
+    try {
+      onChange(await onUpload(file));
+    } catch (problem) {
+      setError(problem instanceof Error ? problem.message : "No se pudo subir la foto.");
+    } finally {
+      setIsUploading(false);
+      onBusyChange?.(false);
+    }
   };
 
   return (
@@ -75,20 +93,21 @@ export function PhotoField({
             className="min-h-tactil border-borde hover:border-marino-600 rounded-pill inline-flex cursor-pointer items-center gap-2 border px-4 font-semibold has-[:focus-visible]:outline-3"
           >
             <ImagePlus aria-hidden="true" className="size-5" />
-            {value ? "Cambiar foto" : "Subir foto"}
+            {isUploading ? "Subiendo foto…" : value ? "Cambiar foto" : "Subir foto"}
             <input
               id={id}
               type="file"
               accept={PHOTO_TYPES.join(",")}
               aria-describedby={`${id}-ayuda${error ? ` ${id}-error` : ""}`}
               className="sr-only"
+              disabled={isUploading}
               onChange={(e) => {
-                pick(e.target.files?.[0]);
+                void pick(e.target.files?.[0]);
                 e.target.value = "";
               }}
             />
           </label>
-          {value ? (
+          {value && !isUploading ? (
             <Button variant="fantasma" onClick={() => onChange(null)}>
               <Trash2 aria-hidden="true" className="size-5" /> Quitar foto
             </Button>
