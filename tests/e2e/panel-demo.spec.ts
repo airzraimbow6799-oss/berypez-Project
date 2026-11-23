@@ -218,10 +218,14 @@ test.describe("Panel en modo demostración", () => {
     await expect(page.getByRole("heading", { name: "Reservas", level: 1 })).toBeVisible();
     await page.getByRole("button", { name: /Nueva reserva/ }).click();
     const dialogo = page.getByRole("dialog", { name: "Nueva reserva" });
+    // Mañana: de noche ya pasaron todas las horas de hoy y la prueba dependía de la hora.
+    const manana = new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleDateString("en-CA", {
+      timeZone: "America/Lima",
+    });
+    await dialogo.getByLabel("Día").fill(manana);
     await dialogo
       .getByRole("radiogroup", { name: "Hora" })
-      .getByRole("radio", { disabled: false })
-      .last()
+      .getByRole("radio", { name: "20:00" })
       .click();
     await dialogo.getByLabel(/Nombre/).fill("Camila Prueba");
     await dialogo.getByLabel(/Celular/).fill("991736402");
