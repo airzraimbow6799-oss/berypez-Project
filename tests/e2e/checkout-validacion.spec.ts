@@ -76,11 +76,14 @@ test.describe("Checkout · validación", () => {
     await expect(page.getByLabel("Fecha y hora")).toBeVisible();
   });
 
-  test("CH-12 · en esta fase solo se ofrece efectivo; Yape, Plin y tarjeta no están activos", async ({
+  test("CH-12 · el checkout de pruebas ofrece efectivo, Yape, Plin y tarjeta (simulados)", async ({
     page,
   }) => {
-    await expect(page.getByRole("radio", { name: /Efectivo al recibir/ })).toBeChecked();
-    await expect(page.getByRole("radio", { name: /Yape, Plin o tarjeta/ })).toBeDisabled();
+    await expect(page.getByText("Simulación para la demostración")).toBeVisible();
+    await expect(page.getByRole("radio", { name: /Efectivo/ })).toBeChecked();
+    for (const medio of [/Yape/, /Plin/, /Tarjeta/]) {
+      await expect(page.getByRole("radio", { name: medio })).toBeEnabled();
+    }
   });
 
   test("CH-09 · un texto con HTML se queda como texto y no se ejecuta", async ({ page }) => {

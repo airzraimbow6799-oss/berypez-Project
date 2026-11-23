@@ -78,6 +78,8 @@ export default defineConfig({
           E2E: "1",
           // Modo demostración del panel activo para probar el panel por rol sin Supabase.
           DEMO_PANEL: "1",
+          // Checkout con Yape, Plin y tarjeta simulados.
+          PAYMENTS_DEMO: "1",
           CATALOG_SOURCE: "snapshot",
           NEXT_PUBLIC_SITE_URL: baseURL,
           NEXT_PUBLIC_SUPABASE_URL:
