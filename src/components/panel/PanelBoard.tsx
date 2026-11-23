@@ -183,7 +183,7 @@ export function PanelBoard({
                 <p className="text-sm">
                   <a
                     href={`tel:+51${order.customerPhone}`}
-                    className="underline underline-offset-4"
+                    className="min-h-tactil -my-3 inline-flex items-center underline underline-offset-4"
                   >
                     {order.customerPhone}
                   </a>{" "}

@@ -22,6 +22,7 @@ import { PRODUCT_TAGS } from "@/types/catalog";
 import type { Outcome } from "./backend";
 import { ChoiceGroupsEditor, PriceGroupEditor } from "./OptionGroupsEditor";
 import { PhotoField } from "./PhotoField";
+import { SectionPicker } from "./SectionPicker";
 
 const toggle = <T,>(list: readonly T[], item: T, on: boolean): T[] =>
   on ? [...list, item] : list.filter((x) => x !== item);
@@ -43,7 +44,7 @@ export function DishEditor({
   open: boolean;
   mode: "crear" | "editar";
   initial: DishFormInput;
-  /** Secciones que ya existen, para sugerirlas al escribir. */
+  /** Secciones que ya existen, para elegirlas en la lista. */
   sections: readonly string[];
   onClose: () => void;
   /** Guarda el plato ya validado; el servidor vuelve a validar y puede devolver errores. */
@@ -52,7 +53,6 @@ export function DishEditor({
   onUpload?: (file: File) => Promise<DishImage>;
 }) {
   const formId = useId();
-  const sectionListId = useId();
   const [form, setForm] = useState<DishFormInput>(initial);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverMessage, setServerMessage] = useState("");
@@ -151,21 +151,13 @@ export function DishEditor({
           ))}
         </ChipGroup>
 
-        <Input
-          label="Sección"
-          required
-          list={sectionListId}
-          placeholder="Ceviches"
-          hint="El grupo dentro de la carta: Ceviches, Sudados, Fuentes…"
+        <SectionPicker
           value={form.section}
+          sections={sections}
+          hint="El grupo dentro de la carta: Ceviches, Sudados, Fuentes… Si no existe, créala aquí."
           error={errors.section}
-          onChange={(e) => set("section", e.target.value)}
+          onChange={(name) => set("section", name)}
         />
-        <datalist id={sectionListId}>
-          {sections.map((name) => (
-            <option key={name} value={name} />
-          ))}
-        </datalist>
 
         {hasPriceGroup ? (
           <p className="bg-crema-200 rounded-md px-4 py-3 text-sm">

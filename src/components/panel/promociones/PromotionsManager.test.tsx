@@ -104,7 +104,9 @@ describe("Promociones (modo demostración)", () => {
 
     const dishDialog = await screen.findByRole("dialog", { name: "Añadir plato", hidden: true });
     await user.type(within(dishDialog).getByLabelText(/Nombre/), "Ceviche de pulpo");
-    await user.type(within(dishDialog).getByLabelText(/Sección/), "Ceviches");
+    await user.click(within(dishDialog).getByRole("button", { name: /Sección/ }));
+    await user.type(within(dishDialog).getByLabelText("Crear una sección nueva"), "Ceviches");
+    await user.click(within(dishDialog).getByRole("button", { name: "Crear" }));
     await user.type(within(dishDialog).getByLabelText(/Precio/), "52");
     await user.click(within(dishDialog).getByRole("button", { name: "Guardar plato" }));
 

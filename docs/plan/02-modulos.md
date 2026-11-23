@@ -288,3 +288,51 @@ Estimación nuestra (±30 %): **unos 6 días-persona** (≈ 2.5 de pantallas y �
 
 1. ¿Quiere un historial para el cliente, o con el seguimiento por enlace basta por ahora?
 2. ¿Piensa en promociones o puntos para clientes frecuentes? (decide si conviene adelantar este módulo).
+
+---
+
+## 8. Integración con el sistema del local (Trinetsoft)
+
+**Por qué:** el local ya trabaja con un sistema que maneja la ticketera de cocina y la facturación electrónica (SUNAT). La idea del equipo es **no duplicar nada**: la web consume lo que ese sistema ya tiene y, cuando se hace una reserva o un pedido, **lo avisa al otro sistema**.
+
+**Qué sabemos y qué no:**
+
+- El sistema se llama **Trinetsoft** según lo que dejó anotado el equipo en `src/features/staff/roles.ts` (comentario del 22-nov-2026) y lo que se comentó en los audios. **Hay que confirmar el nombre exacto y el producto** con el local.
+- Una búsqueda pública (22-nov-2026) solo encontró un artículo de 2014 de [Perú Retail](https://www.peru-retail.com/trinetsoft-disena-app-para-el-retail-peruano/) que describe a la empresa como desarrolladora de software para restaurantes y retail. **No hay documentación pública de una API**: hay que pedirla al proveedor. Nada de lo que sigue está confirmado hasta tenerla.
+
+### Decisión de diseño (no depende del proveedor)
+
+Un **adaptador** `RestaurantSystem` detrás de una interfaz, igual que la pasarela de pagos: la web llama a la interfaz y cada sistema real vive en un archivo.
+
+```
+src/features/restaurant-system/
+  provider.ts        interfaz { pushOrder, pushReservation, cancelReservation, getMenu?, getStock? }
+  providers/
+    trinetsoft.ts    cuando exista la documentación
+    mock.ts          pruebas y modo demostración
+  sync.ts            cola de envíos con reintentos
+```
+
+- **Enviar, no depender:** si el sistema del local no responde, el pedido o la reserva **igual se guarda** en la web y el envío queda en una cola con reintentos (`integration_outbox`). Nunca se pierde una reserva porque el otro sistema esté caído.
+- **Un solo dueño de cada dato:** la facturación (boleta o factura electrónica) la emite el sistema del local; la web no emite comprobantes (ver [05-presupuesto.md](05-presupuesto.md) §5).
+- **Identificador cruzado:** cada pedido o reserva guarda el id que le dio el otro sistema (`external_id`) para no duplicar al reintentar.
+- **Dirección de los datos (por definir):** al menos web → sistema (pedidos y reservas). Opcionales según lo que ofrezca: carta y precios desde el sistema (para no cargarlos dos veces), estado de la ticketera hacia la web.
+
+### Qué hay que pedir al proveedor
+
+1. ¿Tiene **API o webhooks**? Documentación, entorno de pruebas y credenciales.
+2. ¿Se pueden **crear pedidos** y **reservas** por API, y consultar su estado?
+3. ¿Se puede **leer la carta y los precios** (y el stock) desde su sistema?
+4. ¿Quién **emite la boleta o factura**: el sistema al cerrar la cuenta, o se puede pedir por API desde la web?
+5. Costo, límites y condiciones de uso de la API; quién la contrata (el negocio).
+6. Soporte técnico y tiempo de respuesta.
+
+### Estimación
+
+**Sin la documentación no se puede estimar.** Con una API REST sencilla, el adaptador y la cola de reintentos se calculan en unos **4 a 6 días-persona** (estimación nuestra, ±50 %), fuera de los 53 días del plan. Se agenda cuando llegue la documentación.
+
+### A confirmar con la dueña
+
+1. ¿Cómo se llama exactamente el sistema y quién es el contacto del proveedor?
+2. ¿Quiere que los pedidos de la web **lleguen solos a la ticketera de cocina**?
+3. ¿Las reservas deben registrarse también en ese sistema?
