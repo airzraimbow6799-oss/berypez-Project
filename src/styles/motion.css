@@ -403,21 +403,25 @@
 
 /*
  * Transiciones (ninguna referencia las tiene):
- *   .pagina-entra      La página nueva entra con un fundido y sube 12 px al navegar dentro del sitio.
+ *   .pagina-entra      La página nueva se desliza desde la derecha al navegar dentro del sitio,
+ *                      sin velo ni pantalla en blanco (sin «parpadeo»).
+ *   .panel-entra       Igual en el panel, pero solo el contenido: el menú del panel queda quieto.
  *   plato-foto         La foto del plato viaja de la tarjeta a la vista rápida (View Transitions).
  */
 @layer components {
   @media (prefers-reduced-motion: no-preference) {
-    html[data-navegado] .pagina-entra {
+    html[data-navegado] .pagina-entra,
+    .panel-entra > main > :not(header) {
       /* backwards (no both): al terminar no deja `translate`, que volvería al contenedor el
-         ancestro de los elementos `position: fixed` de la página. */
-      animation: pagina-entra 320ms var(--ease-out-suave) backwards;
+         ancestro de los elementos `position: fixed` de la página. La opacidad empieza en 0.5
+         (no en 0): la página nunca queda en blanco, solo se desliza. */
+      animation: pagina-entra 280ms var(--ease-out-suave) backwards;
     }
 
     @keyframes pagina-entra {
       from {
-        opacity: 0;
-        translate: 0 12px;
+        opacity: 0.5;
+        translate: 28px 0;
       }
       to {
         opacity: 1;

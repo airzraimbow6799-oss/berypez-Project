@@ -6,8 +6,11 @@ import { useEffect, useRef, useState } from "react";
 import { FishLoader } from "@/components/brand/FishLoader";
 import { isPageNavigation } from "@/features/navigation/navigation";
 
-/** Si la página nueva llega antes de esto, el velo no aparece (sin parpadeo). */
-export const SHOW_DELAY_MS = 150;
+/**
+ * Si la página nueva llega antes de esto, el velo no aparece: en una navegación normal la página
+ * solo se desliza (.pagina-entra), sin velo ni parpadeo. El velo queda para conexiones lentas.
+ */
+export const SHOW_DELAY_MS = 700;
 /** Una vez visible, se queda al menos esto para que la animación se lea. */
 export const MIN_VISIBLE_MS = 350;
 /** Tope de seguridad por si la navegación falla. */

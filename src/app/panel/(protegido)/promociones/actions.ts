@@ -4,6 +4,7 @@ import { revalidateTag } from "next/cache";
 import { z } from "zod";
 
 import { listDishes } from "@/features/carta/server";
+import { canFeature, normalizeFeatured } from "@/features/promotions/featured";
 import { CATALOG_TAG } from "@/features/catalog/data/cached";
 import {
   parsePromotionForm,
@@ -55,7 +56,14 @@ export async function savePromotion(
   if (!parsed.ok) {
     return { ok: false, message: "Revisa los campos marcados.", errors: parsed.errors };
   }
-  const row = promotionToRow(parsed.data, supabaseUrl);
+  // Una sola destacada y solo si queda activa hoy (src/features/promotions/featured.ts).
+  const data = normalizeFeatured(parsed.data, Date.now());
+  const row = promotionToRow(data, supabaseUrl);
+  if (data.isFeatured) {
+    const others = client.from("promotions").update({ is_featured: false }).eq("is_featured", true);
+    const { error: unfeatureError } = await (id === null ? others : others.neq("id", id));
+    if (unfeatureError) return { ok: false, message: FAILED };
+  }
   const { error } =
     id === null
       ? await client.from("promotions").insert(row)
@@ -71,11 +79,26 @@ export async function setPromotionFlag(
   const client = await adminClient();
   if (!client) return { ok: false, message: NOT_ALLOWED };
   if (!idSchema.safeParse(id).success) return { ok: false, message: FAILED };
-  const column = flag === "isActive" ? "is_active" : "is_featured";
-  const { error } = await client
-    .from("promotions")
-    .update({ [column]: value === true })
-    .eq("id", id);
+  if (flag === "isFeatured" && value) {
+    // Solo se destaca una promoción activa hoy, y al hacerlo la anterior deja de serlo.
+    const current = await listPromotions(client, readPublicEnv().NEXT_PUBLIC_SUPABASE_URL);
+    const target = current.find((p) => p.id === id);
+    if (!target || !canFeature(target, Date.now())) {
+      return { ok: false, message: "Solo se puede destacar una promoción activa." };
+    }
+    const { error: unfeatureError } = await client
+      .from("promotions")
+      .update({ is_featured: false })
+      .eq("is_featured", true)
+      .neq("id", id);
+    if (unfeatureError) return { ok: false, message: FAILED };
+  }
+  // Pausar también quita la estrella: una promoción pausada no sale en la ventana.
+  const patch =
+    flag === "isActive"
+      ? { is_active: value === true, ...(value ? {} : { is_featured: false }) }
+      : { is_featured: value === true };
+  const { error } = await client.from("promotions").update(patch).eq("id", id);
   return error ? { ok: false, message: FAILED } : done(client);
 }
 
