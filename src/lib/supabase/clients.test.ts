@@ -115,18 +115,34 @@ describe("cliente de servicio", () => {
 });
 
 describe("middleware de sesión", () => {
-  it("valida la sesión y copia las cookies renovadas a la respuesta", async () => {
-    const getUser = vi.fn(async () => {
+  const conSesion = () =>
+    new NextRequest("http://localhost/panel", { headers: { cookie: "sb-abcd-auth-token=viejo" } });
+
+  it("valida la firma del token y copia las cookies renovadas a la respuesta", async () => {
+    const getClaims = vi.fn(async () => {
       lastCookieAdapter().setAll([{ name: "sb-token", value: "nuevo", options: { path: "/" } }]);
-      return { data: { user: null }, error: null };
+      return { data: null, error: null };
     });
-    ssr.createServerClient.mockReturnValue({ auth: { getUser } });
+    ssr.createServerClient.mockReturnValue({ auth: { getClaims } });
     const { updateSession } = await import("./middleware");
 
-    const response = await updateSession(new NextRequest("http://localhost/panel"));
+    const response = await updateSession(conSesion());
 
-    expect(getUser).toHaveBeenCalledOnce();
-    expect(lastCookieAdapter().getAll()).toEqual([{ name: "sb-token", value: "nuevo" }]);
+    expect(getClaims).toHaveBeenCalledOnce();
+    expect(lastCookieAdapter().getAll()).toEqual([
+      { name: "sb-abcd-auth-token", value: "viejo" },
+      { name: "sb-token", value: "nuevo" },
+    ]);
     expect(response.cookies.get("sb-token")?.value).toBe("nuevo");
+  });
+
+  it("sin cookies de sesión no crea el cliente ni consulta a Supabase", async () => {
+    ssr.createServerClient.mockClear();
+    const { updateSession } = await import("./middleware");
+
+    const response = await updateSession(new NextRequest("http://localhost/panel/ingresar"));
+
+    expect(ssr.createServerClient).not.toHaveBeenCalled();
+    expect(response.status).toBe(200);
   });
 });
