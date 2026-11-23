@@ -5,6 +5,7 @@ import { create } from "zustand";
 import type { PanelReservation } from "@/components/panel/ReservationsBoard";
 import { isSoldOut } from "@/features/carta/logic";
 import type { Dish, DishFormOutput } from "@/features/carta/schema";
+import { applyFlag, keepSingleFeatured, normalizeFeatured } from "@/features/promotions/featured";
 import type { PromotionData } from "@/features/promotions/schema";
 import type { PanelOrder } from "@/features/orders/panel";
 import { canTransition, type OrderStatus } from "@/features/orders/status";
@@ -158,20 +159,21 @@ export const useDemoStore = create<DemoState>((set, get) => ({
       promotions: state.promotions.filter((p) => p.dishId !== id),
     })),
 
-  savePromotion: (id, data) =>
-    set((state) => ({
-      promotions:
+  savePromotion: (id, rawData) =>
+    set((state) => {
+      // Mismas reglas que el servidor: una sola destacada y solo si está activa hoy.
+      const data = normalizeFeatured(rawData, Date.now());
+      const savedId = id ?? nextId(state.promotions);
+      const promotions =
         id === null
-          ? [
-              { ...data, id: nextId(state.promotions), createdAt: new Date().toISOString() },
-              ...state.promotions,
-            ]
-          : state.promotions.map((p) => (p.id === id ? { ...p, ...data } : p)),
-    })),
+          ? [{ ...data, id: savedId, createdAt: new Date().toISOString() }, ...state.promotions]
+          : state.promotions.map((p) => (p.id === id ? { ...p, ...data } : p));
+      return { promotions: keepSingleFeatured(promotions, savedId) };
+    }),
 
   setPromotionFlag: (id, flag, value) =>
     set((state) => ({
-      promotions: state.promotions.map((p) => (p.id === id ? { ...p, [flag]: value } : p)),
+      promotions: applyFlag(state.promotions, id, flag, value, Date.now()) ?? state.promotions,
     })),
 
   removePromotion: (id) =>

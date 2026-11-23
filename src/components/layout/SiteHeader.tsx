@@ -23,7 +23,9 @@ function TopBar() {
 
 export function SiteHeader() {
   return (
-    <header className="encabezado z-30 md:sticky md:top-0">
+    // relative en celular: sin posición, z-30 no aplicaba y el menú «¿Delivery o recojo?» quedaba
+    // debajo del contenido de la página (el desenfoque de la barra crea su propio apilamiento).
+    <header className="encabezado relative z-30 md:sticky md:top-0">
       <HeaderScrollState />
       <TopBar />
       <div className="barra-principal bg-fondo/95 border-borde border-b backdrop-blur">

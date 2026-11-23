@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { canTransition, nextStatuses, STATUS_LABELS, trackingSteps } from "./status";
+import {
+  canTransition,
+  groupByStatus,
+  nextStatuses,
+  STATUS_LABELS,
+  statusGroup,
+  trackingSteps,
+} from "./status";
 
 describe("transiciones de estado", () => {
   it("delivery: recibido → en cocina → en camino → entregado", () => {
@@ -36,5 +43,31 @@ describe("transiciones de estado", () => {
       "delivered",
     ]);
     expect(trackingSteps("delivery")[2]?.label).toBe("En camino");
+  });
+});
+
+describe("apartados del tablero", () => {
+  it("cada estado cae en su apartado; en camino y listo para recoger van juntos", () => {
+    expect(statusGroup("pending")).toBe("received");
+    expect(statusGroup("received")).toBe("received");
+    expect(statusGroup("in_kitchen")).toBe("in_kitchen");
+    expect(statusGroup("on_the_way")).toBe("ready");
+    expect(statusGroup("ready_for_pickup")).toBe("ready");
+    expect(statusGroup("delivered")).toBe("delivered");
+    expect(statusGroup("cancelled")).toBe("cancelled");
+  });
+
+  it("reparte los pedidos por apartado conservando el orden", () => {
+    const orders = [
+      { id: 1, status: "in_kitchen" as const },
+      { id: 2, status: "pending" as const },
+      { id: 3, status: "in_kitchen" as const },
+      { id: 4, status: "delivered" as const },
+    ];
+    const groups = groupByStatus(orders);
+    expect(groups.in_kitchen.map((o) => o.id)).toEqual([1, 3]);
+    expect(groups.received.map((o) => o.id)).toEqual([2]);
+    expect(groups.delivered.map((o) => o.id)).toEqual([4]);
+    expect(groups.ready).toEqual([]);
   });
 });
