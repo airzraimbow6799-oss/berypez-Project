@@ -2,6 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
 import { DEMO_COOKIE, demoAccountForRole, isDemoPanel } from "@/features/demo/config";
 import { createClient } from "@/lib/supabase/server";
@@ -29,9 +30,11 @@ async function getDemoSession(): Promise<StaffSession | null> {
  * Personal con sesión válida, o null. La sesión REAL manda: si en el navegador quedó la cookie
  * de demostración y la persona entra con su cuenta, se trabaja con datos reales.
  */
-export async function getStaffSession(): Promise<StaffSession | null> {
+// `cache` de React: dentro de una misma petición el layout y la página comparten el resultado,
+// en vez de preguntar a Supabase (usuario + rol) dos o tres veces antes de pintar.
+export const getStaffSession = cache(async (): Promise<StaffSession | null> => {
   return (await getRealSession()) ?? (await getDemoSession());
-}
+});
 
 /** Sesión de Supabase con rol de personal. getUser() valida el token con Supabase. */
 async function getRealSession(): Promise<StaffSession | null> {
