@@ -9,13 +9,11 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
 
 /**
  * Pagos SIMULADOS en el checkout (Yape, Plin y tarjeta de mentira, sin cobrar ni crear pedidos).
- * PAYMENTS_DEMO=1 los enciende, =0 los apaga; sin definir quedan activos solo en las vistas
- * previas de Vercel. En producción el checkout sigue ofreciendo solo efectivo hasta que exista
- * la pasarela real (ver docs/plan/06-requisitos-pasarela.md).
+ * Mientras estamos en la etapa de propuesta están ENCENDIDOS en todos los entornos, producción
+ * incluida, para poder mostrarlos en la web real. Al salir a producción con la pasarela real hay
+ * que poner PAYMENTS_DEMO=0 en Vercel (ver docs/plan/06-requisitos-pasarela.md).
  */
-const paymentsDemo =
-  process.env.PAYMENTS_DEMO === "1" ||
-  (process.env.PAYMENTS_DEMO !== "0" && process.env.VERCEL_ENV === "preview");
+const paymentsDemo = process.env.PAYMENTS_DEMO !== "0";
 
 const nextConfig: NextConfig = {
   env: { NEXT_PUBLIC_PAYMENTS_DEMO: paymentsDemo ? "1" : "0" },
