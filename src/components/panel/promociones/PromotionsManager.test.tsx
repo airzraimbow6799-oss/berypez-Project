@@ -89,8 +89,18 @@ describe("Promociones (modo demostración)", () => {
     const user = await setup();
     await user.click(within(row("Martes de ceviche")).getByRole("switch"));
     expect(promoState("Martes de ceviche")?.isActive).toBe(false);
+    // Pausada: la estrella no se puede usar.
+    expect(
+      within(row("Martes de ceviche")).getByRole("button", {
+        name: /Solo las promociones activas/,
+      }),
+    ).toBeDisabled();
+    await user.click(within(row("Martes de ceviche")).getByRole("switch"));
     await user.click(within(row("Martes de ceviche")).getByRole("button", { name: /Destacar/ }));
     expect(promoState("Martes de ceviche")?.isFeatured).toBe(true);
+    // Solo una destacada: las demás dejan de serlo.
+    const featured = useDemoStore.getState().promotions.filter((p) => p.isFeatured);
+    expect(featured.map((p) => p.title)).toEqual(["Martes de ceviche"]);
     await user.click(screen.getByRole("button", { name: "Eliminar Martes de ceviche" }));
     await user.click(await screen.findByRole("button", { name: "Eliminar promoción" }));
     expect(promoState("Martes de ceviche")).toBeUndefined();

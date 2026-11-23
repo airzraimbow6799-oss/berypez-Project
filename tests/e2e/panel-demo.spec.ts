@@ -76,8 +76,11 @@ test.describe("Panel en modo demostración", () => {
     await expect(page).toHaveURL(/\/panel\/pedidos$/);
     const tarjeta = page.getByRole("listitem").filter({ hasText: "Lucía Paredes" });
     await expect(tarjeta).toBeVisible();
+    await expect(page.getByRole("region", { name: /Recibidos/ })).toContainText("Lucía Paredes");
     await tarjeta.getByRole("button", { name: "Pasar a cocina" }).click();
     await expect(tarjeta.getByText("En cocina")).toBeVisible();
+    // El pedido pasa a su apartado por estado.
+    await expect(page.getByRole("region", { name: /En cocina/ })).toContainText("Lucía Paredes");
   });
 
   test("administración cambia un precio, marca un agotado, añade y edita un plato", async ({

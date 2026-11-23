@@ -58,9 +58,20 @@ describe("acciones de promociones", () => {
       expect.objectContaining({ product_id: ceviche.id, kind: "percent", percent_off: 20 }),
     );
     await setPromotionFlag(3, "isActive", false);
-    expect(calls.update).toHaveBeenCalledWith({ is_active: false }, "id", 3);
+    // Pausar también quita la estrella.
+    expect(calls.update).toHaveBeenCalledWith({ is_active: false, is_featured: false }, "id", 3);
     await deletePromotion(3);
     expect(calls.del).toHaveBeenCalledWith("id", 3);
+  });
+
+  it("no deja destacar una promoción que no está activa", async () => {
+    session.value = { role: "admin", isDemo: false };
+    // listPromotions (simulado) no devuelve la promoción 3 como activa.
+    expect(await setPromotionFlag(3, "isFeatured", true)).toEqual({
+      ok: false,
+      message: "Solo se puede destacar una promoción activa.",
+    });
+    expect(calls.update).not.toHaveBeenCalled();
   });
 
   it("valida en el servidor contra la carta", async () => {

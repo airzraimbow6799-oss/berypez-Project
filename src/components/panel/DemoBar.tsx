@@ -90,14 +90,14 @@ export function DemoBar({ role }: { role: StaffRole }) {
           <p className="flex items-center gap-2 text-sm font-semibold">
             <FlaskConical aria-hidden="true" className="size-4" />
             Modo demostración
-            <span className="text-tinta-suave font-normal">
+            <span className="text-tinta-suave hidden font-normal sm:inline">
               Los datos son de ejemplo y se reinician al recargar la página.
             </span>
           </p>
-          <div className="ml-auto flex flex-wrap items-center gap-1">
+          <div className="flex w-full items-center justify-between gap-1 sm:ml-auto sm:w-auto sm:justify-end">
             <Button
               variant="fantasma"
-              className="px-3 text-sm"
+              className="min-w-tactil px-2.5! text-sm sm:px-3!"
               disabled={!isReady}
               aria-label="Simular pedido"
               title="Simular pedido"
@@ -108,7 +108,7 @@ export function DemoBar({ role }: { role: StaffRole }) {
             </Button>
             <Button
               variant="fantasma"
-              className="px-3 text-sm"
+              className="min-w-tactil px-2.5! text-sm sm:px-3!"
               disabled={!isReady}
               aria-label="Simular reserva"
               title="Simular reserva"
@@ -119,7 +119,7 @@ export function DemoBar({ role }: { role: StaffRole }) {
             </Button>
             <Button
               variant="fantasma"
-              className="relative px-3 text-sm"
+              className="min-w-tactil relative px-2.5! text-sm sm:px-3!"
               aria-label={`Avisos, ${unread} sin leer`}
               onClick={() => setIsOpen(true)}
             >
@@ -136,7 +136,7 @@ export function DemoBar({ role }: { role: StaffRole }) {
             </Button>
             <Button
               variant="fantasma"
-              className="px-3 text-sm"
+              className="min-w-tactil px-2.5! text-sm sm:px-3!"
               aria-pressed={isSoundOn}
               aria-label={isSoundOn ? "Sonido de avisos: activado" : "Sonido de avisos: apagado"}
               title={
@@ -157,7 +157,7 @@ export function DemoBar({ role }: { role: StaffRole }) {
             </Button>
             <Button
               variant="fantasma"
-              className="px-3 text-sm"
+              className="min-w-tactil px-2.5! text-sm sm:px-3!"
               aria-label="Reiniciar datos"
               title="Reiniciar datos"
               onClick={() => {
@@ -170,7 +170,7 @@ export function DemoBar({ role }: { role: StaffRole }) {
             </Button>
             <Button
               variant="fantasma"
-              className="px-3 text-sm"
+              className="min-w-tactil px-2.5! text-sm sm:px-3!"
               aria-label="Cambiar de rol"
               title="Cambiar de rol"
               onClick={leave}
@@ -191,7 +191,7 @@ export function DemoBar({ role }: { role: StaffRole }) {
         headerAction={
           <Button
             variant="secundario"
-            className="px-3 text-sm"
+            className="min-w-tactil px-2.5! text-sm sm:px-3!"
             disabled={unread === 0}
             onClick={markAllRead}
           >
