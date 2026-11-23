@@ -6,28 +6,26 @@ import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
+import { cx } from "@/components/ui/cx";
 import { toast } from "@/components/ui/Toaster";
 import type { PanelOrder } from "@/features/orders/panel";
-import { nextStatuses, type OrderStatus, STATUS_LABELS } from "@/features/orders/status";
-import { formatPrice } from "@/lib/format";
+import {
+  ACTIVE_GROUPS,
+  groupByStatus,
+  type OrderStatus,
+  STATUS_GROUPS,
+  type StatusGroupKey,
+} from "@/features/orders/status";
 import { beep } from "@/lib/beep";
 import { createClient } from "@/lib/supabase/client";
 
-const ACTION_LABELS: Partial<Record<OrderStatus, string>> = {
-  in_kitchen: "Pasar a cocina",
-  on_the_way: "Salió a reparto",
-  ready_for_pickup: "Listo para recoger",
-  delivered: "Entregado",
-  cancelled: "Cancelar",
-};
+import { OrderCard } from "./OrderCard";
+import { STATUS_STYLE } from "./order-status-style";
 
-const ACTIVE: readonly OrderStatus[] = [
-  "pending",
-  "received",
-  "in_kitchen",
-  "on_the_way",
-  "ready_for_pickup",
-];
+/** Qué apartados se ven: los activos (por defecto), uno solo o todos. */
+type View = "activos" | "todos" | StatusGroupKey;
+
+const ALL_GROUPS = STATUS_GROUPS.map((g) => g.key);
 
 /** F3-12 / F3-14 · Tablero en vivo: pedidos nuevos al instante, con sonido, y cambio de estado. */
 export function PanelBoard({
@@ -39,7 +37,7 @@ export function PanelBoard({
   demo?: { onAdvance: (id: number, status: OrderStatus) => void };
 }) {
   const router = useRouter();
-  const [onlyActive, setOnlyActive] = useState(true);
+  const [view, setView] = useState<View>("activos");
   const [isSoundOn, setIsSoundOn] = useState(false);
   const [busyId, setBusyId] = useState<number | null>(null);
   const soundRef = useRef(isSoundOn);
@@ -91,16 +89,26 @@ export function PanelBoard({
     router.refresh();
   };
 
-  const orders = onlyActive
-    ? initialOrders.filter((o) => ACTIVE.includes(o.status))
-    : initialOrders;
+  const groups = groupByStatus(initialOrders);
+  const count = (keys: readonly StatusGroupKey[]) =>
+    keys.reduce((total, key) => total + groups[key].length, 0);
+  const visible: readonly StatusGroupKey[] =
+    view === "activos" ? ACTIVE_GROUPS : view === "todos" ? ALL_GROUPS : [view];
+  const views: { key: View; label: string; total: number; dot?: string }[] = [
+    { key: "activos", label: "Activos", total: count(ACTIVE_GROUPS) },
+    ...STATUS_GROUPS.map((g) => ({
+      key: g.key,
+      label: g.label,
+      total: groups[g.key].length,
+      dot: STATUS_STYLE[g.key].dot,
+    })),
+    { key: "todos", label: "Todos", total: initialOrders.length },
+  ];
+  const shown = visible.filter((key) => groups[key].length > 0 || visible.length === 1);
 
   return (
     <>
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <Chip pressed={onlyActive} onPressedChange={setOnlyActive}>
-          Solo activos
-        </Chip>
         <Chip
           pressed={isSoundOn}
           onPressedChange={(on) => {
@@ -120,94 +128,58 @@ export function PanelBoard({
         </Button>
       </div>
 
-      {orders.length === 0 ? (
+      <div
+        role="group"
+        aria-label="Ver pedidos por estado"
+        className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1"
+      >
+        {views.map((v) => (
+          <Chip key={v.key} pressed={view === v.key} onPressedChange={() => setView(v.key)}>
+            {v.dot ? (
+              <span aria-hidden="true" className={cx("size-2.5 shrink-0 rounded-full", v.dot)} />
+            ) : null}
+            <span className="whitespace-nowrap">
+              {v.label} ({v.total})
+            </span>
+          </Chip>
+        ))}
+      </div>
+
+      {shown.length === 0 ? (
         <p className="text-tinta-suave mt-10 text-center text-lg">
           No hay pedidos activos. Los nuevos aparecen aquí al instante.
         </p>
       ) : (
-        <ul className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {orders.map((order) => {
-            const actions = nextStatuses(order.status, order.modality);
-            return (
-              <li
-                key={order.id}
-                className="bg-superficie border-borde flex flex-col gap-3 rounded-md border p-4 shadow-sm"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="text-lg font-semibold">
-                      N.º {order.id} · {order.customerName}
-                    </p>
-                    <p className="text-tinta-suave text-sm">
-                      {order.modality === "pickup"
-                        ? `Recojo · ${order.branchName}`
-                        : `Delivery · ${order.district}`}{" "}
-                      ·{" "}
-                      {new Date(order.createdAt).toLocaleTimeString("es-PE", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        timeZone: "America/Lima",
-                      })}
-                    </p>
-                  </div>
-                  <span className="bg-aji-100 rounded-pill px-3 py-1 text-sm font-semibold">
-                    {STATUS_LABELS[order.status]}
-                  </span>
-                </div>
-                {order.scheduledFor ? (
-                  <p className="text-rocoto-texto text-sm font-semibold">
-                    Programado:{" "}
-                    {new Date(order.scheduledFor).toLocaleString("es-PE", {
-                      dateStyle: "short",
-                      timeStyle: "short",
-                      timeZone: "America/Lima",
-                    })}
-                  </p>
-                ) : null}
-                <ul className="text-sm">
-                  {order.items.map((item, i) => (
-                    <li key={i}>
-                      <strong>{item.quantity} ×</strong> {item.name}
-                      {item.variantLabel ? ` · ${item.variantLabel}` : ""}
-                      {item.choices.length > 0 ? (
-                        <span className="text-tinta-suave"> ({item.choices.join(", ")})</span>
-                      ) : null}
-                      {item.notes ? (
-                        <span className="text-rocoto-texto block">Nota: {item.notes}</span>
-                      ) : null}
-                    </li>
+        shown.map((key) => {
+          const group = STATUS_GROUPS.find((g) => g.key === key);
+          const orders = groups[key];
+          return (
+            <section key={key} aria-labelledby={`pedidos-${key}`} className="mt-6">
+              <h2 id={`pedidos-${key}`} className="flex items-center gap-2 text-xl font-semibold">
+                <span
+                  aria-hidden="true"
+                  className={cx("size-3 rounded-full", STATUS_STYLE[key].dot)}
+                />
+                {group?.label}{" "}
+                <span className="text-tinta-suave font-normal">({orders.length})</span>
+              </h2>
+              {orders.length === 0 ? (
+                <p className="text-tinta-suave mt-2">No hay pedidos en este estado.</p>
+              ) : (
+                <ul className="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  {orders.map((order) => (
+                    <OrderCard
+                      key={order.id}
+                      order={order}
+                      isBusy={busyId === order.id}
+                      onAdvance={advance}
+                    />
                   ))}
                 </ul>
-                {order.address ? <p className="text-sm">📍 {order.address}</p> : null}
-                {order.notes ? <p className="text-sm">💬 {order.notes}</p> : null}
-                <p className="text-sm">
-                  <a
-                    href={`tel:+51${order.customerPhone}`}
-                    className="min-h-tactil -my-3 inline-flex items-center underline underline-offset-4"
-                  >
-                    {order.customerPhone}
-                  </a>{" "}
-                  · {formatPrice(order.totalCents)} ·{" "}
-                  {order.paymentMethod === "cash" ? "Efectivo" : order.paymentMethod}
-                </p>
-                {actions.length > 0 ? (
-                  <div className="mt-auto flex flex-wrap gap-2">
-                    {actions.map((status) => (
-                      <Button
-                        key={status}
-                        variant={status === "cancelled" ? "fantasma" : "primario"}
-                        isLoading={busyId === order.id}
-                        onClick={() => advance(order, status)}
-                      >
-                        {ACTION_LABELS[status]}
-                      </Button>
-                    ))}
-                  </div>
-                ) : null}
-              </li>
-            );
-          })}
-        </ul>
+              )}
+            </section>
+          );
+        })
       )}
     </>
   );

@@ -261,17 +261,26 @@ export function PromotionEditor({
           <Switch
             label="Promoción activa"
             checked={form.isActive}
-            onChange={(v) => set("isActive", v)}
+            onChange={(v) => {
+              set("isActive", v);
+              // Una promoción pausada no puede ir destacada.
+              if (!v) set("isFeatured", false);
+            }}
             onText="Activa"
             offText="Pausada"
           />
           <Switch
             label="Destacada: sale primero en la ventana emergente"
-            checked={form.isFeatured}
+            checked={form.isFeatured && form.isActive}
+            disabled={!form.isActive}
             onChange={(v) => set("isFeatured", v)}
             onText="Destacada (sale primero)"
             offText="Sin destacar"
           />
+          <p className="text-tinta-suave text-sm">
+            Solo una promoción activa puede ser la destacada. Al destacar esta, la anterior deja de
+            serlo.
+          </p>
         </div>
       </form>
     </Dialog>

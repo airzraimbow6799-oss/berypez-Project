@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { Switch } from "@/components/ui/Switch";
 import { toast } from "@/components/ui/Toaster";
 import { emptyDishForm } from "@/features/carta/schema";
+import { canFeature } from "@/features/promotions/featured";
 import { promoBadge } from "@/features/promotions/pricing";
 import { previewProducts } from "@/features/promotions/preview";
 import {
@@ -211,8 +212,15 @@ export function PromotionsManager({ backend }: { backend: PromotionsBackend }) {
                   />
                   <div className="flex items-center gap-1">
                     <IconButton
-                      label={promo.isFeatured ? "Quitar destacada" : "Destacar: sale primero"}
+                      label={
+                        promo.isFeatured
+                          ? "Quitar destacada"
+                          : canFeature(promo, now)
+                            ? "Destacar: sale primero"
+                            : "Solo las promociones activas se pueden destacar"
+                      }
                       aria-pressed={promo.isFeatured}
+                      disabled={!promo.isFeatured && !canFeature(promo, now)}
                       icon={
                         <Star
                           aria-hidden="true"
@@ -224,7 +232,7 @@ export function PromotionsManager({ backend }: { backend: PromotionsBackend }) {
                           backend.setFlag(promo, "isFeatured", !promo.isFeatured),
                           promo.isFeatured
                             ? `«${promo.title}» ya no es destacada`
-                            : `«${promo.title}» sale primero`,
+                            : `«${promo.title}» es la destacada: sale primero`,
                         )
                       }
                     />

@@ -74,6 +74,9 @@ export function Dialog({
       data-variant={variant}
       onClose={onClose}
       onCancel={(event) => {
+        // Cerrar el selector de archivos de un <input type="file"> también dispara «cancel», y
+        // ese evento sube hasta aquí: solo el Escape del propio diálogo debe cerrarlo.
+        if (event.target !== event.currentTarget) return;
         event.preventDefault();
         onClose();
       }}
