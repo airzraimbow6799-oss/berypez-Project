@@ -20,11 +20,11 @@ describe("isDemoPanel", () => {
   it("DEMO_PANEL=0 lo apaga aunque sea una vista previa", () => {
     expect(isDemoPanel(env({ DEMO_PANEL: "0", VERCEL_ENV: "preview" }))).toBe(false);
   });
-  it("sin definir: hoy queda activo porque el sitio principal es la demo", () => {
-    expect(DEMO_PANEL_BY_DEFAULT).toBe(true);
-    expect(isDemoPanel(env({ VERCEL_ENV: "production" }))).toBe(true);
+  it("sin definir: apagado en producción (solo cuentas reales), activo en vistas previas", () => {
+    expect(DEMO_PANEL_BY_DEFAULT).toBe(false);
+    expect(isDemoPanel(env({ VERCEL_ENV: "production" }))).toBe(false);
     expect(isDemoPanel(env({ VERCEL_ENV: "preview" }))).toBe(true);
-    expect(isDemoPanel(env({}))).toBe(true);
+    expect(isDemoPanel(env({}))).toBe(false);
   });
 });
 

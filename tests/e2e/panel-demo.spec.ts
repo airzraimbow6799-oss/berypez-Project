@@ -114,7 +114,12 @@ test.describe("Panel en modo demostración", () => {
     });
     await expect(dialogo.getByText("Cambiar foto")).toBeVisible();
     await dialogo.getByLabel(/Nombre/).fill("Tiradito nikkei");
-    await dialogo.getByLabel(/Sección/).fill("Tiraditos");
+    // La sección se elige de la lista con el diseño de la página; «Tiraditos» no existe, se crea.
+    await dialogo.getByRole("button", { name: /Sección/ }).click();
+    await expect(dialogo.getByRole("option", { name: "Ceviches" })).toBeVisible();
+    await dialogo.getByLabel("Crear una sección nueva").fill("Tiraditos");
+    await dialogo.getByRole("button", { name: "Crear" }).click();
+    await expect(dialogo.getByRole("button", { name: /Sección/ })).toContainText("Tiraditos");
     await dialogo.getByLabel(/Precio/).fill("34.50");
     await dialogo.getByRole("button", { name: "Nuevo" }).click();
     await dialogo.getByRole("button", { name: "Guardar plato" }).click();

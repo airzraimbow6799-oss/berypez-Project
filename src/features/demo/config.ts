@@ -8,19 +8,20 @@
  * Cuándo está activo:
  * - `DEMO_PANEL=1`: activo siempre (por ejemplo, en la demo pública o en local).
  * - `DEMO_PANEL=0`: apagado siempre.
- * - Sin definir: manda `DEMO_PANEL_BY_DEFAULT` (hoy activo, porque el sitio principal es la demo);
- *   si ese valor se apaga, queda activo solo en vistas previas de Vercel (`VERCEL_ENV=preview`).
+ * - Sin definir: manda `DEMO_PANEL_BY_DEFAULT` (apagado: el sitio principal ya trabaja con datos
+ *   reales); queda activo solo en las vistas previas de Vercel (`VERCEL_ENV=preview`).
  */
 import type { StaffRole } from "@/features/staff/roles";
 
 export const DEMO_COOKIE = "berypez_demo_role";
 
 /**
- * Mientras el enlace principal del sitio sea la demo para la dueña, el modo demostración queda
- * activo por defecto (sin pedir login de Vercel ni variables). Al salir a producción real hay que
- * apagarlo: poner `DEMO_PANEL=0` en Vercel o cambiar esto a `false` (ver docs/plan, fase D).
+ * Apagado desde el 22/11/2026: la carta y las promociones del panel ya escriben en Supabase y en
+ * producción solo entran las cuentas reales (Administración y Recepción). Con el modo demo
+ * encendido, quien entraba con «Administración» trabajaba sobre datos de ejemplo y lo que creaba
+ * (p. ej. promociones) nunca llegaba a la web.
  */
-export const DEMO_PANEL_BY_DEFAULT = true;
+export const DEMO_PANEL_BY_DEFAULT = false;
 
 export function isDemoPanel(env: NodeJS.ProcessEnv = process.env): boolean {
   if (env.DEMO_PANEL === "1") return true;

@@ -27,6 +27,8 @@ export function LoginForm({ demo = false }: { demo?: boolean }) {
 
   /** Entra con la cuenta simulada. Devuelve false si el servidor no la acepta. */
   const demoLogin = async (demoEmail: string, demoPassword: string): Promise<boolean> => {
+    // Si había una sesión real abierta, se cierra: la real manda sobre la de demostración.
+    await createClient().auth.signOut();
     const res = await fetch("/api/demo/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -69,6 +71,8 @@ export function LoginForm({ demo = false }: { demo?: boolean }) {
       setError("Correo o contraseña incorrectos.");
       return;
     }
+    // Quita la cookie de una prueba anterior en modo demostración (si la hay).
+    if (demo) await fetch("/api/demo/login", { method: "DELETE" }).catch(() => undefined);
     enter();
   };
 
