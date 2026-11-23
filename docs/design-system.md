@@ -35,13 +35,13 @@ Contraste medido sobre crema: marino 13.0:1, tinta suave 7.3:1, rocoto-texto 5.2
 
 ## Layout (F0-12)
 
-| Pieza                 | Archivo                              | Notas                                                                        |
-| --------------------- | ------------------------------------ | ---------------------------------------------------------------------------- |
-| Saltar al contenido   | `components/layout/SkipLink.tsx`     | Primer elemento enfocable.                                                   |
-| Header                | `components/layout/SiteHeader.tsx`   | Barra marino, logo, menú, selector de modalidad/sede y carrito. Fijo arriba. |
-| Selector de modalidad | `components/layout/ModeSelector.tsx` | Delivery / Recojo Lince / Recojo Jesús María; se recuerda en la sesión.      |
-| Footer                | `components/layout/SiteFooter.tsx`   | Ola, sedes, cartas, legales y medios de pago.                                |
-| Barra inferior móvil  | `components/layout/MobileNav.tsx`    | Carta · Buscar · Carrito · Reservar · WhatsApp (si hay número).              |
+| Pieza                 | Archivo                              | Notas                                                                                                                                                                        |
+| --------------------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Saltar al contenido   | `components/layout/SkipLink.tsx`     | Primer elemento enfocable.                                                                                                                                                   |
+| Header                | `components/layout/SiteHeader.tsx`   | Barra marino, logo, menú, selector de modalidad/sede y carrito. Fijo arriba desde tablet; en celular `relative z-30` para que el menú de modalidad quede sobre el contenido. |
+| Selector de modalidad | `components/layout/ModeSelector.tsx` | Delivery / Recojo Lince / Recojo Jesús María; se recuerda en la sesión.                                                                                                      |
+| Footer                | `components/layout/SiteFooter.tsx`   | Ola, sedes, cartas, legales y medios de pago.                                                                                                                                |
+| Barra inferior móvil  | `components/layout/MobileNav.tsx`    | Carta · Buscar · Carrito · Reservar · WhatsApp (si hay número).                                                                                                              |
 
 Los datos de las sedes viven en `src/config/site.ts`. Los que aún no confirma la dueña valen `null` y la interfaz no los muestra.
 
@@ -49,18 +49,18 @@ Los datos de las sedes viven en `src/config/site.ts`. Los que aún no confirma l
 
 En `src/components/ui/`. Vitrina para QA en `/componentes` (local y previews; 404 en producción).
 
-| Componente          | Uso y reglas                                                                                                                          |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `Button`            | `primario` (ají), `secundario`, `fantasma`, `peligro`. Con `href` se vuelve enlace. `isLoading` lo deshabilita y marca `aria-busy`.   |
-| `IconButton`        | Solo ícono: `label` obligatorio (nombre accesible).                                                                                   |
-| `Chip`              | Filtro activable con `aria-pressed` y check visible.                                                                                  |
-| `Badge`             | Etiquetas (picante, vegetariano, favorito, promo, agotado): siempre con texto.                                                        |
-| `Card`              | Superficie; `article` por defecto.                                                                                                    |
-| `Input` / `Select`  | Etiqueta, ayuda y error enlazados con `aria-describedby`; error con `role=alert`. Select nativo.                                      |
-| `Stepper`           | Cantidad con botones de 48 px y número en `aria-live`.                                                                                |
-| `Dialog`            | `<dialog>` nativo: `sheet` (vista rápida), `modal`, `drawer` (carrito). Foco atrapado, Escape y retorno del foco los da el navegador. |
-| `Skeleton`          | Decorativo (`aria-hidden`); el contenedor lleva `aria-busy`.                                                                          |
-| `Toaster` / `toast` | Sonner con estilo de marca, anunciado a lectores de pantalla.                                                                         |
+| Componente          | Uso y reglas                                                                                                                                                                                                                                                     |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Button`            | `primario` (ají), `secundario`, `fantasma`, `peligro`. Con `href` se vuelve enlace. `isLoading` lo deshabilita y marca `aria-busy`.                                                                                                                              |
+| `IconButton`        | Solo ícono: `label` obligatorio (nombre accesible).                                                                                                                                                                                                              |
+| `Chip`              | Filtro activable con `aria-pressed` y check visible.                                                                                                                                                                                                             |
+| `Badge`             | Etiquetas (picante, vegetariano, favorito, promo, agotado): siempre con texto.                                                                                                                                                                                   |
+| `Card`              | Superficie; `article` por defecto.                                                                                                                                                                                                                               |
+| `Input` / `Select`  | Etiqueta, ayuda y error enlazados con `aria-describedby`; error con `role=alert`. Select nativo.                                                                                                                                                                 |
+| `Stepper`           | Cantidad con botones de 48 px y número en `aria-live`.                                                                                                                                                                                                           |
+| `Dialog`            | `<dialog>` nativo: `sheet` (vista rápida), `modal`, `drawer` (carrito). Foco atrapado, Escape y retorno del foco los da el navegador. Solo el `cancel` del propio diálogo (Escape) lo cierra: el del selector de archivos de un `<input type="file">` se ignora. |
+| `Skeleton`          | Decorativo (`aria-hidden`); el contenedor lleva `aria-busy`.                                                                                                                                                                                                     |
+| `Toaster` / `toast` | Sonner con estilo de marca, anunciado a lectores de pantalla.                                                                                                                                                                                                    |
 
 ## Pendiente
 
@@ -88,7 +88,7 @@ Segunda tanda (más notoria; mismo criterio):
 | `.parallax-texto` / `.parallax-media` | Portada: el texto sube un poco más que el scroll y el video se queda atrás (~40 px)                                                      | Una clase en cada columna de la portada                                                |
 | `.titulo-ola`                         | Línea ají de 3.5 rem bajo el título de la sección; se dibuja al aparecer. Sin movimiento queda estática (es parte de la marca)           | Clase en el `h2`                                                                       |
 | `.brillo`                             | Destello que cruza el botón principal al pasar el mouse (solo con mouse)                                                                 | Ya incluido en `Button` variante `primario`                                            |
-| `<CountUp to={14} />`                 | Número que cuenta hasta su valor al llegar a la pantalla (IntersectionObserver). Sin JS o con «reducir movimiento» se ve el número final | `src/components/home/CountUp.tsx`                                                      |
+| `<CountUp to={yearsOpen()} />`        | Número que cuenta hasta su valor al llegar a la pantalla (IntersectionObserver). Sin JS o con «reducir movimiento» se ve el número final | `src/components/home/CountUp.tsx`                                                      |
 | `flyToCart(origen, fotoUrl)`          | El plato «vuela» al carrito del encabezado al agregarlo (F2-09). No hace nada con «reducir movimiento» ni sin carrito visible            | `src/features/cart/fly-to-cart.ts`, llamado al agregar con «+» y desde la vista rápida |
 
 Reglas: cada animación debe poder explicarse en una frase (jerarquía, orden de lectura, "esto se toca" o de dónde viene un diálogo);
@@ -115,3 +115,26 @@ Archivo: `src/styles/motion.css` (final del archivo). Mismo criterio que la «ma
 | `<AnimatedNumber />` | Los números suben hasta su valor al aparecer y vuelven a contar si cambian (un pedido nuevo)                        | `src/components/panel/AnimatedNumber.tsx`. Con «reducir movimiento» se ve el valor final |
 
 El gráfico de barras es decorativo para quien usa lector de pantalla: tiene una tabla equivalente (`sr-only`) con los mismos datos.
+
+## Transiciones entre páginas
+
+Sin velo ni esqueleto en una navegación normal: la página nueva **se desliza** desde la derecha (28 px, opacidad desde 0.5, 280 ms). Nunca queda la pantalla en blanco. Con «reducir movimiento» no hay animación.
+
+| Pieza              | Dónde                                        | Qué hace                                                                                                       |
+| ------------------ | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `.pagina-entra`    | `src/app/(site)/template.tsx`                | La página pública entra deslizándose tras una navegación interna (`html[data-navegado]`).                      |
+| `.panel-entra`     | `src/app/panel/(protegido)/template.tsx`     | En el panel se desliza solo el contenido; el menú (`header`) queda quieto. Reemplaza al antiguo `loading.tsx`. |
+| `NavigationLoader` | `src/components/layout/NavigationLoader.tsx` | Velo de los peces solo si la página tarda más de 700 ms (red lenta).                                           |
+| `PanelTabPending`  | `src/components/panel/PanelTabPending.tsx`   | Punto que late en la pestaña del panel mientras carga la sección (`useLinkStatus`).                            |
+
+## Estados del pedido (panel)
+
+El color nunca va solo: siempre lo acompañan el nombre del estado y un ícono. Definidos en `src/components/panel/order-status-style.ts`; los apartados, en `STATUS_GROUPS` de `src/features/orders/status.ts`.
+
+| Apartado           | Estados                          | Color                                                    | Ícono             |
+| ------------------ | -------------------------------- | -------------------------------------------------------- | ----------------- |
+| Recibidos          | `pending`, `received`            | `rocoto` (borde) · insignia `rocoto/10` + `rocoto-texto` | Bandeja           |
+| En cocina          | `in_kitchen`                     | `aji-600` · insignia `aji-100`                           | Gorro de cocinero |
+| En camino o listos | `on_the_way`, `ready_for_pickup` | `marino-600` · insignia `marino-600` + `crema`           | Camión            |
+| Entregados         | `delivered`                      | `limon` · insignia `limon-100` + `limon-texto`           | Check             |
+| Cancelados         | `cancelled`                      | `borde` sobre `crema-200` · texto `tinta-suave`          | Equis             |

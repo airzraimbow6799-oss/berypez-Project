@@ -593,6 +593,17 @@ npx vercel link
 npx vercel env pull .env.local
 ```
 
+### Estado de la versión 2 (panel del restaurante)
+
+| Tema                 | Qué hace                                                                                                                                                                                                                           | Estado    |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| Carta del panel      | Administración edita precio, foto, opciones, secciones y «agotado»; se guarda en Supabase (`admin_*`)                                                                                                                              | ✅ Hecho  |
+| Promociones          | Porcentaje, precio especial o 2×1; ventana emergente en Inicio, franja en la carta y precio tachado. **Una sola destacada y solo entre las activas** (ver `docs/plan/02-modulos.md` §9)                                            | ✅ Hecho  |
+| Pedidos por estado   | Cada estado con su color e ícono (Recibido rojo, En cocina ají, En camino o listo azul, Entregado verde, Cancelado gris) y apartados con conteo: Activos, Recibidos, En cocina, En camino o listos, Entregados, Cancelados y Todos | ✅ Hecho  |
+| Navegación del panel | Sin pantalla de carga: la sección nueva entra deslizándose (`.panel-entra`) y la pestaña tocada muestra que está cargando (`PanelTabPending`)                                                                                      | ✅ Hecho  |
+| Panel en celular     | Menú en una sola fila deslizable y franja de demostración en una fila                                                                                                                                                              | ✅ Hecho  |
+| Modo demostración    | Botones «Entrar como Administración / Recepción»; sigue activo hasta pasar a cuentas reales (`DEMO_PANEL_BY_DEFAULT`)                                                                                                              | ✅ Activo |
+
 ### Estado de la Fase 5
 
 | ID                          | Tarea                                                                                                                                                                            | Estado                                                                                                         |
@@ -651,7 +662,7 @@ npx vercel env pull .env.local
 | F1-03 / F1-11              | Búsqueda tolerante (sin tildes, sinónimos como “seviche”, una letra de error) y filtros: sin picante, vegetariano, niños, compartir, hasta S/ 40                                 | ✅ Hecho (en la carta; `/api/search` global pendiente) |
 | F1-08 / F1-09 / F1-10      | Página `/carta/[slug]` estática (ISR), pestañas, barra de secciones fija con scroll-spy, tarjetas y vista rápida con variantes, elecciones, nota y cantidad                      | ✅ Hecho                                               |
 | F1-13                      | Metadatos por carta y JSON-LD `Menu`                                                                                                                                             | 🚧 Falta `sitemap.xml` y `Restaurant` por sede         |
-| Loader                     | Velo de transición entre páginas con los peces del logo animados (vectorial) y `loading.tsx`                                                                                     | ✅ Hecho                                               |
+| Loader                     | Velo con los peces del logo solo si la página tarda más de 700 ms; en una navegación normal la página nueva entra deslizándose (`.pagina-entra`), sin parpadeo                   | ✅ Hecho                                               |
 | F1-04, F1-12, F1-14, F1-15 | Resto de la fase                                                                                                                                                                 | ⏳ Pendiente                                           |
 
 ### Estado de la Fase 0
