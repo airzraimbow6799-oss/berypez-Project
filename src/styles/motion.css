@@ -472,3 +472,31 @@
     }
   }
 }
+
+/*
+ * Pago aprobado (checkout en demostración): el círculo se dibuja y el visto aparece después. Es el
+ * «listo» del pago: confirma que algo importante terminó bien. Con «reducir movimiento» queda dibujado.
+ */
+.pago-aprobado {
+  color: var(--color-limon-texto);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pago-aprobado-circulo {
+    stroke-dasharray: 151;
+    stroke-dashoffset: 151;
+    animation: pago-dibuja 600ms var(--ease-out-suave) forwards;
+  }
+
+  .pago-aprobado-check {
+    stroke-dasharray: 36;
+    stroke-dashoffset: 36;
+    animation: pago-dibuja 400ms var(--ease-out-suave) 450ms forwards;
+  }
+
+  @keyframes pago-dibuja {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+}
