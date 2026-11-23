@@ -336,3 +336,31 @@ src/features/restaurant-system/
 1. ¿Cómo se llama exactamente el sistema y quién es el contacto del proveedor?
 2. ¿Quiere que los pedidos de la web **lleguen solos a la ticketera de cocina**?
 3. ¿Las reservas deben registrarse también en ese sistema?
+
+---
+
+## 9. Promociones (en producción desde el 22-nov-2026)
+
+**Objetivo:** que Administración cree y pause promociones sin programador, y que la web las muestre al instante: ventana emergente en Inicio, franja «Promociones» en la carta y precio tachado en las tarjetas.
+
+### Pantallas
+
+- `/panel/promociones` (solo `admin`): lista con estado (activa, programada, pausada, vencida), interruptor Activa/Pausada, estrella de **destacada**, editar y eliminar; botón «Ver ventana emergente» para previsualizarla.
+- Editor (`PromotionEditor.tsx`): plato (o «Crear plato nuevo» con el editor de la carta), tipo, valor, título, foto propia opcional, fechas de inicio y fin opcionales, activa y destacada.
+
+### Reglas
+
+1. **Tipos:** porcentaje (5 % a 90 %), precio especial (por opción del plato si tiene opciones) y 2×1. El precio final lo calcula `src/features/promotions/pricing.ts`, igual en la web (para mostrar) y en el servidor (para cobrar).
+2. **Una sola destacada** (`src/features/promotions/featured.ts`): al destacar una promoción, la anterior deja de serlo. Sale primero en la ventana emergente.
+3. **Solo se destaca una promoción activa hoy.** Con la promoción pausada, programada o vencida la estrella aparece deshabilitada y el servidor rechaza el cambio. **Pausar quita la estrella.** Al guardar desde el editor, una promoción que no queda activa hoy se guarda sin destacar.
+4. Las reglas 2 y 3 corren igual en el modo demostración (`src/features/demo/store.ts`) y en las acciones del servidor (`src/app/panel/(protegido)/promociones/actions.ts`).
+5. **Ventana emergente:** solo al cargar o recargar «/» (no al navegar a Inicio dentro del sitio), después del aviso de cookies; carrusel que pasa solo cada 6 s y se detiene únicamente con el botón de pausa. Mismo formato en todas las tarjetas: precio antes tachado → precio ahora + detalle («por plato · 20 % menos», «por 2 platos · pagas solo 1»).
+6. Cada cambio refresca la caché de la carta (`revalidateTag`): la web lo muestra en segundos.
+
+### Datos
+
+Tabla `promotions` (migración `20261122000200_promotions.sql`): `kind`, `percent_off`, `price_cents`, `variant_id`, `title`, `image_path`, `starts_at`, `ends_at`, `is_active`, `is_featured`. RLS: el público solo lee las activas y vigentes; solo Administración escribe.
+
+### Pruebas
+
+`featured.test.ts`, `pricing.test.ts`, `schema.test.ts`, `PromotionsManager.test.tsx`, `actions.test.ts` y `tests/e2e/promociones.spec.ts`.
