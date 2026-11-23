@@ -4,6 +4,7 @@ import {
   Bell,
   BellOff,
   CalendarCheck,
+  CheckCheck,
   FlaskConical,
   LogOut,
   RotateCcw,
@@ -14,7 +15,6 @@ import { useEffect, useRef, useState } from "react";
 
 import { useDemoReady } from "@/components/panel/useDemoReady";
 import { Button } from "@/components/ui/Button";
-import { Chip } from "@/components/ui/Chip";
 import { Dialog } from "@/components/ui/Dialog";
 import { toast } from "@/components/ui/Toaster";
 import { type DemoNotification, useDemoStore } from "@/features/demo/store";
@@ -48,7 +48,9 @@ export function DemoBar({ role }: { role: StaffRole }) {
   const simulateReservation = useDemoStore((s) => s.simulateReservation);
   const markAllRead = useDemoStore((s) => s.markAllRead);
 
-  const [isSoundOn, setIsSoundOn] = useState(false);
+  // El sonido arranca encendido: quien toca «Simular» ya hizo clic en la página, así que el
+  // navegador deja sonar. En el panel real se enciende con el botón «Sonido».
+  const [isSoundOn, setIsSoundOn] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const soundRef = useRef(isSoundOn);
   soundRef.current = isSoundOn;
@@ -135,6 +137,27 @@ export function DemoBar({ role }: { role: StaffRole }) {
             <Button
               variant="fantasma"
               className="px-3 text-sm"
+              aria-pressed={isSoundOn}
+              aria-label={isSoundOn ? "Sonido de avisos: activado" : "Sonido de avisos: apagado"}
+              title={
+                isSoundOn ? "Apagar el sonido de los avisos" : "Encender el sonido de los avisos"
+              }
+              onClick={() => {
+                const next = !isSoundOn;
+                setIsSoundOn(next);
+                if (next) beep();
+              }}
+            >
+              {isSoundOn ? (
+                <Bell aria-hidden="true" className="size-4" />
+              ) : (
+                <BellOff aria-hidden="true" className="size-4" />
+              )}
+              <span className="hidden md:inline">{isSoundOn ? "Sonido" : "Sin sonido"}</span>
+            </Button>
+            <Button
+              variant="fantasma"
+              className="px-3 text-sm"
               aria-label="Reiniciar datos"
               title="Reiniciar datos"
               onClick={() => {
@@ -164,27 +187,16 @@ export function DemoBar({ role }: { role: StaffRole }) {
         onClose={() => setIsOpen(false)}
         variant="drawer"
         title="Avisos"
-        description="Llegan solos al panel, sin recargar la página."
-        footer={
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <Chip
-              pressed={isSoundOn}
-              onPressedChange={(on) => {
-                setIsSoundOn(on);
-                if (on) beep();
-              }}
-            >
-              {isSoundOn ? (
-                <Bell aria-hidden="true" className="size-4" />
-              ) : (
-                <BellOff aria-hidden="true" className="size-4" />
-              )}
-              Sonido
-            </Chip>
-            <Button variant="secundario" disabled={unread === 0} onClick={markAllRead}>
-              Marcar todo como leído
-            </Button>
-          </div>
+        description="Llegan solos, sin recargar."
+        headerAction={
+          <Button
+            variant="secundario"
+            className="px-3 text-sm"
+            disabled={unread === 0}
+            onClick={markAllRead}
+          >
+            <CheckCheck aria-hidden="true" className="size-4" /> Marcar como leído
+          </Button>
         }
       >
         {mine.length === 0 ? (

@@ -117,7 +117,10 @@ export function ReservationsBoard({
                   {r.occasion ? ` · ${r.occasion}` : ""}
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
-                  <a href={`tel:+51${r.phone}`} className="text-sm underline underline-offset-4">
+                  <a
+                    href={`tel:+51${r.phone}`}
+                    className="min-h-tactil -my-2 inline-flex items-center text-sm underline underline-offset-4"
+                  >
                     {r.phone}
                   </a>
                   {r.source ? <Badge>{SOURCE_LABELS[r.source]}</Badge> : null}

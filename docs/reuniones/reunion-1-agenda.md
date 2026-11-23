@@ -69,6 +69,15 @@ Cada una dice **qué módulo desbloquea**. Dejar la respuesta escrita.
 | 18  | ¿Cómo emite sus boletas o facturas electrónicas? (lo ve con su contador)                    |           |
 | 19  | ¿Quién firma el contrato con el proveedor?                                                  |           |
 
+### Sistema del local (ticketera y facturación)
+
+| #   | Pregunta                                                                                            | Respuesta |
+| --- | --------------------------------------------------------------------------------------------------- | --------- |
+| 20  | ¿Cómo se llama exactamente el sistema del local (Trinetsoft?) y quién es el contacto del proveedor? |           |
+| 21  | ¿Quiere que los pedidos de la web lleguen solos a la ticketera de cocina?                           |           |
+| 22  | ¿Las reservas también deben registrarse en ese sistema?                                             |           |
+| 23  | ¿Quién emite la boleta o factura: el sistema al cerrar la cuenta? (la web no emite comprobantes)    |           |
+
 ## Acta (completar durante la reunión)
 
 - **Fecha y asistentes:**

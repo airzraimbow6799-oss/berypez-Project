@@ -139,6 +139,22 @@ describe("CartaManager · lista", () => {
   });
 });
 
+/** Elige una sección en la lista; si no existe, la crea con «Crear una sección nueva». */
+async function setSection(
+  user: ReturnType<typeof userEvent.setup>,
+  form: ReturnType<typeof within>,
+  name: string,
+) {
+  await user.click(form.getByRole("button", { name: /Sección/ }));
+  const existing = form.queryByRole("option", { name });
+  if (existing) {
+    await user.click(existing);
+    return;
+  }
+  await user.type(form.getByLabelText("Crear una sección nueva"), name);
+  await user.click(form.getByRole("button", { name: "Crear" }));
+}
+
 describe("CartaManager · añadir y editar platos", () => {
   it("añade un plato simple con foto, carta, sección y etiquetas", async () => {
     const user = await renderAdmin();
@@ -152,7 +168,7 @@ describe("CartaManager · añadir y editar platos", () => {
     await user.type(form.getByLabelText(/Nombre/), "Tiradito nikkei");
     await user.type(form.getByLabelText("Descripción"), "Pescado en láminas con salsa nikkei.");
     await user.click(form.getByRole("button", { name: "Piqueos" }));
-    await user.type(form.getByLabelText(/Sección/), "Tiraditos");
+    await setSection(user, form, "Tiraditos");
     await user.type(form.getByLabelText(/Precio/), "34.5");
     await user.click(form.getByRole("button", { name: "Nuevo" }));
     await user.click(form.getByRole("button", { name: "Guardar plato" }));
@@ -187,7 +203,7 @@ describe("CartaManager · añadir y editar platos", () => {
     const dialog = await openNewDish(user);
     const form = within(dialog);
     await user.type(form.getByLabelText(/Nombre/), "Tacu tacu");
-    await user.type(form.getByLabelText(/Sección/), "Fondos");
+    await setSection(user, form, "Fondos");
 
     await user.click(form.getByRole("button", { name: /Agregar apartado con precio/ }));
     expect(form.queryByLabelText(/^Precio \(S\/\) \(obligatorio\)/)).not.toBeInTheDocument();

@@ -230,7 +230,7 @@ describe("Avisos en vivo (franja de demostración)", () => {
     await user().click(await screen.findByRole("button", { name: "Simular pedido" }));
     await user().click(screen.getByRole("button", { name: /Avisos/ }));
     const drawer = await screen.findByRole("dialog", { name: "Avisos", hidden: true });
-    await user().click(within(drawer).getByRole("button", { name: "Marcar todo como leído" }));
+    await user().click(within(drawer).getByRole("button", { name: "Marcar como leído" }));
     expect(screen.getByRole("button", { name: "Avisos, 0 sin leer" })).toBeInTheDocument();
   });
 });
