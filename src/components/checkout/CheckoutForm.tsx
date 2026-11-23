@@ -11,8 +11,18 @@ import { useCart } from "@/features/cart/store";
 import { useQuote } from "@/features/cart/use-quote";
 import { checkoutSchema, fieldErrors } from "@/features/checkout/schema";
 import { clearFieldError, type ErrorMap, fieldError } from "@/features/forms/field-errors";
+import { validateCard } from "@/features/payments/card";
+import {
+  type PaymentMethodId,
+  simulatePayment,
+  validateWallet,
+  WAITING_MESSAGES,
+} from "@/features/payments/simulate";
 import { MODE_OPTIONS, modeId, readStoredMode, writeStoredMode } from "@/features/order-mode/mode";
 import { formatPrice } from "@/lib/format";
+
+import { EMPTY_PAY_DATA, PaymentBlock, type PayData } from "./PaymentBlock";
+import { PaymentApproved } from "./PaymentApproved";
 
 type BranchesData = {
   branches: Array<{ slug: string; name: string; status: { isOpen: boolean; label: string } }>;
@@ -96,7 +106,12 @@ const INITIAL = {
 };
 
 /** F2-10 · Checkout en una página: Contacto · Entrega · Pago, con validación en línea. */
-export function CheckoutForm() {
+export function CheckoutForm({
+  paymentsDemo = process.env.NEXT_PUBLIC_PAYMENTS_DEMO === "1",
+}: {
+  /** Demostración: Yape, Plin y tarjeta simulados (no cobran ni crean pedidos). */
+  paymentsDemo?: boolean;
+}) {
   const router = useRouter();
   const { lines, clear } = useCart();
   const branches = useBranches();
@@ -108,6 +123,15 @@ export function CheckoutForm() {
   const [resetKey, setResetKey] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [method, setMethod] = useState<PaymentMethodId>("cash");
+  const [pay, setPay] = useState<PayData>(EMPTY_PAY_DATA);
+  const [payErrors, setPayErrors] = useState<Record<string, string | undefined>>({});
+  const [payStatus, setPayStatus] = useState<string>("");
+  const [approved, setApproved] = useState<{
+    method: PaymentMethodId;
+    reference: string;
+    totalCents: number;
+  } | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -142,7 +166,8 @@ export function CheckoutForm() {
     cashChangeForCents: form.cashChange ? Math.round(Number(form.cashChange) * 100) : null,
     notes: form.notes,
     acceptTerms: form.acceptTerms,
-    turnstileToken: token,
+    // El pago simulado no llega al servidor, así que no necesita la verificación anti-bots.
+    turnstileToken: token || (paymentsDemo && method !== "cash" ? "simulado" : ""),
     items: lines.map((l) => ({
       productId: l.productId,
       variantId: l.variantId,
@@ -167,6 +192,38 @@ export function CheckoutForm() {
     if (!validation.success) {
       setTouched(Object.fromEntries(Object.keys(clientErrors).map((k) => [k, true])));
       setFormError("Revisa los datos marcados.");
+      return;
+    }
+    if (paymentsDemo && method !== "cash") {
+      const errors =
+        method === "card"
+          ? validateCard(pay.card)
+          : validateWallet(method, pay.phone || form.phone, pay.yapeCode);
+      if (Object.keys(errors).length > 0) {
+        setPayErrors(errors);
+        setFormError("Revisa los datos del pago.");
+        return;
+      }
+      setPayErrors({});
+      setIsSubmitting(true);
+      setPayStatus(WAITING_MESSAGES[method]);
+      const outcome = await simulatePayment({
+        method,
+        phone: pay.phone || form.phone,
+        yapeCode: pay.yapeCode,
+        cardNumber: pay.card.number,
+      });
+      setIsSubmitting(false);
+      setPayStatus("");
+      if (outcome.ok) {
+        setApproved({
+          method,
+          reference: outcome.reference,
+          totalCents: quote.status === "ready" ? quote.quote.totalCents : 0,
+        });
+      } else {
+        setFormError(outcome.message);
+      }
       return;
     }
     setIsSubmitting(true);
@@ -202,6 +259,34 @@ export function CheckoutForm() {
       </div>
     );
   }
+
+  if (approved) {
+    return (
+      <PaymentApproved
+        {...approved}
+        onReset={() => {
+          setApproved(null);
+          setFormError("");
+        }}
+      />
+    );
+  }
+
+  const cashInput = (
+    <Input
+      label="¿Con cuánto pagas?"
+      name="cashChange"
+      type="number"
+      inputMode="decimal"
+      min="0"
+      step="0.10"
+      hint="Opcional: para llevarte el vuelto exacto."
+      value={form.cashChange}
+      onChange={(e) => set("cashChange")(e.target.value)}
+      onBlur={blur("cashChangeForCents")}
+      error={errorFor("cashChangeForCents")}
+    />
+  );
 
   const zone = branches?.zones.find((z) => z.district === form.district);
   const branchStatus = branches?.branches.find((b) => b.slug === branchSlug)?.status;
@@ -344,36 +429,49 @@ export function CheckoutForm() {
         </Block>
 
         <Block step={3} title="Pago">
-          <div role="radiogroup" aria-label="Medio de pago" className="grid gap-2 sm:grid-cols-2">
-            <RadioCard
-              name="pago"
-              checked
-              onChange={() => undefined}
-              label="Efectivo al recibir"
-              hint="Pagas al recibir o al recoger"
+          {paymentsDemo ? (
+            <PaymentBlock
+              method={method}
+              onMethodChange={(next) => {
+                setMethod(next);
+                setPayErrors({});
+                setFormError("");
+              }}
+              data={pay}
+              onDataChange={(patch) => {
+                setPay((current) => ({ ...current, ...patch }));
+                setPayErrors({});
+              }}
+              errors={payErrors}
+              isBusy={isSubmitting}
+              cashField={cashInput}
             />
-            <RadioCard
-              name="pago"
-              checked={false}
-              onChange={() => undefined}
-              disabled
-              label="Yape, Plin o tarjeta"
-              hint="Muy pronto"
-            />
-          </div>
-          <Input
-            label="¿Con cuánto pagas?"
-            name="cashChange"
-            type="number"
-            inputMode="decimal"
-            min="0"
-            step="0.10"
-            hint="Opcional: para llevarte el vuelto exacto."
-            value={form.cashChange}
-            onChange={(e) => set("cashChange")(e.target.value)}
-            onBlur={blur("cashChangeForCents")}
-            error={errorFor("cashChangeForCents")}
-          />
+          ) : (
+            <>
+              <div
+                role="radiogroup"
+                aria-label="Medio de pago"
+                className="grid gap-2 sm:grid-cols-2"
+              >
+                <RadioCard
+                  name="pago"
+                  checked
+                  onChange={() => undefined}
+                  label="Efectivo al recibir"
+                  hint="Pagas al recibir o al recoger"
+                />
+                <RadioCard
+                  name="pago"
+                  checked={false}
+                  onChange={() => undefined}
+                  disabled
+                  label="Yape, Plin o tarjeta"
+                  hint="Muy pronto"
+                />
+              </div>
+              {cashInput}
+            </>
+          )}
           <div className="flex flex-col gap-1.5">
             <label htmlFor="notes" className="font-semibold">
               Notas del pedido <span className="text-tinta-suave font-normal">(opcional)</span>
@@ -465,8 +563,19 @@ export function CheckoutForm() {
             </p>
           ) : null}
           <Button type="submit" size="lg" className="mt-4 w-full" isLoading={isSubmitting}>
-            {total ? `Confirmar pedido · ${formatPrice(total.totalCents)}` : "Confirmar pedido"}
+            {paymentsDemo && method !== "cash"
+              ? total
+                ? `Pagar ${formatPrice(total.totalCents)}`
+                : "Pagar"
+              : total
+                ? `Confirmar pedido · ${formatPrice(total.totalCents)}`
+                : "Confirmar pedido"}
           </Button>
+          {payStatus ? (
+            <p role="status" className="text-tinta-suave mt-3 text-center text-sm font-semibold">
+              {payStatus}
+            </p>
+          ) : null}
         </div>
       </aside>
     </form>
