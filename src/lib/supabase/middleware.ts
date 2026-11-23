@@ -5,9 +5,21 @@ import { readPublicEnv } from "@/lib/env";
 
 /**
  * Refresca la sesión del personal en cada petición al panel.
- * `auth.getUser()` valida el token con Supabase y, si venció, escribe las cookies nuevas.
+ *
+ * - Sin cookies de sesión (quien aún no ingresó, o la demostración) no hay nada que refrescar:
+ *   no se crea el cliente ni se consulta a Supabase.
+ * - Con cookies, `auth.getClaims()` comprueba la firma del token **en el servidor, con las
+ *   claves públicas del proyecto**, sin viajar a Supabase; solo renueva (y escribe las cookies
+ *   nuevas) si el token venció. Este proyecto firma con claves asimétricas (ES256).
+ *
+ * Esto es solo el refresco de cookies. La decisión de quién entra y con qué rol sigue en
+ * `getStaffSession`, que valida con `auth.getUser()` y consulta `staff_roles`.
  */
 export async function updateSession(request: NextRequest): Promise<NextResponse> {
+  if (!request.cookies.getAll().some((cookie) => cookie.name.startsWith("sb-"))) {
+    return NextResponse.next({ request });
+  }
+
   const env = readPublicEnv();
   let response = NextResponse.next({ request });
 
@@ -32,8 +44,8 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
     },
   );
 
-  // No meter código entre createServerClient y getUser: rompe el refresco de sesión.
-  await supabase.auth.getUser();
+  // No meter código entre createServerClient y getClaims: rompe el refresco de sesión.
+  await supabase.auth.getClaims();
 
   return response;
 }
