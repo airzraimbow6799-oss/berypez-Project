@@ -16,9 +16,10 @@ import type { StaffRole } from "@/features/staff/roles";
 export const DEMO_COOKIE = "berypez_demo_role";
 
 /**
- * Mientras el enlace principal del sitio sea la demo para la dueña, el modo demostración queda
- * activo por defecto (sin pedir login de Vercel ni variables). Al salir a producción real hay que
- * apagarlo: poner `DEMO_PANEL=0` en Vercel o cambiar esto a `false` (ver docs/plan, fase D).
+ * Activo: a pedido de Axel el sitio sigue en modo demostración (botones «Entrar como
+ * Administración / Recepción») hasta pasar a cuentas reales. Una sesión real, si existe, manda
+ * sobre la de demostración (ver `getStaffSession`). Para apagarlo: `DEMO_PANEL=0` en Vercel o
+ * cambiar esto a `false`.
  */
 export const DEMO_PANEL_BY_DEFAULT = true;
 

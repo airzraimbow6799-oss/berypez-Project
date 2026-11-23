@@ -22,6 +22,8 @@ type DialogProps = {
   variant?: DialogVariant;
   children: ReactNode;
   footer?: ReactNode;
+  /** Acción a la derecha del título, junto a «Cerrar» (siempre a la vista, sin bajar la lista). */
+  headerAction?: ReactNode;
 };
 
 const VARIANT_CLASSES: Record<DialogVariant, string> = {
@@ -43,6 +45,7 @@ export function Dialog({
   variant = "sheet",
   children,
   footer,
+  headerAction,
 }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -86,9 +89,9 @@ export function Dialog({
       )}
     >
       {open ? (
-        <div className="flex max-h-[inherit] flex-col">
+        <div className={cx("flex max-h-[inherit] flex-col", variant === "drawer" && "h-full")}>
           <header className="border-borde flex items-start justify-between gap-3 border-b px-5 py-4">
-            <div>
+            <div className="min-w-0 flex-1">
               <h2 id={titleId} className="text-xl font-semibold">
                 {title}
               </h2>
@@ -98,13 +101,16 @@ export function Dialog({
                 </p>
               ) : null}
             </div>
-            <IconButton
-              label="Cerrar"
-              icon={<X aria-hidden="true" className="size-6" />}
-              onClick={onClose}
-            />
+            <div className="flex shrink-0 items-center gap-1">
+              {headerAction}
+              <IconButton
+                label="Cerrar"
+                icon={<X aria-hidden="true" className="size-6" />}
+                onClick={onClose}
+              />
+            </div>
           </header>
-          <div className="overflow-y-auto px-5 py-4">{children}</div>
+          <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">{children}</div>
           {footer ? <footer className="border-borde border-t px-5 py-4">{footer}</footer> : null}
         </div>
       ) : null}

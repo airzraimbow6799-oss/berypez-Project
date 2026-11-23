@@ -98,11 +98,11 @@ describe("Reservas con cupo", () => {
   it("guarda una reserva por llamada que cuenta como las de la web", async () => {
     render(<ReservationsDesk />);
     const dialog = await openDialog();
-    const hours = within(within(dialog).getByRole("radiogroup", { name: "Hora" })).getAllByRole(
-      "radio",
-    );
-    const free = hours.find((h) => !(h as HTMLButtonElement).disabled)!;
-    await user().click(free);
+    // Mañana: hoy, de noche, ya pasaron todas las horas y la prueba dependía de la hora en que corre.
+    const date = within(dialog).getByLabelText("Día");
+    await user().clear(date);
+    await user().type(date, dateKeyLima(Date.now() + 24 * 60 * 60 * 1000));
+    await user().click(within(dialog).getByRole("radio", { name: "20:00" }));
     await user().type(within(dialog).getByLabelText(/Nombre/), "Camila Prueba");
     await user().type(within(dialog).getByLabelText(/Celular/), "991736402");
     await user().click(within(dialog).getByRole("button", { name: "Guardar reserva" }));
@@ -230,7 +230,7 @@ describe("Avisos en vivo (franja de demostración)", () => {
     await user().click(await screen.findByRole("button", { name: "Simular pedido" }));
     await user().click(screen.getByRole("button", { name: /Avisos/ }));
     const drawer = await screen.findByRole("dialog", { name: "Avisos", hidden: true });
-    await user().click(within(drawer).getByRole("button", { name: "Marcar todo como leído" }));
+    await user().click(within(drawer).getByRole("button", { name: "Marcar como leído" }));
     expect(screen.getByRole("button", { name: "Avisos, 0 sin leer" })).toBeInTheDocument();
   });
 });

@@ -114,7 +114,12 @@ test.describe("Panel en modo demostración", () => {
     });
     await expect(dialogo.getByText("Cambiar foto")).toBeVisible();
     await dialogo.getByLabel(/Nombre/).fill("Tiradito nikkei");
-    await dialogo.getByLabel(/Sección/).fill("Tiraditos");
+    // La sección se elige de la lista con el diseño de la página; «Tiraditos» no existe, se crea.
+    await dialogo.getByRole("button", { name: /Sección/ }).click();
+    await expect(dialogo.getByRole("option", { name: "Ceviches" })).toBeVisible();
+    await dialogo.getByLabel("Crear una sección nueva").fill("Tiraditos");
+    await dialogo.getByRole("button", { name: "Crear" }).click();
+    await expect(dialogo.getByRole("button", { name: /Sección/ })).toContainText("Tiraditos");
     await dialogo.getByLabel(/Precio/).fill("34.50");
     await dialogo.getByRole("button", { name: "Nuevo" }).click();
     await dialogo.getByRole("button", { name: "Guardar plato" }).click();
@@ -213,10 +218,14 @@ test.describe("Panel en modo demostración", () => {
     await expect(page.getByRole("heading", { name: "Reservas", level: 1 })).toBeVisible();
     await page.getByRole("button", { name: /Nueva reserva/ }).click();
     const dialogo = page.getByRole("dialog", { name: "Nueva reserva" });
+    // Mañana: de noche ya pasaron todas las horas de hoy y la prueba dependía de la hora.
+    const manana = new Date(Date.now() + 24 * 60 * 60 * 1000).toLocaleDateString("en-CA", {
+      timeZone: "America/Lima",
+    });
+    await dialogo.getByLabel("Día").fill(manana);
     await dialogo
       .getByRole("radiogroup", { name: "Hora" })
-      .getByRole("radio", { disabled: false })
-      .last()
+      .getByRole("radio", { name: "20:00" })
       .click();
     await dialogo.getByLabel(/Nombre/).fill("Camila Prueba");
     await dialogo.getByLabel(/Celular/).fill("991736402");
